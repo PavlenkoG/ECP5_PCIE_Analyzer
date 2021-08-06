@@ -1,0 +1,25 @@
+EESchema-DOCLIB  Version 2.0
+#
+$CMP +3.3VCC
+K POWER, PWR
+$ENDCMP
+#
+$CMP C
+D Unpolarized capacitor
+K capacitor cap
+$ENDCMP
+#
+$CMP GND
+K POWER, PWR
+$ENDCMP
+#
+$CMP HMC914
+D 12.5 Gbps LIMITING AMPLIFIER w/ LOSS OF SIGNAL FEATURE
+$ENDCMP
+#
+$CMP R
+D Resistor
+K r res resistor
+$ENDCMP
+#
+#End Doc Library
