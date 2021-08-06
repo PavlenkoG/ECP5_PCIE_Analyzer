@@ -55,11 +55,10 @@ VU.library("sim_core").add_source_files(SRC_PATH / "SRC" / "*.vhd")
 #add simulation
 VU.library("sim_core").add_source_files(SRC_PATH / "sim" / "VUnit" / "*.vhd")
 
-'''
 
 VU.add_library("pcie_core")
+'''
 VU.library("pcie_core").add_source_file(SRC_PATH / "sim_core" / "ip_cores " / "pcie" / "pcie_eval" / "pcie" /"src"/"top"/"pcie_beh.v")
-
 '''
 
 VU.set_compile_option("activehdl.vcom_flags", ['-2008'])

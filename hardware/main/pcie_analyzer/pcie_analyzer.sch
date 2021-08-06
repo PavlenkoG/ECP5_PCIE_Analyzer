@@ -1,7 +1,7 @@
 EESchema Schematic File Version 4
 EELAYER 30 0
 EELAYER END
-$Descr A4 11693 8268
+$Descr A3 16535 11693
 encoding utf-8
 Sheet 1 1
 Title ""
@@ -133,8 +133,6 @@ Wire Notes Line
 	2600 2900 2100 2900
 Text Notes 2100 3200 0    50   ~ 0
 connect to \neither vcc\nor gnd
-Text Label 2300 1100 0    50   ~ 0
-PCIE_UP_P
 Text Label 2300 1200 0    50   ~ 0
 PCIE_UP_N
 $Comp
@@ -335,7 +333,7 @@ $EndComp
 Wire Wire Line
 	2100 2500 2100 2400
 Wire Wire Line
-	2000 2400 2100 2400
+	1900 2400 2100 2400
 Wire Wire Line
 	2400 2400 2400 2500
 Wire Wire Line
@@ -381,12 +379,12 @@ Wire Wire Line
 Connection ~ 2700 1400
 Wire Wire Line
 	2700 1400 2400 1400
-Text GLabel 2100 1400 0    50   Input ~ 0
-DISABLE
-Text GLabel 2100 1900 0    50   Input ~ 0
-AODWNENB
-Text GLabel 2000 2400 0    50   Input ~ 0
-VAC
+Text GLabel 1900 1400 0    50   Input ~ 0
+DISABLE_UP
+Text GLabel 1900 1900 0    50   Input ~ 0
+AODWNENB_UP
+Text GLabel 1900 2400 0    50   Input ~ 0
+VAC_UP
 Wire Wire Line
 	3900 2200 3600 2200
 Wire Wire Line
@@ -481,7 +479,7 @@ $EndComp
 Wire Wire Line
 	5400 2800 5600 2800
 Wire Wire Line
-	5800 2800 6400 2800
+	5800 2800 6000 2800
 Wire Wire Line
 	5400 2900 6400 2900
 $Comp
@@ -498,12 +496,12 @@ $EndComp
 $Comp
 L pcie_analyzer:+3.3VCC #PWR?
 U 1 1 6110A78C
-P 6400 2800
-F 0 "#PWR?" H 6400 2650 50  0001 C CNN
-F 1 "+3.3VCC" H 6400 2940 50  0000 C CNN
-F 2 "" H 6400 2800 50  0001 C CNN
-F 3 "" H 6400 2800 50  0001 C CNN
-	1    6400 2800
+P 6000 2700
+F 0 "#PWR?" H 6000 2550 50  0001 C CNN
+F 1 "+3.3VCC" H 6000 2840 50  0000 C CNN
+F 2 "" H 6000 2700 50  0001 C CNN
+F 3 "" H 6000 2700 50  0001 C CNN
+	1    6000 2700
 	1    0    0    -1  
 $EndComp
 Text GLabel 6400 2900 2    50   Input ~ 0
@@ -761,4 +759,1526 @@ Wire Wire Line
 Wire Wire Line
 	4700 1600 4700 1700
 Connection ~ 4600 1600
+Connection ~ 2100 1900
+Wire Wire Line
+	2100 1900 1900 1900
+Connection ~ 2100 1400
+Wire Wire Line
+	2100 1400 1900 1400
+Wire Wire Line
+	6000 2800 6000 2700
+Text Label 2300 1100 0    50   ~ 0
+PCIE_UP_P
+$Comp
+L pcie_analyzer:HMC914 D?
+U 1 1 610E666B
+P 4100 5000
+F 0 "D?" H 5100 5100 50  0000 C CNN
+F 1 "HMC914" H 4600 4200 50  0000 C CNN
+F 2 "" H 4100 5000 50  0001 C CNN
+F 3 "" H 4100 5000 50  0001 C CNN
+	1    4100 5000
+	1    0    0    -1  
+$EndComp
+$Comp
+L pcie_analyzer:R R?
+U 1 1 610E69CB
+P 2700 6200
+F 0 "R?" V 2840 6150 50  0000 L CNB
+F 1 "4.75K" V 2770 6090 50  0000 L CNN
+F 2 "" V 2630 6200 50  0001 C CNN
+F 3 "" H 2700 6200 50  0001 C CNN
+	1    2700 6200
+	0    -1   -1   0   
+$EndComp
+$Comp
+L pcie_analyzer:R R?
+U 1 1 610E69D5
+P 3000 6200
+F 0 "R?" V 3140 6150 50  0000 L CNB
+F 1 "4.75K" V 3070 6090 50  0000 L CNN
+F 2 "" V 2930 6200 50  0001 C CNN
+F 3 "" H 3000 6200 50  0001 C CNN
+	1    3000 6200
+	0    -1   -1   0   
+$EndComp
+$Comp
+L pcie_analyzer:C C?
+U 1 1 610E69DF
+P 3300 6400
+F 0 "C?" H 3350 6475 50  0000 L CNB
+F 1 "100n" H 3350 6325 50  0000 L CNN
+F 2 "" H 3300 6415 50  0001 C CNN
+F 3 "" H 3300 6415 50  0001 C CNN
+	1    3300 6400
+	1    0    0    -1  
+$EndComp
+$Comp
+L pcie_analyzer:C C?
+U 1 1 610E69E9
+P 3600 6400
+F 0 "C?" H 3650 6475 50  0000 L CNB
+F 1 "100n" H 3650 6325 50  0000 L CNN
+F 2 "" H 3600 6415 50  0001 C CNN
+F 3 "" H 3600 6415 50  0001 C CNN
+	1    3600 6400
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	3900 6200 3600 6200
+Wire Wire Line
+	3300 6300 3300 6200
+Connection ~ 3300 6200
+Wire Wire Line
+	3300 6200 3100 6200
+Wire Wire Line
+	3600 6300 3600 6200
+Connection ~ 3600 6200
+Wire Wire Line
+	3600 6200 3300 6200
+Wire Wire Line
+	2800 6200 2900 6200
+Wire Wire Line
+	2600 6200 2400 6200
+$Comp
+L pcie_analyzer:GND #PWR?
+U 1 1 610E69FC
+P 2400 6700
+F 0 "#PWR?" H 2395 6530 50  0001 C CNN
+F 1 "GND" H 2400 6600 50  0001 C CNN
+F 2 "" H 2400 6700 50  0001 C CNN
+F 3 "" H 2400 6700 50  0001 C CNN
+	1    2400 6700
+	1    0    0    -1  
+$EndComp
+$Comp
+L pcie_analyzer:GND #PWR?
+U 1 1 610E6A06
+P 3300 6700
+F 0 "#PWR?" H 3295 6530 50  0001 C CNN
+F 1 "GND" H 3300 6600 50  0001 C CNN
+F 2 "" H 3300 6700 50  0001 C CNN
+F 3 "" H 3300 6700 50  0001 C CNN
+	1    3300 6700
+	1    0    0    -1  
+$EndComp
+$Comp
+L pcie_analyzer:GND #PWR?
+U 1 1 610E6A10
+P 3600 6700
+F 0 "#PWR?" H 3595 6530 50  0001 C CNN
+F 1 "GND" H 3600 6600 50  0001 C CNN
+F 2 "" H 3600 6700 50  0001 C CNN
+F 3 "" H 3600 6700 50  0001 C CNN
+	1    3600 6700
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	3600 6700 3600 6500
+Wire Wire Line
+	3300 6700 3300 6500
+Wire Wire Line
+	2400 6200 2400 6700
+Wire Notes Line
+	2100 6000 2100 6500
+Wire Notes Line
+	2100 6500 2600 6500
+Wire Notes Line
+	2600 6500 2600 6000
+Wire Notes Line
+	2600 6000 2100 6000
+Text Notes 2100 6300 0    50   ~ 0
+connect to \neither vcc\nor gnd
+Text Label 2300 4300 0    50   ~ 0
+PCIE_DOWN_N
+$Comp
+L pcie_analyzer:C C?
+U 1 1 610E6A23
+P 2100 5200
+F 0 "C?" H 2150 5275 50  0000 L CNB
+F 1 "4.7u" H 2150 5125 50  0000 L CNN
+F 2 "" H 2100 5215 50  0001 C CNN
+F 3 "" H 2100 5215 50  0001 C CNN
+	1    2100 5200
+	1    0    0    -1  
+$EndComp
+$Comp
+L pcie_analyzer:C C?
+U 1 1 610E6A2D
+P 2400 5200
+F 0 "C?" H 2450 5275 50  0000 L CNB
+F 1 "1n" H 2450 5125 50  0000 L CNN
+F 2 "" H 2400 5215 50  0001 C CNN
+F 3 "" H 2400 5215 50  0001 C CNN
+	1    2400 5200
+	1    0    0    -1  
+$EndComp
+$Comp
+L pcie_analyzer:C C?
+U 1 1 610E6A37
+P 2700 5200
+F 0 "C?" H 2750 5275 50  0000 L CNB
+F 1 "100n" H 2750 5125 50  0000 L CNN
+F 2 "" H 2700 5215 50  0001 C CNN
+F 3 "" H 2700 5215 50  0001 C CNN
+	1    2700 5200
+	1    0    0    -1  
+$EndComp
+$Comp
+L pcie_analyzer:C C?
+U 1 1 610E6A41
+P 2100 5700
+F 0 "C?" H 2150 5775 50  0000 L CNB
+F 1 "1n" H 2150 5625 50  0000 L CNN
+F 2 "" H 2100 5715 50  0001 C CNN
+F 3 "" H 2100 5715 50  0001 C CNN
+	1    2100 5700
+	1    0    0    -1  
+$EndComp
+$Comp
+L pcie_analyzer:C C?
+U 1 1 610E6A4B
+P 2400 5700
+F 0 "C?" H 2450 5775 50  0000 L CNB
+F 1 "100n" H 2450 5625 50  0000 L CNN
+F 2 "" H 2400 5715 50  0001 C CNN
+F 3 "" H 2400 5715 50  0001 C CNN
+	1    2400 5700
+	1    0    0    -1  
+$EndComp
+$Comp
+L pcie_analyzer:C C?
+U 1 1 610E6A55
+P 3600 6000
+F 0 "C?" V 3545 5810 50  0000 L CNB
+F 1 "100n" V 3545 6055 50  0000 L CNN
+F 2 "" H 3600 6015 50  0001 C CNN
+F 3 "" H 3600 6015 50  0001 C CNN
+	1    3600 6000
+	0    1    1    0   
+$EndComp
+Wire Wire Line
+	3900 6000 3700 6000
+Wire Wire Line
+	3300 6100 3300 6000
+Wire Wire Line
+	3300 6000 3500 6000
+Wire Wire Line
+	3300 6100 3900 6100
+$Comp
+L pcie_analyzer:C C?
+U 1 1 610E6A63
+P 2100 4700
+F 0 "C?" H 2150 4775 50  0000 L CNB
+F 1 "4.7u" H 2150 4625 50  0000 L CNN
+F 2 "" H 2100 4715 50  0001 C CNN
+F 3 "" H 2100 4715 50  0001 C CNN
+	1    2100 4700
+	1    0    0    -1  
+$EndComp
+$Comp
+L pcie_analyzer:C C?
+U 1 1 610E6A6D
+P 2400 4700
+F 0 "C?" H 2450 4775 50  0000 L CNB
+F 1 "1n" H 2450 4625 50  0000 L CNN
+F 2 "" H 2400 4715 50  0001 C CNN
+F 3 "" H 2400 4715 50  0001 C CNN
+	1    2400 4700
+	1    0    0    -1  
+$EndComp
+$Comp
+L pcie_analyzer:C C?
+U 1 1 610E6A77
+P 2700 4700
+F 0 "C?" H 2750 4775 50  0000 L CNB
+F 1 "100n" H 2750 4625 50  0000 L CNN
+F 2 "" H 2700 4715 50  0001 C CNN
+F 3 "" H 2700 4715 50  0001 C CNN
+	1    2700 4700
+	1    0    0    -1  
+$EndComp
+$Comp
+L pcie_analyzer:GND #PWR?
+U 1 1 610E6A81
+P 2100 5800
+F 0 "#PWR?" H 2095 5630 50  0001 C CNN
+F 1 "GND" H 2100 5700 50  0001 C CNN
+F 2 "" H 2100 5800 50  0001 C CNN
+F 3 "" H 2100 5800 50  0001 C CNN
+	1    2100 5800
+	1    0    0    -1  
+$EndComp
+$Comp
+L pcie_analyzer:GND #PWR?
+U 1 1 610E6A8B
+P 2400 5800
+F 0 "#PWR?" H 2395 5630 50  0001 C CNN
+F 1 "GND" H 2400 5700 50  0001 C CNN
+F 2 "" H 2400 5800 50  0001 C CNN
+F 3 "" H 2400 5800 50  0001 C CNN
+	1    2400 5800
+	1    0    0    -1  
+$EndComp
+$Comp
+L pcie_analyzer:GND #PWR?
+U 1 1 610E6A95
+P 2100 5300
+F 0 "#PWR?" H 2095 5130 50  0001 C CNN
+F 1 "GND" H 2100 5200 50  0001 C CNN
+F 2 "" H 2100 5300 50  0001 C CNN
+F 3 "" H 2100 5300 50  0001 C CNN
+	1    2100 5300
+	1    0    0    -1  
+$EndComp
+$Comp
+L pcie_analyzer:GND #PWR?
+U 1 1 610E6A9F
+P 2400 5300
+F 0 "#PWR?" H 2395 5130 50  0001 C CNN
+F 1 "GND" H 2400 5200 50  0001 C CNN
+F 2 "" H 2400 5300 50  0001 C CNN
+F 3 "" H 2400 5300 50  0001 C CNN
+	1    2400 5300
+	1    0    0    -1  
+$EndComp
+$Comp
+L pcie_analyzer:GND #PWR?
+U 1 1 610E6AA9
+P 2700 5300
+F 0 "#PWR?" H 2695 5130 50  0001 C CNN
+F 1 "GND" H 2700 5200 50  0001 C CNN
+F 2 "" H 2700 5300 50  0001 C CNN
+F 3 "" H 2700 5300 50  0001 C CNN
+	1    2700 5300
+	1    0    0    -1  
+$EndComp
+$Comp
+L pcie_analyzer:GND #PWR?
+U 1 1 610E6AB3
+P 2700 4800
+F 0 "#PWR?" H 2695 4630 50  0001 C CNN
+F 1 "GND" H 2700 4700 50  0001 C CNN
+F 2 "" H 2700 4800 50  0001 C CNN
+F 3 "" H 2700 4800 50  0001 C CNN
+	1    2700 4800
+	1    0    0    -1  
+$EndComp
+$Comp
+L pcie_analyzer:GND #PWR?
+U 1 1 610E6ABD
+P 2400 4800
+F 0 "#PWR?" H 2395 4630 50  0001 C CNN
+F 1 "GND" H 2400 4700 50  0001 C CNN
+F 2 "" H 2400 4800 50  0001 C CNN
+F 3 "" H 2400 4800 50  0001 C CNN
+	1    2400 4800
+	1    0    0    -1  
+$EndComp
+$Comp
+L pcie_analyzer:GND #PWR?
+U 1 1 610E6AC7
+P 2100 4800
+F 0 "#PWR?" H 2095 4630 50  0001 C CNN
+F 1 "GND" H 2100 4700 50  0001 C CNN
+F 2 "" H 2100 4800 50  0001 C CNN
+F 3 "" H 2100 4800 50  0001 C CNN
+	1    2100 4800
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	2100 5600 2100 5500
+Wire Wire Line
+	1900 5500 2100 5500
+Wire Wire Line
+	2400 5500 2400 5600
+Wire Wire Line
+	2400 5500 3300 5500
+Wire Wire Line
+	3300 5500 3300 5900
+Wire Wire Line
+	3300 5900 3900 5900
+Connection ~ 2400 5500
+Wire Wire Line
+	3900 5600 3400 5600
+Wire Wire Line
+	3400 5600 3400 5000
+Wire Wire Line
+	3400 5000 2700 5000
+Wire Wire Line
+	2100 5000 2100 5100
+Wire Wire Line
+	2400 5100 2400 5000
+Connection ~ 2400 5000
+Wire Wire Line
+	2400 5000 2100 5000
+Wire Wire Line
+	2700 5100 2700 5000
+Connection ~ 2700 5000
+Wire Wire Line
+	2700 5000 2400 5000
+Wire Wire Line
+	3900 5500 3500 5500
+Wire Wire Line
+	3500 5500 3500 4500
+Wire Wire Line
+	3500 4500 2700 4500
+Wire Wire Line
+	2100 4500 2100 4600
+Wire Wire Line
+	2400 4600 2400 4500
+Connection ~ 2400 4500
+Wire Wire Line
+	2400 4500 2100 4500
+Wire Wire Line
+	2700 4600 2700 4500
+Connection ~ 2700 4500
+Wire Wire Line
+	2700 4500 2400 4500
+Text GLabel 1900 4500 0    50   Input ~ 0
+DISABLE_DOWN
+Text GLabel 1900 5000 0    50   Input ~ 0
+AODWNENB_DOWN
+Text GLabel 1900 5500 0    50   Input ~ 0
+VAC_DOWN
+Wire Wire Line
+	3900 5300 3600 5300
+Wire Wire Line
+	3600 5300 3600 4300
+Wire Wire Line
+	2300 4300 3600 4300
+Wire Wire Line
+	3700 4200 3700 5200
+Wire Wire Line
+	3700 5200 3900 5200
+Wire Wire Line
+	2300 4200 3700 4200
+$Comp
+L pcie_analyzer:GND #PWR?
+U 1 1 610E6AF5
+P 5100 6900
+F 0 "#PWR?" H 5095 6730 50  0001 C CNN
+F 1 "GND" H 5100 6800 50  0001 C CNN
+F 2 "" H 5100 6900 50  0001 C CNN
+F 3 "" H 5100 6900 50  0001 C CNN
+	1    5100 6900
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	5100 6900 5100 6800
+Wire Wire Line
+	5100 6800 5000 6800
+Wire Wire Line
+	4200 6800 4200 6700
+Connection ~ 5100 6800
+Wire Wire Line
+	5100 6800 5100 6700
+Wire Wire Line
+	4300 6700 4300 6800
+Connection ~ 4300 6800
+Wire Wire Line
+	4300 6800 4200 6800
+Wire Wire Line
+	4400 6700 4400 6800
+Connection ~ 4400 6800
+Wire Wire Line
+	4400 6800 4300 6800
+Wire Wire Line
+	4500 6700 4500 6800
+Connection ~ 4500 6800
+Wire Wire Line
+	4500 6800 4400 6800
+Wire Wire Line
+	4600 6700 4600 6800
+Connection ~ 4600 6800
+Wire Wire Line
+	4600 6800 4500 6800
+Wire Wire Line
+	4700 6700 4700 6800
+Connection ~ 4700 6800
+Wire Wire Line
+	4700 6800 4600 6800
+Wire Wire Line
+	4800 6700 4800 6800
+Connection ~ 4800 6800
+Wire Wire Line
+	4800 6800 4700 6800
+Wire Wire Line
+	4900 6700 4900 6800
+Connection ~ 4900 6800
+Wire Wire Line
+	4900 6800 4800 6800
+Wire Wire Line
+	5000 6700 5000 6800
+Connection ~ 5000 6800
+Wire Wire Line
+	5000 6800 4900 6800
+Wire Wire Line
+	5400 5200 6400 5200
+Wire Wire Line
+	5400 5300 6400 5300
+Text Label 6000 5200 0    50   ~ 0
+PCIE_2_P
+Text Label 6000 5300 0    50   ~ 0
+PCIE_2_N
+$Comp
+L pcie_analyzer:R R?
+U 1 1 610E6B20
+P 5700 5900
+F 0 "R?" V 5840 5850 50  0000 L CNB
+F 1 "1.82K" V 5770 5790 50  0000 L CNN
+F 2 "" V 5630 5900 50  0001 C CNN
+F 3 "" H 5700 5900 50  0001 C CNN
+	1    5700 5900
+	0    -1   -1   0   
+$EndComp
+Wire Wire Line
+	5400 5900 5600 5900
+Wire Wire Line
+	5800 5900 6000 5900
+Wire Wire Line
+	5400 6000 6400 6000
+$Comp
+L pcie_analyzer:+3.3VCC #PWR?
+U 1 1 610E6B2D
+P 4500 4500
+F 0 "#PWR?" H 4500 4350 50  0001 C CNN
+F 1 "+3.3VCC" H 4500 4640 50  0000 C CNN
+F 2 "" H 4500 4500 50  0001 C CNN
+F 3 "" H 4500 4500 50  0001 C CNN
+	1    4500 4500
+	1    0    0    -1  
+$EndComp
+$Comp
+L pcie_analyzer:+3.3VCC #PWR?
+U 1 1 610E6B37
+P 6000 5800
+F 0 "#PWR?" H 6000 5650 50  0001 C CNN
+F 1 "+3.3VCC" H 6000 5940 50  0000 C CNN
+F 2 "" H 6000 5800 50  0001 C CNN
+F 3 "" H 6000 5800 50  0001 C CNN
+	1    6000 5800
+	1    0    0    -1  
+$EndComp
+Text GLabel 6400 6000 2    50   Input ~ 0
+RSSI
+Connection ~ 2100 5500
+Wire Wire Line
+	2100 5500 2400 5500
+$Comp
+L pcie_analyzer:C C?
+U 1 1 610E6B44
+P 5200 4500
+F 0 "C?" H 5250 4575 50  0000 L CNB
+F 1 "1n" H 5250 4425 50  0000 L CNN
+F 2 "" H 5200 4515 50  0001 C CNN
+F 3 "" H 5200 4515 50  0001 C CNN
+	1    5200 4500
+	1    0    0    -1  
+$EndComp
+$Comp
+L pcie_analyzer:C C?
+U 1 1 610E6B4E
+P 5500 4500
+F 0 "C?" H 5550 4575 50  0000 L CNB
+F 1 "100n" H 5550 4425 50  0000 L CNN
+F 2 "" H 5500 4515 50  0001 C CNN
+F 3 "" H 5500 4515 50  0001 C CNN
+	1    5500 4500
+	1    0    0    -1  
+$EndComp
+$Comp
+L pcie_analyzer:GND #PWR?
+U 1 1 610E6B58
+P 5200 4600
+F 0 "#PWR?" H 5195 4430 50  0001 C CNN
+F 1 "GND" H 5200 4500 50  0001 C CNN
+F 2 "" H 5200 4600 50  0001 C CNN
+F 3 "" H 5200 4600 50  0001 C CNN
+	1    5200 4600
+	1    0    0    -1  
+$EndComp
+$Comp
+L pcie_analyzer:GND #PWR?
+U 1 1 610E6B62
+P 5500 4600
+F 0 "#PWR?" H 5495 4430 50  0001 C CNN
+F 1 "GND" H 5500 4500 50  0001 C CNN
+F 2 "" H 5500 4600 50  0001 C CNN
+F 3 "" H 5500 4600 50  0001 C CNN
+	1    5500 4600
+	1    0    0    -1  
+$EndComp
+$Comp
+L pcie_analyzer:C C?
+U 1 1 610E6B6C
+P 6000 4500
+F 0 "C?" H 6050 4575 50  0000 L CNB
+F 1 "1n" H 6050 4425 50  0000 L CNN
+F 2 "" H 6000 4515 50  0001 C CNN
+F 3 "" H 6000 4515 50  0001 C CNN
+	1    6000 4500
+	1    0    0    -1  
+$EndComp
+$Comp
+L pcie_analyzer:C C?
+U 1 1 610E6B76
+P 6300 4500
+F 0 "C?" H 6350 4575 50  0000 L CNB
+F 1 "100n" H 6350 4425 50  0000 L CNN
+F 2 "" H 6300 4515 50  0001 C CNN
+F 3 "" H 6300 4515 50  0001 C CNN
+	1    6300 4500
+	1    0    0    -1  
+$EndComp
+$Comp
+L pcie_analyzer:GND #PWR?
+U 1 1 610E6B80
+P 6000 4600
+F 0 "#PWR?" H 5995 4430 50  0001 C CNN
+F 1 "GND" H 6000 4500 50  0001 C CNN
+F 2 "" H 6000 4600 50  0001 C CNN
+F 3 "" H 6000 4600 50  0001 C CNN
+	1    6000 4600
+	1    0    0    -1  
+$EndComp
+$Comp
+L pcie_analyzer:GND #PWR?
+U 1 1 610E6B8A
+P 6300 4600
+F 0 "#PWR?" H 6295 4430 50  0001 C CNN
+F 1 "GND" H 6300 4500 50  0001 C CNN
+F 2 "" H 6300 4600 50  0001 C CNN
+F 3 "" H 6300 4600 50  0001 C CNN
+	1    6300 4600
+	1    0    0    -1  
+$EndComp
+$Comp
+L pcie_analyzer:C C?
+U 1 1 610E6B94
+P 7100 4500
+F 0 "C?" H 7150 4575 50  0000 L CNB
+F 1 "1n" H 7150 4425 50  0000 L CNN
+F 2 "" H 7100 4515 50  0001 C CNN
+F 3 "" H 7100 4515 50  0001 C CNN
+	1    7100 4500
+	1    0    0    -1  
+$EndComp
+$Comp
+L pcie_analyzer:C C?
+U 1 1 610E6B9E
+P 7400 4500
+F 0 "C?" H 7450 4575 50  0000 L CNB
+F 1 "100n" H 7450 4425 50  0000 L CNN
+F 2 "" H 7400 4515 50  0001 C CNN
+F 3 "" H 7400 4515 50  0001 C CNN
+	1    7400 4500
+	1    0    0    -1  
+$EndComp
+$Comp
+L pcie_analyzer:GND #PWR?
+U 1 1 610E6BA8
+P 7100 4600
+F 0 "#PWR?" H 7095 4430 50  0001 C CNN
+F 1 "GND" H 7100 4500 50  0001 C CNN
+F 2 "" H 7100 4600 50  0001 C CNN
+F 3 "" H 7100 4600 50  0001 C CNN
+	1    7100 4600
+	1    0    0    -1  
+$EndComp
+$Comp
+L pcie_analyzer:GND #PWR?
+U 1 1 610E6BB2
+P 7400 4600
+F 0 "#PWR?" H 7395 4430 50  0001 C CNN
+F 1 "GND" H 7400 4500 50  0001 C CNN
+F 2 "" H 7400 4600 50  0001 C CNN
+F 3 "" H 7400 4600 50  0001 C CNN
+	1    7400 4600
+	1    0    0    -1  
+$EndComp
+$Comp
+L pcie_analyzer:C C?
+U 1 1 610E6BBC
+P 6600 4500
+F 0 "C?" H 6650 4575 50  0000 L CNB
+F 1 "4.7u" H 6650 4425 50  0000 L CNN
+F 2 "" H 6600 4515 50  0001 C CNN
+F 3 "" H 6600 4515 50  0001 C CNN
+	1    6600 4500
+	1    0    0    -1  
+$EndComp
+$Comp
+L pcie_analyzer:GND #PWR?
+U 1 1 610E6BC6
+P 6600 4600
+F 0 "#PWR?" H 6595 4430 50  0001 C CNN
+F 1 "GND" H 6600 4500 50  0001 C CNN
+F 2 "" H 6600 4600 50  0001 C CNN
+F 3 "" H 6600 4600 50  0001 C CNN
+	1    6600 4600
+	1    0    0    -1  
+$EndComp
+$Comp
+L pcie_analyzer:C C?
+U 1 1 610E6BD0
+P 7700 4500
+F 0 "C?" H 7750 4575 50  0000 L CNB
+F 1 "4.7u" H 7750 4425 50  0000 L CNN
+F 2 "" H 7700 4515 50  0001 C CNN
+F 3 "" H 7700 4515 50  0001 C CNN
+	1    7700 4500
+	1    0    0    -1  
+$EndComp
+$Comp
+L pcie_analyzer:GND #PWR?
+U 1 1 610E6BDA
+P 7700 4600
+F 0 "#PWR?" H 7695 4430 50  0001 C CNN
+F 1 "GND" H 7700 4500 50  0001 C CNN
+F 2 "" H 7700 4600 50  0001 C CNN
+F 3 "" H 7700 4600 50  0001 C CNN
+	1    7700 4600
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	5200 4300 5500 4300
+Wire Wire Line
+	6600 4300 6600 4400
+Wire Wire Line
+	5200 4300 5200 4400
+Wire Wire Line
+	6300 4300 6300 4400
+Connection ~ 6300 4300
+Wire Wire Line
+	6300 4300 6600 4300
+Wire Wire Line
+	6000 4300 6000 4400
+Connection ~ 6000 4300
+Wire Wire Line
+	6000 4300 6300 4300
+Wire Wire Line
+	5500 4300 5500 4400
+Connection ~ 5500 4300
+Wire Wire Line
+	5500 4300 6000 4300
+Wire Wire Line
+	7100 4300 7400 4300
+Wire Wire Line
+	7700 4300 7700 4400
+Wire Wire Line
+	7100 4300 7100 4400
+Wire Wire Line
+	7400 4300 7400 4400
+Connection ~ 7400 4300
+Wire Wire Line
+	7400 4300 7700 4300
+$Comp
+L pcie_analyzer:+3.3VCC #PWR?
+U 1 1 610E6BF6
+P 6600 4200
+F 0 "#PWR?" H 6600 4050 50  0001 C CNN
+F 1 "+3.3VCC" H 6600 4340 50  0000 C CNN
+F 2 "" H 6600 4200 50  0001 C CNN
+F 3 "" H 6600 4200 50  0001 C CNN
+	1    6600 4200
+	1    0    0    -1  
+$EndComp
+Connection ~ 6600 4300
+Wire Wire Line
+	6600 4300 6600 4200
+$Comp
+L pcie_analyzer:+3.3VCC #PWR?
+U 1 1 610E6C02
+P 7700 4200
+F 0 "#PWR?" H 7700 4050 50  0001 C CNN
+F 1 "+3.3VCC" H 7700 4340 50  0000 C CNN
+F 2 "" H 7700 4200 50  0001 C CNN
+F 3 "" H 7700 4200 50  0001 C CNN
+	1    7700 4200
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	7700 4300 7700 4200
+Connection ~ 7700 4300
+Wire Wire Line
+	4500 4800 4500 4700
+Wire Wire Line
+	4500 4700 4600 4700
+Wire Wire Line
+	4600 4700 4600 4800
+Connection ~ 4500 4700
+Wire Wire Line
+	4500 4700 4500 4500
+Wire Wire Line
+	4600 4700 4700 4700
+Wire Wire Line
+	4700 4700 4700 4800
+Connection ~ 4600 4700
+Connection ~ 2100 5000
+Wire Wire Line
+	2100 5000 1900 5000
+Connection ~ 2100 4500
+Wire Wire Line
+	2100 4500 1900 4500
+Wire Wire Line
+	6000 5900 6000 5800
+Text Label 2300 4200 0    50   ~ 0
+PCIE_DOWN_P
+$Comp
+L pcie_analyzer:HMC914 D?
+U 1 1 610FF5A3
+P 4100 8100
+F 0 "D?" H 5100 8200 50  0000 C CNN
+F 1 "HMC914" H 4600 7300 50  0000 C CNN
+F 2 "" H 4100 8100 50  0001 C CNN
+F 3 "" H 4100 8100 50  0001 C CNN
+	1    4100 8100
+	1    0    0    -1  
+$EndComp
+$Comp
+L pcie_analyzer:R R?
+U 1 1 610FF5AD
+P 2700 9300
+F 0 "R?" V 2840 9250 50  0000 L CNB
+F 1 "4.75K" V 2770 9190 50  0000 L CNN
+F 2 "" V 2630 9300 50  0001 C CNN
+F 3 "" H 2700 9300 50  0001 C CNN
+	1    2700 9300
+	0    -1   -1   0   
+$EndComp
+$Comp
+L pcie_analyzer:R R?
+U 1 1 610FF5B7
+P 3000 9300
+F 0 "R?" V 3140 9250 50  0000 L CNB
+F 1 "4.75K" V 3070 9190 50  0000 L CNN
+F 2 "" V 2930 9300 50  0001 C CNN
+F 3 "" H 3000 9300 50  0001 C CNN
+	1    3000 9300
+	0    -1   -1   0   
+$EndComp
+$Comp
+L pcie_analyzer:C C?
+U 1 1 610FF5C1
+P 3300 9500
+F 0 "C?" H 3350 9575 50  0000 L CNB
+F 1 "100n" H 3350 9425 50  0000 L CNN
+F 2 "" H 3300 9515 50  0001 C CNN
+F 3 "" H 3300 9515 50  0001 C CNN
+	1    3300 9500
+	1    0    0    -1  
+$EndComp
+$Comp
+L pcie_analyzer:C C?
+U 1 1 610FF5CB
+P 3600 9500
+F 0 "C?" H 3650 9575 50  0000 L CNB
+F 1 "100n" H 3650 9425 50  0000 L CNN
+F 2 "" H 3600 9515 50  0001 C CNN
+F 3 "" H 3600 9515 50  0001 C CNN
+	1    3600 9500
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	3900 9300 3600 9300
+Wire Wire Line
+	3300 9400 3300 9300
+Connection ~ 3300 9300
+Wire Wire Line
+	3300 9300 3100 9300
+Wire Wire Line
+	3600 9400 3600 9300
+Connection ~ 3600 9300
+Wire Wire Line
+	3600 9300 3300 9300
+Wire Wire Line
+	2800 9300 2900 9300
+Wire Wire Line
+	2600 9300 2400 9300
+$Comp
+L pcie_analyzer:GND #PWR?
+U 1 1 610FF5DE
+P 2400 9800
+F 0 "#PWR?" H 2395 9630 50  0001 C CNN
+F 1 "GND" H 2400 9700 50  0001 C CNN
+F 2 "" H 2400 9800 50  0001 C CNN
+F 3 "" H 2400 9800 50  0001 C CNN
+	1    2400 9800
+	1    0    0    -1  
+$EndComp
+$Comp
+L pcie_analyzer:GND #PWR?
+U 1 1 610FF5E8
+P 3300 9800
+F 0 "#PWR?" H 3295 9630 50  0001 C CNN
+F 1 "GND" H 3300 9700 50  0001 C CNN
+F 2 "" H 3300 9800 50  0001 C CNN
+F 3 "" H 3300 9800 50  0001 C CNN
+	1    3300 9800
+	1    0    0    -1  
+$EndComp
+$Comp
+L pcie_analyzer:GND #PWR?
+U 1 1 610FF5F2
+P 3600 9800
+F 0 "#PWR?" H 3595 9630 50  0001 C CNN
+F 1 "GND" H 3600 9700 50  0001 C CNN
+F 2 "" H 3600 9800 50  0001 C CNN
+F 3 "" H 3600 9800 50  0001 C CNN
+	1    3600 9800
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	3600 9800 3600 9600
+Wire Wire Line
+	3300 9800 3300 9600
+Wire Wire Line
+	2400 9300 2400 9800
+Wire Notes Line
+	2100 9100 2100 9600
+Wire Notes Line
+	2100 9600 2600 9600
+Wire Notes Line
+	2600 9600 2600 9100
+Wire Notes Line
+	2600 9100 2100 9100
+Text Notes 2100 9400 0    50   ~ 0
+connect to \neither vcc\nor gnd
+Text Label 2300 7400 0    50   ~ 0
+CLK_N
+$Comp
+L pcie_analyzer:C C?
+U 1 1 610FF605
+P 2100 8300
+F 0 "C?" H 2150 8375 50  0000 L CNB
+F 1 "4.7u" H 2150 8225 50  0000 L CNN
+F 2 "" H 2100 8315 50  0001 C CNN
+F 3 "" H 2100 8315 50  0001 C CNN
+	1    2100 8300
+	1    0    0    -1  
+$EndComp
+$Comp
+L pcie_analyzer:C C?
+U 1 1 610FF60F
+P 2400 8300
+F 0 "C?" H 2450 8375 50  0000 L CNB
+F 1 "1n" H 2450 8225 50  0000 L CNN
+F 2 "" H 2400 8315 50  0001 C CNN
+F 3 "" H 2400 8315 50  0001 C CNN
+	1    2400 8300
+	1    0    0    -1  
+$EndComp
+$Comp
+L pcie_analyzer:C C?
+U 1 1 610FF619
+P 2700 8300
+F 0 "C?" H 2750 8375 50  0000 L CNB
+F 1 "100n" H 2750 8225 50  0000 L CNN
+F 2 "" H 2700 8315 50  0001 C CNN
+F 3 "" H 2700 8315 50  0001 C CNN
+	1    2700 8300
+	1    0    0    -1  
+$EndComp
+$Comp
+L pcie_analyzer:C C?
+U 1 1 610FF623
+P 2100 8800
+F 0 "C?" H 2150 8875 50  0000 L CNB
+F 1 "1n" H 2150 8725 50  0000 L CNN
+F 2 "" H 2100 8815 50  0001 C CNN
+F 3 "" H 2100 8815 50  0001 C CNN
+	1    2100 8800
+	1    0    0    -1  
+$EndComp
+$Comp
+L pcie_analyzer:C C?
+U 1 1 610FF62D
+P 2400 8800
+F 0 "C?" H 2450 8875 50  0000 L CNB
+F 1 "100n" H 2450 8725 50  0000 L CNN
+F 2 "" H 2400 8815 50  0001 C CNN
+F 3 "" H 2400 8815 50  0001 C CNN
+	1    2400 8800
+	1    0    0    -1  
+$EndComp
+$Comp
+L pcie_analyzer:C C?
+U 1 1 610FF637
+P 3600 9100
+F 0 "C?" V 3545 8910 50  0000 L CNB
+F 1 "100n" V 3545 9155 50  0000 L CNN
+F 2 "" H 3600 9115 50  0001 C CNN
+F 3 "" H 3600 9115 50  0001 C CNN
+	1    3600 9100
+	0    1    1    0   
+$EndComp
+Wire Wire Line
+	3900 9100 3700 9100
+Wire Wire Line
+	3300 9200 3300 9100
+Wire Wire Line
+	3300 9100 3500 9100
+Wire Wire Line
+	3300 9200 3900 9200
+$Comp
+L pcie_analyzer:C C?
+U 1 1 610FF645
+P 2100 7800
+F 0 "C?" H 2150 7875 50  0000 L CNB
+F 1 "4.7u" H 2150 7725 50  0000 L CNN
+F 2 "" H 2100 7815 50  0001 C CNN
+F 3 "" H 2100 7815 50  0001 C CNN
+	1    2100 7800
+	1    0    0    -1  
+$EndComp
+$Comp
+L pcie_analyzer:C C?
+U 1 1 610FF64F
+P 2400 7800
+F 0 "C?" H 2450 7875 50  0000 L CNB
+F 1 "1n" H 2450 7725 50  0000 L CNN
+F 2 "" H 2400 7815 50  0001 C CNN
+F 3 "" H 2400 7815 50  0001 C CNN
+	1    2400 7800
+	1    0    0    -1  
+$EndComp
+$Comp
+L pcie_analyzer:C C?
+U 1 1 610FF659
+P 2700 7800
+F 0 "C?" H 2750 7875 50  0000 L CNB
+F 1 "100n" H 2750 7725 50  0000 L CNN
+F 2 "" H 2700 7815 50  0001 C CNN
+F 3 "" H 2700 7815 50  0001 C CNN
+	1    2700 7800
+	1    0    0    -1  
+$EndComp
+$Comp
+L pcie_analyzer:GND #PWR?
+U 1 1 610FF663
+P 2100 8900
+F 0 "#PWR?" H 2095 8730 50  0001 C CNN
+F 1 "GND" H 2100 8800 50  0001 C CNN
+F 2 "" H 2100 8900 50  0001 C CNN
+F 3 "" H 2100 8900 50  0001 C CNN
+	1    2100 8900
+	1    0    0    -1  
+$EndComp
+$Comp
+L pcie_analyzer:GND #PWR?
+U 1 1 610FF66D
+P 2400 8900
+F 0 "#PWR?" H 2395 8730 50  0001 C CNN
+F 1 "GND" H 2400 8800 50  0001 C CNN
+F 2 "" H 2400 8900 50  0001 C CNN
+F 3 "" H 2400 8900 50  0001 C CNN
+	1    2400 8900
+	1    0    0    -1  
+$EndComp
+$Comp
+L pcie_analyzer:GND #PWR?
+U 1 1 610FF677
+P 2100 8400
+F 0 "#PWR?" H 2095 8230 50  0001 C CNN
+F 1 "GND" H 2100 8300 50  0001 C CNN
+F 2 "" H 2100 8400 50  0001 C CNN
+F 3 "" H 2100 8400 50  0001 C CNN
+	1    2100 8400
+	1    0    0    -1  
+$EndComp
+$Comp
+L pcie_analyzer:GND #PWR?
+U 1 1 610FF681
+P 2400 8400
+F 0 "#PWR?" H 2395 8230 50  0001 C CNN
+F 1 "GND" H 2400 8300 50  0001 C CNN
+F 2 "" H 2400 8400 50  0001 C CNN
+F 3 "" H 2400 8400 50  0001 C CNN
+	1    2400 8400
+	1    0    0    -1  
+$EndComp
+$Comp
+L pcie_analyzer:GND #PWR?
+U 1 1 610FF68B
+P 2700 8400
+F 0 "#PWR?" H 2695 8230 50  0001 C CNN
+F 1 "GND" H 2700 8300 50  0001 C CNN
+F 2 "" H 2700 8400 50  0001 C CNN
+F 3 "" H 2700 8400 50  0001 C CNN
+	1    2700 8400
+	1    0    0    -1  
+$EndComp
+$Comp
+L pcie_analyzer:GND #PWR?
+U 1 1 610FF695
+P 2700 7900
+F 0 "#PWR?" H 2695 7730 50  0001 C CNN
+F 1 "GND" H 2700 7800 50  0001 C CNN
+F 2 "" H 2700 7900 50  0001 C CNN
+F 3 "" H 2700 7900 50  0001 C CNN
+	1    2700 7900
+	1    0    0    -1  
+$EndComp
+$Comp
+L pcie_analyzer:GND #PWR?
+U 1 1 610FF69F
+P 2400 7900
+F 0 "#PWR?" H 2395 7730 50  0001 C CNN
+F 1 "GND" H 2400 7800 50  0001 C CNN
+F 2 "" H 2400 7900 50  0001 C CNN
+F 3 "" H 2400 7900 50  0001 C CNN
+	1    2400 7900
+	1    0    0    -1  
+$EndComp
+$Comp
+L pcie_analyzer:GND #PWR?
+U 1 1 610FF6A9
+P 2100 7900
+F 0 "#PWR?" H 2095 7730 50  0001 C CNN
+F 1 "GND" H 2100 7800 50  0001 C CNN
+F 2 "" H 2100 7900 50  0001 C CNN
+F 3 "" H 2100 7900 50  0001 C CNN
+	1    2100 7900
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	2100 8700 2100 8600
+Wire Wire Line
+	1900 8600 2100 8600
+Wire Wire Line
+	2400 8600 2400 8700
+Wire Wire Line
+	2400 8600 3300 8600
+Wire Wire Line
+	3300 8600 3300 9000
+Wire Wire Line
+	3300 9000 3900 9000
+Connection ~ 2400 8600
+Wire Wire Line
+	3900 8700 3400 8700
+Wire Wire Line
+	3400 8700 3400 8100
+Wire Wire Line
+	3400 8100 2700 8100
+Wire Wire Line
+	2100 8100 2100 8200
+Wire Wire Line
+	2400 8200 2400 8100
+Connection ~ 2400 8100
+Wire Wire Line
+	2400 8100 2100 8100
+Wire Wire Line
+	2700 8200 2700 8100
+Connection ~ 2700 8100
+Wire Wire Line
+	2700 8100 2400 8100
+Wire Wire Line
+	3900 8600 3500 8600
+Wire Wire Line
+	3500 8600 3500 7600
+Wire Wire Line
+	3500 7600 2700 7600
+Wire Wire Line
+	2100 7600 2100 7700
+Wire Wire Line
+	2400 7700 2400 7600
+Connection ~ 2400 7600
+Wire Wire Line
+	2400 7600 2100 7600
+Wire Wire Line
+	2700 7700 2700 7600
+Connection ~ 2700 7600
+Wire Wire Line
+	2700 7600 2400 7600
+Text GLabel 1900 7600 0    50   Input ~ 0
+DISABLE_CLK
+Text GLabel 1900 8100 0    50   Input ~ 0
+AODWNENB_CLK
+Text GLabel 1900 8600 0    50   Input ~ 0
+VAC_CLK
+Wire Wire Line
+	3900 8400 3600 8400
+Wire Wire Line
+	3600 8400 3600 7400
+Wire Wire Line
+	2300 7400 3600 7400
+Wire Wire Line
+	3700 7300 3700 8300
+Wire Wire Line
+	3700 8300 3900 8300
+Wire Wire Line
+	2300 7300 3700 7300
+$Comp
+L pcie_analyzer:GND #PWR?
+U 1 1 610FF6D7
+P 5100 10000
+F 0 "#PWR?" H 5095 9830 50  0001 C CNN
+F 1 "GND" H 5100 9900 50  0001 C CNN
+F 2 "" H 5100 10000 50  0001 C CNN
+F 3 "" H 5100 10000 50  0001 C CNN
+	1    5100 10000
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	5100 10000 5100 9900
+Wire Wire Line
+	5100 9900 5000 9900
+Wire Wire Line
+	4200 9900 4200 9800
+Connection ~ 5100 9900
+Wire Wire Line
+	5100 9900 5100 9800
+Wire Wire Line
+	4300 9800 4300 9900
+Connection ~ 4300 9900
+Wire Wire Line
+	4300 9900 4200 9900
+Wire Wire Line
+	4400 9800 4400 9900
+Connection ~ 4400 9900
+Wire Wire Line
+	4400 9900 4300 9900
+Wire Wire Line
+	4500 9800 4500 9900
+Connection ~ 4500 9900
+Wire Wire Line
+	4500 9900 4400 9900
+Wire Wire Line
+	4600 9800 4600 9900
+Connection ~ 4600 9900
+Wire Wire Line
+	4600 9900 4500 9900
+Wire Wire Line
+	4700 9800 4700 9900
+Connection ~ 4700 9900
+Wire Wire Line
+	4700 9900 4600 9900
+Wire Wire Line
+	4800 9800 4800 9900
+Connection ~ 4800 9900
+Wire Wire Line
+	4800 9900 4700 9900
+Wire Wire Line
+	4900 9800 4900 9900
+Connection ~ 4900 9900
+Wire Wire Line
+	4900 9900 4800 9900
+Wire Wire Line
+	5000 9800 5000 9900
+Connection ~ 5000 9900
+Wire Wire Line
+	5000 9900 4900 9900
+Wire Wire Line
+	5400 8300 6400 8300
+Wire Wire Line
+	5400 8400 6400 8400
+Text Label 6000 8300 0    50   ~ 0
+PCIE_CLK_P
+Text Label 6000 8400 0    50   ~ 0
+PCIE_CLK_N
+$Comp
+L pcie_analyzer:R R?
+U 1 1 610FF702
+P 5700 9000
+F 0 "R?" V 5840 8950 50  0000 L CNB
+F 1 "1.82K" V 5770 8890 50  0000 L CNN
+F 2 "" V 5630 9000 50  0001 C CNN
+F 3 "" H 5700 9000 50  0001 C CNN
+	1    5700 9000
+	0    -1   -1   0   
+$EndComp
+Wire Wire Line
+	5400 9000 5600 9000
+Wire Wire Line
+	5800 9000 6000 9000
+Wire Wire Line
+	5400 9100 6400 9100
+$Comp
+L pcie_analyzer:+3.3VCC #PWR?
+U 1 1 610FF70F
+P 4500 7600
+F 0 "#PWR?" H 4500 7450 50  0001 C CNN
+F 1 "+3.3VCC" H 4500 7740 50  0000 C CNN
+F 2 "" H 4500 7600 50  0001 C CNN
+F 3 "" H 4500 7600 50  0001 C CNN
+	1    4500 7600
+	1    0    0    -1  
+$EndComp
+$Comp
+L pcie_analyzer:+3.3VCC #PWR?
+U 1 1 610FF719
+P 6000 8900
+F 0 "#PWR?" H 6000 8750 50  0001 C CNN
+F 1 "+3.3VCC" H 6000 9040 50  0000 C CNN
+F 2 "" H 6000 8900 50  0001 C CNN
+F 3 "" H 6000 8900 50  0001 C CNN
+	1    6000 8900
+	1    0    0    -1  
+$EndComp
+Text GLabel 6400 9100 2    50   Input ~ 0
+RSSI
+Connection ~ 2100 8600
+Wire Wire Line
+	2100 8600 2400 8600
+$Comp
+L pcie_analyzer:C C?
+U 1 1 610FF726
+P 5200 7600
+F 0 "C?" H 5250 7675 50  0000 L CNB
+F 1 "1n" H 5250 7525 50  0000 L CNN
+F 2 "" H 5200 7615 50  0001 C CNN
+F 3 "" H 5200 7615 50  0001 C CNN
+	1    5200 7600
+	1    0    0    -1  
+$EndComp
+$Comp
+L pcie_analyzer:C C?
+U 1 1 610FF730
+P 5500 7600
+F 0 "C?" H 5550 7675 50  0000 L CNB
+F 1 "100n" H 5550 7525 50  0000 L CNN
+F 2 "" H 5500 7615 50  0001 C CNN
+F 3 "" H 5500 7615 50  0001 C CNN
+	1    5500 7600
+	1    0    0    -1  
+$EndComp
+$Comp
+L pcie_analyzer:GND #PWR?
+U 1 1 610FF73A
+P 5200 7700
+F 0 "#PWR?" H 5195 7530 50  0001 C CNN
+F 1 "GND" H 5200 7600 50  0001 C CNN
+F 2 "" H 5200 7700 50  0001 C CNN
+F 3 "" H 5200 7700 50  0001 C CNN
+	1    5200 7700
+	1    0    0    -1  
+$EndComp
+$Comp
+L pcie_analyzer:GND #PWR?
+U 1 1 610FF744
+P 5500 7700
+F 0 "#PWR?" H 5495 7530 50  0001 C CNN
+F 1 "GND" H 5500 7600 50  0001 C CNN
+F 2 "" H 5500 7700 50  0001 C CNN
+F 3 "" H 5500 7700 50  0001 C CNN
+	1    5500 7700
+	1    0    0    -1  
+$EndComp
+$Comp
+L pcie_analyzer:C C?
+U 1 1 610FF74E
+P 6000 7600
+F 0 "C?" H 6050 7675 50  0000 L CNB
+F 1 "1n" H 6050 7525 50  0000 L CNN
+F 2 "" H 6000 7615 50  0001 C CNN
+F 3 "" H 6000 7615 50  0001 C CNN
+	1    6000 7600
+	1    0    0    -1  
+$EndComp
+$Comp
+L pcie_analyzer:C C?
+U 1 1 610FF758
+P 6300 7600
+F 0 "C?" H 6350 7675 50  0000 L CNB
+F 1 "100n" H 6350 7525 50  0000 L CNN
+F 2 "" H 6300 7615 50  0001 C CNN
+F 3 "" H 6300 7615 50  0001 C CNN
+	1    6300 7600
+	1    0    0    -1  
+$EndComp
+$Comp
+L pcie_analyzer:GND #PWR?
+U 1 1 610FF762
+P 6000 7700
+F 0 "#PWR?" H 5995 7530 50  0001 C CNN
+F 1 "GND" H 6000 7600 50  0001 C CNN
+F 2 "" H 6000 7700 50  0001 C CNN
+F 3 "" H 6000 7700 50  0001 C CNN
+	1    6000 7700
+	1    0    0    -1  
+$EndComp
+$Comp
+L pcie_analyzer:GND #PWR?
+U 1 1 610FF76C
+P 6300 7700
+F 0 "#PWR?" H 6295 7530 50  0001 C CNN
+F 1 "GND" H 6300 7600 50  0001 C CNN
+F 2 "" H 6300 7700 50  0001 C CNN
+F 3 "" H 6300 7700 50  0001 C CNN
+	1    6300 7700
+	1    0    0    -1  
+$EndComp
+$Comp
+L pcie_analyzer:C C?
+U 1 1 610FF776
+P 7100 7600
+F 0 "C?" H 7150 7675 50  0000 L CNB
+F 1 "1n" H 7150 7525 50  0000 L CNN
+F 2 "" H 7100 7615 50  0001 C CNN
+F 3 "" H 7100 7615 50  0001 C CNN
+	1    7100 7600
+	1    0    0    -1  
+$EndComp
+$Comp
+L pcie_analyzer:C C?
+U 1 1 610FF780
+P 7400 7600
+F 0 "C?" H 7450 7675 50  0000 L CNB
+F 1 "100n" H 7450 7525 50  0000 L CNN
+F 2 "" H 7400 7615 50  0001 C CNN
+F 3 "" H 7400 7615 50  0001 C CNN
+	1    7400 7600
+	1    0    0    -1  
+$EndComp
+$Comp
+L pcie_analyzer:GND #PWR?
+U 1 1 610FF78A
+P 7100 7700
+F 0 "#PWR?" H 7095 7530 50  0001 C CNN
+F 1 "GND" H 7100 7600 50  0001 C CNN
+F 2 "" H 7100 7700 50  0001 C CNN
+F 3 "" H 7100 7700 50  0001 C CNN
+	1    7100 7700
+	1    0    0    -1  
+$EndComp
+$Comp
+L pcie_analyzer:GND #PWR?
+U 1 1 610FF794
+P 7400 7700
+F 0 "#PWR?" H 7395 7530 50  0001 C CNN
+F 1 "GND" H 7400 7600 50  0001 C CNN
+F 2 "" H 7400 7700 50  0001 C CNN
+F 3 "" H 7400 7700 50  0001 C CNN
+	1    7400 7700
+	1    0    0    -1  
+$EndComp
+$Comp
+L pcie_analyzer:C C?
+U 1 1 610FF79E
+P 6600 7600
+F 0 "C?" H 6650 7675 50  0000 L CNB
+F 1 "4.7u" H 6650 7525 50  0000 L CNN
+F 2 "" H 6600 7615 50  0001 C CNN
+F 3 "" H 6600 7615 50  0001 C CNN
+	1    6600 7600
+	1    0    0    -1  
+$EndComp
+$Comp
+L pcie_analyzer:GND #PWR?
+U 1 1 610FF7A8
+P 6600 7700
+F 0 "#PWR?" H 6595 7530 50  0001 C CNN
+F 1 "GND" H 6600 7600 50  0001 C CNN
+F 2 "" H 6600 7700 50  0001 C CNN
+F 3 "" H 6600 7700 50  0001 C CNN
+	1    6600 7700
+	1    0    0    -1  
+$EndComp
+$Comp
+L pcie_analyzer:C C?
+U 1 1 610FF7B2
+P 7700 7600
+F 0 "C?" H 7750 7675 50  0000 L CNB
+F 1 "4.7u" H 7750 7525 50  0000 L CNN
+F 2 "" H 7700 7615 50  0001 C CNN
+F 3 "" H 7700 7615 50  0001 C CNN
+	1    7700 7600
+	1    0    0    -1  
+$EndComp
+$Comp
+L pcie_analyzer:GND #PWR?
+U 1 1 610FF7BC
+P 7700 7700
+F 0 "#PWR?" H 7695 7530 50  0001 C CNN
+F 1 "GND" H 7700 7600 50  0001 C CNN
+F 2 "" H 7700 7700 50  0001 C CNN
+F 3 "" H 7700 7700 50  0001 C CNN
+	1    7700 7700
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	5200 7400 5500 7400
+Wire Wire Line
+	6600 7400 6600 7500
+Wire Wire Line
+	5200 7400 5200 7500
+Wire Wire Line
+	6300 7400 6300 7500
+Connection ~ 6300 7400
+Wire Wire Line
+	6300 7400 6600 7400
+Wire Wire Line
+	6000 7400 6000 7500
+Connection ~ 6000 7400
+Wire Wire Line
+	6000 7400 6300 7400
+Wire Wire Line
+	5500 7400 5500 7500
+Connection ~ 5500 7400
+Wire Wire Line
+	5500 7400 6000 7400
+Wire Wire Line
+	7100 7400 7400 7400
+Wire Wire Line
+	7700 7400 7700 7500
+Wire Wire Line
+	7100 7400 7100 7500
+Wire Wire Line
+	7400 7400 7400 7500
+Connection ~ 7400 7400
+Wire Wire Line
+	7400 7400 7700 7400
+$Comp
+L pcie_analyzer:+3.3VCC #PWR?
+U 1 1 610FF7D8
+P 6600 7300
+F 0 "#PWR?" H 6600 7150 50  0001 C CNN
+F 1 "+3.3VCC" H 6600 7440 50  0000 C CNN
+F 2 "" H 6600 7300 50  0001 C CNN
+F 3 "" H 6600 7300 50  0001 C CNN
+	1    6600 7300
+	1    0    0    -1  
+$EndComp
+Connection ~ 6600 7400
+Wire Wire Line
+	6600 7400 6600 7300
+$Comp
+L pcie_analyzer:+3.3VCC #PWR?
+U 1 1 610FF7E4
+P 7700 7300
+F 0 "#PWR?" H 7700 7150 50  0001 C CNN
+F 1 "+3.3VCC" H 7700 7440 50  0000 C CNN
+F 2 "" H 7700 7300 50  0001 C CNN
+F 3 "" H 7700 7300 50  0001 C CNN
+	1    7700 7300
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	7700 7400 7700 7300
+Connection ~ 7700 7400
+Wire Wire Line
+	4500 7900 4500 7800
+Wire Wire Line
+	4500 7800 4600 7800
+Wire Wire Line
+	4600 7800 4600 7900
+Connection ~ 4500 7800
+Wire Wire Line
+	4500 7800 4500 7600
+Wire Wire Line
+	4600 7800 4700 7800
+Wire Wire Line
+	4700 7800 4700 7900
+Connection ~ 4600 7800
+Connection ~ 2100 8100
+Wire Wire Line
+	2100 8100 1900 8100
+Connection ~ 2100 7600
+Wire Wire Line
+	2100 7600 1900 7600
+Wire Wire Line
+	6000 9000 6000 8900
+Text Label 2300 7300 0    50   ~ 0
+CLK_P
 $EndSCHEMATC
