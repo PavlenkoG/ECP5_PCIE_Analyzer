@@ -1,0 +1,31 @@
+[Device]
+Family=ecp5um
+OperatingCondition=IND
+Package=CABGA381
+PartName=LFE5UM-85F-7BG381I
+PartType=LFE5UM-85F
+SpeedGrade=7
+Status=P
+[IP]
+CoreName=EXTREF
+CoreRevision=1.1
+CoreStatus=Demo
+CoreType=LPM
+Date=10/29/2018
+ModuleName=extref
+ParameterFileVersion=1.0
+SourceFormat=vhdl
+Time=14:01:05
+VendorName=Lattice Semiconductor Corporation
+[Parameters]
+Destination=Synplicity
+EDIF=1
+EXTREFDCBIAS=Disabled
+EXTREFTERMRES=50 ohms
+Expression=BusA(0 to 7)
+IO=0
+Order=Big Endian [MSB:LSB]
+VHDL=1
+Verilog=0
+[SYSTEMPNR]
+EXTREF=DCU1
