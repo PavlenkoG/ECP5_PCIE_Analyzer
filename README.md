@@ -1,5 +1,6 @@
 # ECP5_PCIE_Analyzer
 
+https://www.latticesemi.com/products/developmentboardsandkits/ecp5evaluationboard
 # Eval Board top view
 ![Block Schema](doc/pic/block_sch.svg)
 
