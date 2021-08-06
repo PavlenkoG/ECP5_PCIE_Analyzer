@@ -47,19 +47,6 @@ VU.add_external_library("pcsd_aldec_work","C:\\Aldec\\Active-HDL-11.1\\vlib\\lat
 VU.add_library("bpl100")
 VU.library("bpl100").add_source_file(SRC_PATH / "Impl" / "ip_cores " / "pcie" / "pcie.vhd")
 
-#add m100_design_info library
-VU.add_library("m100_design_info").add_source_file(SRC_PATH / "bae-lib" / "m100-design-info" / "design_info_pkg.vhd")
-
-#add sio_core library
-VU.add_library("m100_sio_core")
-VU.library("m100_sio_core").add_source_files(CORE_PATH / "src" / "core" / "ecp5" / "*.vhd")
-VU.library("m100_sio_core").add_source_files(CORE_PATH / "src" / "core" / "machxo3" / "*.vhd")
-VU.library("m100_sio_core").add_source_files(CORE_PATH / "src" / "core" / "*.vhd")
-VU.library("m100_sio_core").add_source_files(CORE_PATH / "src" / "*.vhd")
-VU.library("m100_sio_core").add_source_files(CORE_PATH / "src_bp" / "*.vhd")
-VU.library("m100_sio_core").add_source_files(CORE_PATH / "src_bp" / "core" / "*.vhd")
-VU.library("m100_sio_core").add_source_files(CORE_PATH / "src_bp" / "core" / "ecp5" /"*.vhd")
-
 #add extref
 VU.library("bpl100").add_source_files(SRC_PATH / "Impl" / "ip_cores" / "extref" / "*.vhd")
 
@@ -71,7 +58,7 @@ VU.library("bpl100").add_source_files(SRC_PATH / "SRC" / "*.vhd")
 VU.library("bpl100").add_source_files(SRC_PATH / "sim" / "VUnit" / "*.vhd")
 
 VU.add_library("pcie_core")
-VU.library("pcie_core").add_source_file(SRC_PATH / "Impl" / "ip_cores " / "pcie" / "pcie_eval" / "pcie" /"src"/"top"/"pcie_beh.v")
+VU.library("pcie_core").add_source_file(SRC_PATH / "sim_core" / "ip_cores " / "pcie" / "pcie_eval" / "pcie" /"src"/"top"/"pcie_beh.v")
 
 
 VU.set_compile_option("activehdl.vcom_flags", ['-2008'])
@@ -79,22 +66,22 @@ VU.set_compile_option("activehdl.vcom_flags", ['-2008'])
 
 VU.set_compile_option("activehdl.vlog_flags", ['-v2k5', '-dbg', '+define+RSL_SIM_MODE', '+define+SIM_MODE', '+define+USERNAME_EVAL_TOP=pcie_eval_top',
                                                '+define+DEBUG=0', '+define+SIMULATE',  '+define+VHDL_SIM','+define+mixed_hdl',
-                                               '+incdir+../../Impl/ip_cores/pcie/pcie_eval/pcie/testbench/top',
-                                               '+incdir+../../Impl/ip_cores/pcie/pcie_eval/pcie/testbench/tests',
-                                               '+incdir+../../Impl/ip_cores/pcie/pcie_eval/models/ecp5um',
-                                               '+incdir+../../Impl/ip_cores/pcie/pcie_eval/pcie/src/params',
-                                               '../../Impl/ip_cores/pcie/pcie_eval/pcie/src/params/pci_exp_params.v',
-                                               '../../Impl/ip_cores/pcie/pcie_eval/pcie/testbench/top/eval_pcie.v',
-                                               '../../Impl/ip_cores/pcie/pcie_eval/pcie/testbench/top/eval_tbtx.v',
-                                               '../../Impl/ip_cores/pcie/pcie_eval/pcie/testbench/top/eval_tbrx.v',
-                                               '../../Impl/ip_cores/pcie/pcie_eval/models/ecp5um/pcie_ctc.v',
-                                               '../../Impl/ip_cores/pcie/pcie_eval/models/ecp5um/pcie_sync1s.v',
-                                               '../../Impl/ip_cores/pcie/pcie_eval/models/ecp5um/pcie_pipe.v',
-                                               '../../Impl/ip_cores/pcie/pcie_eval/models/ecp5um/pcie_extref.v',
-                                               '../../Impl/ip_cores/pcie/pcie_eval/models/ecp5um/pcie_pcs_softlogic.v',
-                                               '../../Impl/ip_cores/pcie/pcie_eval/models/ecp5um/pcie_pcs.v',
-                                               '../../Impl/ip_cores/pcie/pcie_eval/models/ecp5um/pcie_phy.v',
-                                               '../../Impl/ip_cores/pcie/pcie_eval/pcie/src/top/pcie_core.v' ])
+                                               '+incdir+../../sim_core/ip_cores/pcie/pcie_eval/pcie/testbench/top',
+                                               '+incdir+../../sim_core/ip_cores/pcie/pcie_eval/pcie/testbench/tests',
+                                               '+incdir+../../sim_core/ip_cores/pcie/pcie_eval/models/ecp5um',
+                                               '+incdir+../../sim_core/ip_cores/pcie/pcie_eval/pcie/src/params',
+                                               '../../sim_core/ip_cores/pcie/pcie_eval/pcie/src/params/pci_exp_params.v',
+                                               '../../sim_core/ip_cores/pcie/pcie_eval/pcie/testbench/top/eval_pcie.v',
+                                               '../../sim_core/ip_cores/pcie/pcie_eval/pcie/testbench/top/eval_tbtx.v',
+                                               '../../sim_core/ip_cores/pcie/pcie_eval/pcie/testbench/top/eval_tbrx.v',
+                                               '../../sim_core/ip_cores/pcie/pcie_eval/models/ecp5um/pcie_ctc.v',
+                                               '../../sim_core/ip_cores/pcie/pcie_eval/models/ecp5um/pcie_sync1s.v',
+                                               '../../sim_core/ip_cores/pcie/pcie_eval/models/ecp5um/pcie_pipe.v',
+                                               '../../sim_core/ip_cores/pcie/pcie_eval/models/ecp5um/pcie_extref.v',
+                                               '../../sim_core/ip_cores/pcie/pcie_eval/models/ecp5um/pcie_pcs_softlogic.v',
+                                               '../../sim_core/ip_cores/pcie/pcie_eval/models/ecp5um/pcie_pcs.v',
+                                               '../../sim_core/ip_cores/pcie/pcie_eval/models/ecp5um/pcie_phy.v',
+                                               '../../sim_core/ip_cores/pcie/pcie_eval/pcie/src/top/pcie_core.v' ])
 
 VU.set_sim_option("activehdl.vsim_flags",["+access +w_nets", "+access +r","-ieee_nowarn","-t 1ps",
                                           "-L pcie_core","-L pmi_work","-L ovi_ecp5u",
