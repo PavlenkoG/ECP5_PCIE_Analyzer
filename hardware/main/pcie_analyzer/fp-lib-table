@@ -1,0 +1,3 @@
+(fp_lib_table
+  (lib (name ecp5_pcie_analyzer)(type KiCad)(uri ${KIPRJMOD}/../../common/libs/pretty)(options "")(descr ""))
+)
