@@ -1,6 +1,8 @@
 # ECP5_PCIE_Analyzer
 
 https://www.latticesemi.com/products/developmentboardsandkits/ecp5evaluationboard
+# VERSA Expansion Headers
+![sch](doc/pic/connector.png)
 # Eval Board top view
 ![Block Schema](doc/pic/block_sch.svg)
 
