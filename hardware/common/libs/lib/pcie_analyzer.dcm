@@ -9,12 +9,20 @@ D Unpolarized capacitor
 K capacitor cap
 $ENDCMP
 #
+$CMP Ferrite_Bead
+D Ferrite bead
+$ENDCMP
+#
 $CMP GND
 K POWER, PWR
 $ENDCMP
 #
 $CMP HMC914
 D 12.5 Gbps LIMITING AMPLIFIER w/ LOSS OF SIGNAL FEATURE
+$ENDCMP
+#
+$CMP ONET1191P
+D 11.3-Gbps Limiting Amplifier
 $ENDCMP
 #
 $CMP R
