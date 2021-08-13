@@ -10,3 +10,7 @@ https://www.latticesemi.com/products/developmentboardsandkits/ecp5evaluationboar
 
 # Eval Board bottom view
 ![Eval Board Bottom](/doc/pic/ecp_eval_board_bot.png)
+
+## Impedance calculation JLCPCB
+![impedance 50 Ohm single](/doc/pic/impedance_single_50.png)
+![impedance 100 Ohm diff](/doc/pic/impedance_diff_100.png)
