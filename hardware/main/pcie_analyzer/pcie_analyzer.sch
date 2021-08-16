@@ -1615,4 +1615,61 @@ F 3 "" H 7800 5100 50  0001 C CNN
 $EndComp
 Wire Wire Line
 	7800 5100 7800 5900
+$Comp
+L pcie_analyzer:AXIAL_CABLE_SL8800_08 ST1
+U 1 1 611C5899
+P 1800 2000
+F 0 "ST1" H 2100 2150 50  0000 C CNN
+F 1 "AXIAL_CABLE_SL8800_08" H 2100 400 50  0000 C CNN
+F 2 "ecp5_pcie_analyzer:AXIAL_CABLE_SL8800_08" H 2200 400 50  0001 C CNN
+F 3 "" H 2000 1800 50  0001 C CNN
+	1    1800 2000
+	-1   0    0    -1  
+$EndComp
+$Comp
+L pcie_analyzer:GND #PWR0126
+U 1 1 611DB058
+P 2000 3800
+F 0 "#PWR0126" H 1995 3630 50  0001 C CNN
+F 1 "GND" H 2000 3700 50  0001 C CNN
+F 2 "" H 2000 3800 50  0001 C CNN
+F 3 "" H 2000 3800 50  0001 C CNN
+	1    2000 3800
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	1800 3400 2000 3400
+Wire Wire Line
+	2000 3400 2000 3800
+Wire Wire Line
+	1800 2000 2000 2000
+Wire Wire Line
+	2000 2000 2000 3400
+Connection ~ 2000 3400
+Text GLabel 2200 2200 2    50   Input ~ 0
+PCIE_UP_P
+Text GLabel 2200 2300 2    50   Input ~ 0
+PCIE_UP_N
+Text GLabel 2100 2500 2    50   Input ~ 0
+PCIE_DOWN_P
+Text GLabel 2100 2600 2    50   Input ~ 0
+PCIE_DOWN_N
+Text GLabel 2400 2800 2    50   Input ~ 0
+CLK_P
+Text GLabel 2400 2900 2    50   Input ~ 0
+CLK_N
+Wire Wire Line
+	1800 2200 2200 2200
+Wire Wire Line
+	1800 2300 2200 2300
+Wire Wire Line
+	1800 2500 2100 2500
+Wire Wire Line
+	1800 2600 2100 2600
+Wire Wire Line
+	1800 2800 2400 2800
+Wire Wire Line
+	1800 2900 2400 2900
+NoConn ~ 1800 3100
+NoConn ~ 1800 3200
 $EndSCHEMATC
