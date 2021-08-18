@@ -33,6 +33,7 @@ VU.add_external_library("pcsd_aldec_work","C:\\lscc\\diamond\\3.11_x64\\active-h
 '''
 
 
+'''
 VU.add_external_library("ecp5u","C:\\Aldec\\Active-HDL-11.1\\vlib\\lattice\\vhdl\\ecp5u")
 VU.add_external_library("ecp5um","C:\\Aldec\\Active-HDL-11.1\\vlib\\lattice\\vhdl\\ecp5u")
 VU.add_external_library("machxo3l","C:\\Aldec\\Active-HDL-11.1\\vlib\\lattice\\vhdl\\machxo3l")
@@ -40,6 +41,14 @@ VU.add_external_library("ovi_ecp5u","C:\\Aldec\\Active-HDL-11.1\\vlib\\lattice\\
 VU.add_external_library("pmi_work","C:\\Aldec\\Active-HDL-11.1\\vlib\\lattice\\verilog\\pmi_work")
 VU.add_external_library("aldec","C:\\Aldec\\Active-HDL-11.1\\vlib\\aldec")
 VU.add_external_library("pcsd_aldec_work","C:\\Aldec\\Active-HDL-11.1\\vlib\\lattice\\verilog\\pcsd_aldec_work")
+'''
+VU.add_external_library("ecp5u","C:\\lscc\\diamond\\3.12\\modeltech\\lib\\ecp5u")
+VU.add_external_library("ecp5um","C:\\lscc\\diamond\\3.12\\modeltech\\lib\\ecp5u")
+VU.add_external_library("ovi_ecp5u","C:\\lscc\\diamond\\3.12\\modeltech\\lib\\ovi_ecp5u")
+VU.add_external_library("ovi_ecp5um","C:\\lscc\\diamond\\3.12\\modeltech\\lib\\ovi_ecp5u")
+VU.add_external_library("pmi_work","C:\\lscc\\diamond\\3.12\\modeltech\\lib\\pmi_work")
+VU.add_external_library("pcsd_work","C:\\lscc\\diamond\\3.12\\modeltech\\lib\\pcsd_work")
+
 
 #add pcie core
 VU.add_library("sim_core")
