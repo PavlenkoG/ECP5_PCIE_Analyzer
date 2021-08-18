@@ -1672,18 +1672,14 @@ Text GLabel 2700 2500 2    50   Input ~ 0
 PCIE_UP_N
 Wire Wire Line
 	2300 2500 2700 2500
-Text GLabel 11800 2000 0    50   Input ~ 0
-LOS1
-Text GLabel 11800 2100 0    50   Input ~ 0
-LOS2
-Text GLabel 11800 2200 0    50   Input ~ 0
-LOS3
-Text GLabel 11800 2300 0    50   Input ~ 0
-DISABLE1
-Text GLabel 11800 2400 0    50   Input ~ 0
-DISABLE2
 Text GLabel 11800 2500 0    50   Input ~ 0
-DISABLE_CLK
+LOS1
+Text GLabel 11800 2300 0    50   Input ~ 0
+LOS2
+Text GLabel 11800 2400 0    50   Input ~ 0
+DISABLE1
+Text GLabel 11800 2200 0    50   Input ~ 0
+DISABLE2
 Wire Wire Line
 	11800 2000 12200 2000
 Wire Wire Line
@@ -1745,4 +1741,8 @@ NoConn ~ 14400 2200
 NoConn ~ 14400 2100
 NoConn ~ 14400 1900
 NoConn ~ 14400 2000
+Text GLabel 11800 2000 0    50   Input ~ 0
+DISABLE_CLK
+Text GLabel 11800 2100 0    50   Input ~ 0
+LOS3
 $EndSCHEMATC
