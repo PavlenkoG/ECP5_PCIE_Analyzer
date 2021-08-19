@@ -515,28 +515,13 @@ $EndComp
 Wire Wire Line
 	2300 3300 2500 3300
 Wire Wire Line
-	2500 3300 2500 3700
-Wire Wire Line
-	2300 1900 2500 1900
-Wire Wire Line
-	2500 1900 2500 3300
-Connection ~ 2500 3300
-Text GLabel 2700 2400 2    50   Input ~ 0
+	2500 3300 2500 3400
+Text GLabel 2900 2400 2    50   Input ~ 0
 PCIE_UP_P
-Text GLabel 2900 2700 2    50   Input ~ 0
+Text GLabel 3100 2700 2    50   Input ~ 0
 CLK_P
-Text GLabel 2900 2800 2    50   Input ~ 0
+Text GLabel 3100 2800 2    50   Input ~ 0
 CLK_N
-Wire Wire Line
-	2300 2100 2700 2100
-Wire Wire Line
-	2300 2200 2700 2200
-Wire Wire Line
-	2300 2400 2700 2400
-Wire Wire Line
-	2300 2700 2900 2700
-Wire Wire Line
-	2300 2800 2900 2800
 NoConn ~ 2300 3000
 NoConn ~ 2300 3100
 Text GLabel 5100 5600 0    50   Input ~ 0
@@ -545,9 +530,9 @@ Text GLabel 5100 5700 0    50   Input ~ 0
 PCIE_DOWN_N
 Wire Wire Line
 	5100 5600 6200 5600
-Text GLabel 2700 2200 2    50   Input ~ 0
+Text GLabel 2900 2200 2    50   Input ~ 0
 PCIE_DOWN_N
-Text GLabel 2700 2100 2    50   Input ~ 0
+Text GLabel 2900 2100 2    50   Input ~ 0
 PCIE_DOWN_P
 Wire Wire Line
 	9400 5100 9400 5900
@@ -1668,10 +1653,8 @@ F 3 "" H 6900 2615 50  0001 C CNN
 	1    6900 2600
 	0    1    1    0   
 $EndComp
-Text GLabel 2700 2500 2    50   Input ~ 0
+Text GLabel 2900 2500 2    50   Input ~ 0
 PCIE_UP_N
-Wire Wire Line
-	2300 2500 2700 2500
 Text GLabel 11800 2500 0    50   Input ~ 0
 LOS1
 Text GLabel 11800 2300 0    50   Input ~ 0
@@ -1745,4 +1728,57 @@ Text GLabel 11800 2000 0    50   Input ~ 0
 DISABLE_CLK
 Text GLabel 11800 2100 0    50   Input ~ 0
 LOS3
+Wire Wire Line
+	2500 3600 2500 3700
+$Comp
+L pcie_analyzer:R R11
+U 1 1 6125E84F
+P 2700 3500
+F 0 "R11" H 2530 3620 50  0000 L CNB
+F 1 "0" H 2730 3370 50  0000 L CNN
+F 2 "ecp5_pcie_analyzer:R_0402" V 2630 3500 50  0001 C CNN
+F 3 "" H 2700 3500 50  0001 C CNN
+	1    2700 3500
+	1    0    0    -1  
+$EndComp
+$Comp
+L pcie_analyzer:GND #PWR0127
+U 1 1 61278318
+P 2700 3700
+F 0 "#PWR0127" H 2695 3530 50  0001 C CNN
+F 1 "GND" H 2700 3600 50  0001 C CNN
+F 2 "" H 2700 3700 50  0001 C CNN
+F 3 "" H 2700 3700 50  0001 C CNN
+	1    2700 3700
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	2700 3600 2700 3700
+$Comp
+L pcie_analyzer:R R10
+U 1 1 6125D88C
+P 2500 3500
+F 0 "R10" H 2330 3620 50  0000 L CNB
+F 1 "0" H 2520 3370 50  0000 L CNN
+F 2 "ecp5_pcie_analyzer:R_0402" V 2430 3500 50  0001 C CNN
+F 3 "" H 2500 3500 50  0001 C CNN
+	1    2500 3500
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	2300 2100 2900 2100
+Wire Wire Line
+	2300 2200 2900 2200
+Wire Wire Line
+	2300 2400 2900 2400
+Wire Wire Line
+	2300 2500 2900 2500
+Wire Wire Line
+	2300 2700 3100 2700
+Wire Wire Line
+	2300 2800 3100 2800
+Wire Wire Line
+	2700 1900 2700 3400
+Wire Wire Line
+	2300 1900 2700 1900
 $EndSCHEMATC
