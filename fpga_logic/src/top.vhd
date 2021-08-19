@@ -78,23 +78,19 @@ begin
 
     lfsr_scrambler_inst_1 : entity work.lfsr_scrambler
     port map (
-        data_in         => rxdata_1,
-        rx_k            => rx_k_1(0),
-        scram_en        => scram_en_1,
-        scram_rst       => scram_rst_1,
         rst             => rst,
         clk             => rx_pclk_1,
+        data_in         => rxdata_1,
+        rx_k            => rx_k_1(0),
         data_out        => open
     );
 
     lfsr_scrambler_inst_2 : entity work.lfsr_scrambler
     port map (
-        data_in         => rxdata_2,
-        rx_k            => rx_k_2(0),
-        scram_en        => scram_en_2,
-        scram_rst       => scram_rst_2,
         rst             => rst,
         clk             => rx_pclk_2,
+        data_in         => rxdata_2,
+        rx_k            => rx_k_2(0),
         data_out        => open
     );
 

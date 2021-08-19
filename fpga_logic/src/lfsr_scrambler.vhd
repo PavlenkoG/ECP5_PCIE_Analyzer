@@ -14,18 +14,23 @@
 -------------------------------------------------------------------------------
 library ieee;
 use ieee.std_logic_1164.all;
+use work.analyzer_pkg.all;
 
 entity lfsr_scrambler is
-  port ( data_in : in std_logic_vector (7 downto 0);
-    rx_k : in std_logic;
-    scram_en, scram_rst , rst, clk : in std_logic;
-    data_out : out std_logic_vector (7 downto 0));
+  port ( 
+    clk       : in std_logic;
+    rst       : in std_logic;
+    data_in   : in std_logic_vector (7 downto 0);
+    rx_k      : in std_logic;
+    data_out  : out std_logic_vector (7 downto 0));
 end lfsr_scrambler;
 
 architecture imp_scrambler of lfsr_scrambler is
   signal data_c: std_logic_vector (7 downto 0);
   signal lfsr_q: std_logic_vector (15 downto 0);
   signal lfsr_c: std_logic_vector (15 downto 0);
+  signal scram_en : std_logic;
+  signal scram_rst : std_logic;
 begin
     lfsr_c(0) <= lfsr_q(8);
     lfsr_c(1) <= lfsr_q(9);
@@ -52,6 +57,11 @@ begin
     data_c(5) <= data_in(5) xor lfsr_q(10);
     data_c(6) <= data_in(6) xor lfsr_q(9);
     data_c(7) <= data_in(7) xor lfsr_q(8);
+
+    scram_rst <= '1' when rx_k = '1' and data_in = K_COM_SYM_28_5 else '0';
+    scram_en  <= '0' when rx_k = '1' and data_in = K_COM_SYM_28_5 else
+                 '0' when rx_k = '1' and data_in = K_PAD_SKP_28_0 else
+                 '1';
 
     process (clk,rst) begin
       if (rst = '1') then
