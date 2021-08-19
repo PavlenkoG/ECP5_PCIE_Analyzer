@@ -23,4 +23,6 @@ package analyzer_pkg is
     type t_analyzer_out is record
         addr_wr             : std_logic_vector (MEM_LEN - 1 downto 0);
     end record;
+
+    type t_packet_type is (DLLP_PKT, TLP_PKT, ORDR_ST);
 end package;
