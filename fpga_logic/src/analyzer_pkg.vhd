@@ -15,6 +15,26 @@ package analyzer_pkg is
     constant K_PAD_IDL_28_3     : std_logic_vector(7 downto 0) := X"7C"; -- Idle; used in the electrical idle ordered set
     constant K_PAD_EIE_28_7     : std_logic_vector(7 downto 0) := X"FC"; -- Electrical Idle Exit; Reserved in 2.5 GT/s
 
+    --                                                              FMT TYPE
+    constant TLP_TYPE_MRD       : std_logic_vector (7 downto 0) := "000_00000";
+    constant TLP_TYPE_MRDLK     : std_logic_vector (7 downto 0) := "000_00001";
+    constant TLP_TYPE_MWR       : std_logic_vector (7 downto 0) := "010_00000";
+    constant TLP_TYPE_IORD      : std_logic_vector (7 downto 0) := "000_00010";
+    constant TLP_TYPE_IOWR      : std_logic_vector (7 downto 0) := "010_00010";
+    constant TLP_TYPE_CFGRD0    : std_logic_vector (7 downto 0) := "000_00100";
+    constant TLP_TYPE_CFGWR0    : std_logic_vector (7 downto 0) := "010_00100";
+    constant TLP_TYPE_CFGRD1    : std_logic_vector (7 downto 0) := "000_00101";
+    constant TLP_TYPE_CFGWR1    : std_logic_vector (7 downto 0) := "010_00101";
+    constant TLP_TYPE_TCFGRD    : std_logic_vector (7 downto 0) := "000_11011";
+    constant TLP_TYPE_TCFGWR    : std_logic_vector (7 downto 0) := "010_11011";
+    constant TLP_TYPE_MSG       : std_logic_vector (7 downto 0) := "001_10000";
+    constant TLP_TYPE_MSGD      : std_logic_vector (7 downto 0) := "011_10000";
+    constant TLP_TYPE_CPL       : std_logic_vector (7 downto 0) := "000_01010";
+    constant TLP_TYPE_CPLD      : std_logic_vector (7 downto 0) := "010_01010";
+    constant TLP_TYPE_CPLLK     : std_logic_vector (7 downto 0) := "000_01011";
+    constant TLP_TYPE_CPLDLK    : std_logic_vector (7 downto 0) := "010_01011";
+
+
     type t_analyzer_in is record
         data_in             : std_logic_vector (7 downto 0);
         rx_k                : std_logic;
@@ -25,4 +45,5 @@ package analyzer_pkg is
     end record;
 
     type t_packet_type is (DLLP_PKT, TLP_PKT, ORDR_ST);
+    type t_tlp_type is (MRD, MRDLK, MWR, IORD, IOWR, CFGRD0, CFGWR0, CFGRD1, CFGWR1, TCFGRD, TCFGWR, MSG, MSGD, CPL, CPLD, CPLLK, CPLDLK);
 end package;
