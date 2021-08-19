@@ -66,16 +66,6 @@ begin
         rxdata          => rxdata_2
     );
 
-    scram_rst_1 <= '1' when rx_k_1(0) = '1' and rxdata_1 = X"BC" else '0';
-    scram_en_1 <= '0' when rx_k_1(0) = '1' and rxdata_1 = X"BC" else
-                '0' when rx_k_1(0) = '1' and rxdata_1 =X"1C" else
-                '1';
-
-    scram_rst_2 <= '1' when rx_k_2(0) = '1' and rxdata_2 = X"BC" else '0';
-    scram_en_2 <= '0' when rx_k_2(0) = '1' and rxdata_2 = X"BC" else
-                '0' when rx_k_2(0) = '1' and rxdata_2 =X"1C" else
-                '1';
-
     lfsr_scrambler_inst_1 : entity work.lfsr_scrambler
     port map (
         rst             => rst,

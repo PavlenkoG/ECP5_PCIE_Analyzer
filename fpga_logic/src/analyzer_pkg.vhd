@@ -2,6 +2,7 @@ library ieee;
 use ieee.std_logic_1164.all;
 
 package analyzer_pkg is
+    constant MEM_LEN            : integer := 16;
 
     constant K_COM_SYM_28_5     : std_logic_vector(7 downto 0) := X"BC"; -- comma; used for lane and link initialization and management
     constant K_STP_SYM_27_7     : std_logic_vector(7 downto 0) := X"FB"; -- start TLP; Marks the start of a transaction layer packet
@@ -14,5 +15,12 @@ package analyzer_pkg is
     constant K_PAD_IDL_28_3     : std_logic_vector(7 downto 0) := X"7C"; -- Idle; used in the electrical idle ordered set
     constant K_PAD_EIE_28_7     : std_logic_vector(7 downto 0) := X"FC"; -- Electrical Idle Exit; Reserved in 2.5 GT/s
 
+    type t_analyzer_in is record
+        data_in             : std_logic_vector (7 downto 0);
+        rx_k                : std_logic;
+    end record;
 
+    type t_analyzer_out is record
+        addr_wr             : std_logic_vector (MEM_LEN - 1 downto 0);
+    end record;
 end package;
