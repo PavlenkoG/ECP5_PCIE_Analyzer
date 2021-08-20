@@ -15,28 +15,51 @@ package analyzer_pkg is
     constant K_PAD_IDL_28_3     : std_logic_vector(7 downto 0) := X"7C"; -- Idle; used in the electrical idle ordered set
     constant K_PAD_EIE_28_7     : std_logic_vector(7 downto 0) := X"FC"; -- Electrical Idle Exit; Reserved in 2.5 GT/s
 
-    --                                                              FMT TYPE
-    constant TLP_TYPE_MRD       : std_logic_vector (7 downto 0) := "000_00000";
-    constant TLP_TYPE_MRDLK     : std_logic_vector (7 downto 0) := "000_00001";
-    constant TLP_TYPE_MWR       : std_logic_vector (7 downto 0) := "010_00000";
-    constant TLP_TYPE_IORD      : std_logic_vector (7 downto 0) := "000_00010";
-    constant TLP_TYPE_IOWR      : std_logic_vector (7 downto 0) := "010_00010";
-    constant TLP_TYPE_CFGRD0    : std_logic_vector (7 downto 0) := "000_00100";
-    constant TLP_TYPE_CFGWR0    : std_logic_vector (7 downto 0) := "010_00100";
-    constant TLP_TYPE_CFGRD1    : std_logic_vector (7 downto 0) := "000_00101";
-    constant TLP_TYPE_CFGWR1    : std_logic_vector (7 downto 0) := "010_00101";
-    constant TLP_TYPE_TCFGRD    : std_logic_vector (7 downto 0) := "000_11011";
-    constant TLP_TYPE_TCFGWR    : std_logic_vector (7 downto 0) := "010_11011";
-    constant TLP_TYPE_MSG       : std_logic_vector (7 downto 0) := "001_10000";
-    constant TLP_TYPE_MSGD      : std_logic_vector (7 downto 0) := "011_10000";
-    constant TLP_TYPE_CPL       : std_logic_vector (7 downto 0) := "000_01010";
-    constant TLP_TYPE_CPLD      : std_logic_vector (7 downto 0) := "010_01010";
-    constant TLP_TYPE_CPLLK     : std_logic_vector (7 downto 0) := "000_01011";
-    constant TLP_TYPE_CPLDLK    : std_logic_vector (7 downto 0) := "010_01011";
+    -- TLP Packet Types
+    --                                                               FMT TYPE
+    constant TLP_TYPE_MRD3      : std_logic_vector (7 downto 0) := B"000_00000"; -- Memory read request 3DW
+    constant TLP_TYPE_MRD4      : std_logic_vector (7 downto 0) := B"001_00000"; -- Memory read request 4DW
+    constant TLP_TYPE_MRDLK3    : std_logic_vector (7 downto 0) := B"000_00001"; -- Memory read lock request 3DW
+    constant TLP_TYPE_MRDLK4    : std_logic_vector (7 downto 0) := B"001_00001"; -- Memory read lock request 4DW
+    constant TLP_TYPE_MWR3      : std_logic_vector (7 downto 0) := B"010_00000"; -- Memory write request 3DW
+    constant TLP_TYPE_MWR4      : std_logic_vector (7 downto 0) := B"011_00000"; -- Memory write request 4DW
+    constant TLP_TYPE_IORD      : std_logic_vector (7 downto 0) := B"000_00010"; -- IO Read request
+    constant TLP_TYPE_IOWR      : std_logic_vector (7 downto 0) := B"010_00010"; -- IO Write request
+    constant TLP_TYPE_CFGRD0    : std_logic_vector (7 downto 0) := B"000_00100"; -- Config type 0 Read request
+    constant TLP_TYPE_CFGWR0    : std_logic_vector (7 downto 0) := B"010_00100"; -- Config type 0 Write request
+    constant TLP_TYPE_CFGRD1    : std_logic_vector (7 downto 0) := B"000_00101"; -- Config type 1 Read request
+    constant TLP_TYPE_CFGWR1    : std_logic_vector (7 downto 0) := B"010_00101"; -- Config type 1 Write request
+    constant TLP_TYPE_TCFGRD    : std_logic_vector (7 downto 0) := B"000_11011"; -- 
+    constant TLP_TYPE_TCFGWR    : std_logic_vector (7 downto 0) := B"010_11011";
+    constant TLP_TYPE_MSG       : std_logic_vector (7 downto 0) := B"001_10000"; -- Message request
+    constant TLP_TYPE_MSGD      : std_logic_vector (7 downto 0) := B"011_10000"; -- Message request with data
+    constant TLP_TYPE_CPL       : std_logic_vector (7 downto 0) := B"000_01010"; -- Completion
+    constant TLP_TYPE_CPLD      : std_logic_vector (7 downto 0) := B"010_01010"; -- Completion with data
+    constant TLP_TYPE_CPLLK     : std_logic_vector (7 downto 0) := B"000_01011"; -- Completion/Locked
+    constant TLP_TYPE_CPLDLK    : std_logic_vector (7 downto 0) := B"010_01011"; -- Completion with data
+
+    -- DLLP Packet Types
+    constant DLLP_TYPE_ACK     : std_logic_vector (7 downto 0) := B"0000_0000"; -- TLP Acknowledge
+    constant DLLP_TYPE_NAK     : std_logic_vector (7 downto 0) := B"0001_0000"; -- TLP Negative acknowledge
+    constant DLLP_TYPE_PM_L1   : std_logic_vector (7 downto 0) := B"0010_0000"; -- Power management Enter L1
+    constant DLLP_TYPE_PM_L23  : std_logic_vector (7 downto 0) := B"0010_0001"; -- Power management Enter L23
+    constant DLLP_TYPE_PM_ASR1 : std_logic_vector (7 downto 0) := B"0010_0011"; -- Power management Active state request L1
+    constant DLLP_TYPE_REQ_ACK : std_logic_vector (7 downto 0) := B"0010_0100"; -- Power management request ack
+    constant DLLP_TYPE_VEN_SP  : std_logic_vector (7 downto 0) := B"0011_0000"; -- vendor specific
+    constant DLLP_TYPE_FC1P    : std_logic_vector (7 downto 0) := B"0100_0000"; -- InitFC1-P
+    constant DLLP_TYPE_FC1NP   : std_logic_vector (7 downto 0) := B"0101_0000"; -- InitFC1-NP
+    constant DLLP_TYPE_FC1CPL  : std_logic_vector (7 downto 0) := B"0110_0000"; -- InitFC1-Cpl
+    constant DLLP_TYPE_FC2P    : std_logic_vector (7 downto 0) := B"1100_0000"; -- InitFC2-P
+    constant DLLP_TYPE_FC2NP   : std_logic_vector (7 downto 0) := B"1101_0000"; -- InitFC2-NP
+    constant DLLP_TYPE_FC2CPL  : std_logic_vector (7 downto 0) := B"1110_0000"; -- InitFC2-Cpl
+    constant DLLP_TYPE_FCP     : std_logic_vector (7 downto 0) := B"1000_0000"; -- UpdateFC-P
+    constant DLLP_TYPE_FCNP    : std_logic_vector (7 downto 0) := B"1001_0000"; -- UpdateFC-NP
+    constant DLLP_TYPE_FCCPL   : std_logic_vector (7 downto 0) := B"1010_0000"; -- UpdateFC-Cpl
 
 
     type t_analyzer_in is record
-        data_in             : std_logic_vector (7 downto 0);
+        data_in_unscr       : std_logic_vector (7 downto 0);
+        data_in_scr         : std_logic_vector (7 downto 0);
         rx_k                : std_logic;
     end record;
 
@@ -46,4 +69,7 @@ package analyzer_pkg is
 
     type t_packet_type is (DLLP_PKT, TLP_PKT, ORDR_ST);
     type t_tlp_type is (MRD, MRDLK, MWR, IORD, IOWR, CFGRD0, CFGWR0, CFGRD1, CFGWR1, TCFGRD, TCFGWR, MSG, MSGD, CPL, CPLD, CPLLK, CPLDLK);
+    type t_dllp_type is (ACK, NAK, PM_L1, PM_L23, PM_ASR1, REQ_ACK, VEN_SP, FC1P, FC1NP, FC1CPL, FC2P, FC2NP, FC2CPL, FCP, FCNP, FCCPL);
+
 end package;
+

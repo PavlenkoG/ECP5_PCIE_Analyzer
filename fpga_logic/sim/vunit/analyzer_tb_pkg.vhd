@@ -9,7 +9,7 @@ use work.pcie_tx_engine_pkg.all;
 use work.pci_wrapper_pkg.all;
 use work.top_pkg.all;
 
-package BP_x86_tb_pkg is
+package analyzer_tb_pkg is
 
     constant C_PACKET_LEN         : integer := 24;
     constant C_TEST_LEN           : integer := 50;
@@ -161,7 +161,7 @@ package BP_x86_tb_pkg is
 
 
 end package;
-package body BP_x86_tb_pkg is
+package body analyzer_tb_pkg is
     -- array for x_read_f
     type indexed_char is array (0 to 15) of character;
     constant HEX_VALUE : indexed_char :=

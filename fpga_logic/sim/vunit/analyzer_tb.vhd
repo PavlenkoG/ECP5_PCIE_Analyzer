@@ -18,6 +18,7 @@ use work.pcie_tx_engine_pkg.all;
 use work.pcie_rx_engine_pkg.all;
 use work.pci_wrapper_pkg.all;
 use work.pci_core_wrapper_pkg.all;
+use work.analyzer_tb_pkg.all;
 
 library ecp5u;
 use ecp5u.components.all;

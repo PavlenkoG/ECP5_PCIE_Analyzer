@@ -2,6 +2,7 @@
 """
 BPL Project test
 """
+import os
 
 from pathlib import Path
 from vunit import VUnit, VUnitCLI
@@ -20,25 +21,29 @@ MACHXO_VL_LIB =   Path("C:\\lscc\\diamond\\3.12\\cae_library\\simulation\\verilo
 ECP5_VHDL_LIB = Path("C:\\lscc\\diamond\\3.12\\cae_library\\simulation\\vhdl\\ecp5u\\src")
 ECP5_VL_LIB =   Path("C:\\lscc\\diamond\\3.12\\cae_library\\simulation\\verilog\\ecp5u")
 '''
+if (os.environ['PATH'].find("Active-HDL-11.1")):
+    print("AHDL 11.1")
+    VU.add_external_library("ecp5u","C:\\Aldec\\Active-HDL-11.1\\vlib\\lattice\\vhdl\\ecp5u")
+    VU.add_external_library("ecp5um","C:\\Aldec\\Active-HDL-11.1\\vlib\\lattice\\vhdl\\ecp5u")
+    VU.add_external_library("machxo3l","C:\\Aldec\\Active-HDL-11.1\\vlib\\lattice\\vhdl\\machxo3l")
+    VU.add_external_library("ovi_ecp5u","C:\\Aldec\\Active-HDL-11.1\\vlib\\lattice\\verilog\\ovi_ecp5u")
+    VU.add_external_library("pmi_work","C:\\Aldec\\Active-HDL-11.1\\vlib\\lattice\\verilog\\pmi_work")
+    VU.add_external_library("aldec","C:\\Aldec\\Active-HDL-11.1\\vlib\\aldec")
+    VU.add_external_library("pcsd_aldec_work","C:\\Aldec\\Active-HDL-11.1\\vlib\\lattice\\verilog\\pcsd_aldec_work")
+else:
+    print("AHDL 10")
+    VU.add_external_library("ecp5u","C:\\lscc\\diamond\\3.11_x64\\active-hdl\\vlib\\ecp5u")
+    VU.add_external_library("ecp5um","C:\\lscc\\diamond\\3.11_x64\\active-hdl\\vlib\\ecp5u")
+    VU.add_external_library("machxo3l","C:\\lscc\\diamond\\3.11_x64\\active-hdl\\vlib\\machxo3l")
+    VU.add_external_library("ovi_ecp5u","C:\\lscc\\diamond\\3.11_x64\\active-hdl\\vlib\\ovi_ecp5u")
+    VU.add_external_library("pmi_work","C:\\lscc\\diamond\\3.11_x64\\active-hdl\\vlib\\pmi_work")
+    VU.add_external_library("aldec","C:\\lscc\\diamond\\3.11_x64\\active-hdl\\vlib\\aldec")
+    VU.add_external_library("pcsd_aldec_work","C:\\lscc\\diamond\\3.11_x64\\active-hdl\\vlib\\pcsd_aldec_work")
 
 
-VU.add_external_library("ecp5u","C:\\lscc\\diamond\\3.11_x64\\active-hdl\\vlib\\ecp5u")
-VU.add_external_library("ecp5um","C:\\lscc\\diamond\\3.11_x64\\active-hdl\\vlib\\ecp5u")
-VU.add_external_library("machxo3l","C:\\lscc\\diamond\\3.11_x64\\active-hdl\\vlib\\machxo3l")
-VU.add_external_library("ovi_ecp5u","C:\\lscc\\diamond\\3.11_x64\\active-hdl\\vlib\\ovi_ecp5u")
-VU.add_external_library("pmi_work","C:\\lscc\\diamond\\3.11_x64\\active-hdl\\vlib\\pmi_work")
-VU.add_external_library("aldec","C:\\lscc\\diamond\\3.11_x64\\active-hdl\\vlib\\aldec")
-VU.add_external_library("pcsd_aldec_work","C:\\lscc\\diamond\\3.11_x64\\active-hdl\\vlib\\pcsd_aldec_work")
 
 
 '''
-VU.add_external_library("ecp5u","C:\\Aldec\\Active-HDL-11.1\\vlib\\lattice\\vhdl\\ecp5u")
-VU.add_external_library("ecp5um","C:\\Aldec\\Active-HDL-11.1\\vlib\\lattice\\vhdl\\ecp5u")
-VU.add_external_library("machxo3l","C:\\Aldec\\Active-HDL-11.1\\vlib\\lattice\\vhdl\\machxo3l")
-VU.add_external_library("ovi_ecp5u","C:\\Aldec\\Active-HDL-11.1\\vlib\\lattice\\verilog\\ovi_ecp5u")
-VU.add_external_library("pmi_work","C:\\Aldec\\Active-HDL-11.1\\vlib\\lattice\\verilog\\pmi_work")
-VU.add_external_library("aldec","C:\\Aldec\\Active-HDL-11.1\\vlib\\aldec")
-VU.add_external_library("pcsd_aldec_work","C:\\Aldec\\Active-HDL-11.1\\vlib\\lattice\\verilog\\pcsd_aldec_work")
 '''
 '''
 VU.add_external_library("ecp5u","C:\\lscc\\diamond\\3.12\\modeltech\\lib\\ecp5u")
