@@ -56,20 +56,41 @@ package analyzer_pkg is
     constant DLLP_TYPE_FCNP    : std_logic_vector (7 downto 0) := B"1001_0000"; -- UpdateFC-NP
     constant DLLP_TYPE_FCCPL   : std_logic_vector (7 downto 0) := B"1010_0000"; -- UpdateFC-Cpl
 
+    type t_packet_type is (DLLP_PKT, TLP_PKT, ORDR_ST, IDLE);
+    type t_tlp_type is (MRD, MRDLK, MWR, IORD, IOWR, CFGRD0, CFGWR0, CFGRD1, CFGWR1, TCFGRD, TCFGWR, MSG, MSGD, CPL, CPLD, CPLLK, CPLDLK);
+    type t_dllp_type is (ACK, NAK, PM_L1, PM_L23, PM_ASR1, REQ_ACK, VEN_SP, FC1P, FC1NP, FC1CPL, FC2P, FC2NP, FC2CPL, FCP, FCNP, FCCPL);
+    type t_order_set_type is (TS1, TS2, SKIP, FTS, EIDLE);
+
+    type t_trigger_type is record
+        packet_type_en      : std_logic;
+        packet_type         : t_packet_type;
+
+        tlp_type_en         : std_logic;
+        tlp_type            : t_tlp_type;
+
+        dllp_type_en        : std_logic;
+        dllp_type           : t_dllp_type;
+
+        order_set_en        : std_logic;
+        order_set_type      : t_order_set_type;
+
+        addr_match_en       : std_logic;
+        addr_match          : std_logic_vector (31 downto 0);
+    end record;
 
     type t_analyzer_in is record
         data_in_unscr       : std_logic_vector (7 downto 0);
         data_in_scr         : std_logic_vector (7 downto 0);
         rx_k                : std_logic;
+
+        trigger_start       : std_logic;
+        trigger_set         : t_trigger_type;
     end record;
 
     type t_analyzer_out is record
         addr_wr             : std_logic_vector (MEM_LEN - 1 downto 0);
+        trigger_out         : std_logic;
     end record;
-
-    type t_packet_type is (DLLP_PKT, TLP_PKT, ORDR_ST);
-    type t_tlp_type is (MRD, MRDLK, MWR, IORD, IOWR, CFGRD0, CFGWR0, CFGRD1, CFGWR1, TCFGRD, TCFGWR, MSG, MSGD, CPL, CPLD, CPLLK, CPLDLK);
-    type t_dllp_type is (ACK, NAK, PM_L1, PM_L23, PM_ASR1, REQ_ACK, VEN_SP, FC1P, FC1NP, FC1CPL, FC2P, FC2NP, FC2CPL, FCP, FCNP, FCCPL);
 
 end package;
 

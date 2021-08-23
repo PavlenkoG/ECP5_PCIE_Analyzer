@@ -1,6 +1,7 @@
 library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
+use work.analyzer_pkg.all;
 
 entity top is
     port(
@@ -27,6 +28,12 @@ architecture RTL of top is
     signal scram_rst_2         : std_logic;
     signal scram_en_1          : std_logic;
     signal scram_en_2          : std_logic;
+
+    signal d_and                : t_analyzer_in;
+    signal q_and                : t_analyzer_out;
+
+    signal d_anu                : t_analyzer_in;
+    signal q_anu                : t_analyzer_out;
 
 begin
 
@@ -72,7 +79,8 @@ begin
         clk             => rx_pclk_1,
         data_in         => rxdata_1,
         rx_k            => rx_k_1(0),
-        data_out        => open
+        data_out        => d_and.data_in_scr,
+        rx_k_out        => d_and.rx_k
     );
 
     lfsr_scrambler_inst_2 : entity work.lfsr_scrambler
@@ -81,7 +89,23 @@ begin
         clk             => rx_pclk_2,
         data_in         => rxdata_2,
         rx_k            => rx_k_2(0),
-        data_out        => open
+        data_out        => d_anu.data_in_scr,
+        rx_k_out        => d_anu.rx_k
     );
 
+    analyzer_down_inst : entity  work.analyzer
+    port map (
+        clk             => rx_pclk_1,
+        rst             => rst,
+        d               => d_and,
+        q               => q_and
+    ); 
+
+    analyzer_up_inst : entity  work.analyzer
+    port map (
+        clk             => rx_pclk_2,
+        rst             => rst,
+        d               => d_anu,
+        q               => q_anu
+    ); 
 end architecture RTL;

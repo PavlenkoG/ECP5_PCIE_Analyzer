@@ -18,19 +18,21 @@ use work.analyzer_pkg.all;
 
 entity lfsr_scrambler is
   port ( 
-    clk       : in std_logic;
-    rst       : in std_logic;
-    data_in   : in std_logic_vector (7 downto 0);
-    rx_k      : in std_logic;
-    data_out  : out std_logic_vector (7 downto 0));
+    clk         : in std_logic;
+    rst         : in std_logic;
+    data_in     : in std_logic_vector (7 downto 0);
+    rx_k        : in std_logic;
+    data_out    : out std_logic_vector (7 downto 0);
+    rx_k_out    : out std_logic
+    );
 end lfsr_scrambler;
 
 architecture imp_scrambler of lfsr_scrambler is
-  signal data_c: std_logic_vector (7 downto 0);
-  signal lfsr_q: std_logic_vector (15 downto 0);
-  signal lfsr_c: std_logic_vector (15 downto 0);
-  signal scram_en : std_logic;
-  signal scram_rst : std_logic;
+  signal data_c     : std_logic_vector (7 downto 0);
+  signal lfsr_q     : std_logic_vector (15 downto 0);
+  signal lfsr_c     : std_logic_vector (15 downto 0);
+  signal scram_en   : std_logic;
+  signal scram_rst  : std_logic;
 begin
     lfsr_c(0) <= lfsr_q(8);
     lfsr_c(1) <= lfsr_q(9);
@@ -67,7 +69,8 @@ begin
       if (rst = '1') then
         lfsr_q <= b"1111111111111111";
         data_out <= b"00000000";
-      elsif (clk'EVENT and clk = '1') then
+    elsif (clk'EVENT and clk = '1') then
+        rx_k_out <= rx_k;
         if (scram_rst = '1') then
           lfsr_q <= b"1111111111111111";
         elsif (scram_en = '1') then

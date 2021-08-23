@@ -55,7 +55,9 @@ architecture arch of analyzer_tb is
     signal rst                      :  std_logic;
 
 
-    signal clk_25, ioclk            : std_logic;
+    signal clk_25                   : std_logic;
+    signal ioclk1                   : std_logic;
+    signal ioclk2                   : std_logic;
     signal clk_100                  : std_logic;
     signal io_no_pcie_train         : std_logic;
     signal refclk                   : std_logic;
@@ -80,6 +82,10 @@ architecture arch of analyzer_tb is
     signal d_pci_ep                     : t_pci_core_wrapper_in;
     signal q_pci_ep                     : t_pci_core_wrapper_out;
 
+    signal payload        : payload_t;
+    signal addr           : std_logic_vector (31 downto 0);
+    signal len            : integer;
+
     -- component for Power Up Set/Reset; Set/Reset interface
     component pur is
     generic(
@@ -95,7 +101,13 @@ architecture arch of analyzer_tb is
 
 begin
     
-    --asdb_dump("/analyzer_tb/BP_x86_inst/dma_table_inst/DataInA");
+    asdb_dump("/analyzer_tb/dut/analyzer_down_inst/d");
+    asdb_dump("/analyzer_tb/dut/analyzer_down_inst/q");
+    asdb_dump("/analyzer_tb/dut/analyzer_down_inst/r");
+
+    asdb_dump("/analyzer_tb/dut/analyzer_up_inst/d");
+    asdb_dump("/analyzer_tb/dut/analyzer_up_inst/q");
+    asdb_dump("/analyzer_tb/dut/analyzer_up_inst/r");
 
     main : process
     begin
@@ -103,6 +115,7 @@ begin
         if run("wait for pcie link up") then
             wait until q_pci.phy.phy_ltssm_state = "0010";
             report "PCIExpress link ok";
+            wait for 5 us;
         end if;
         test_runner_cleanup(runner);
     end process;
@@ -195,7 +208,17 @@ begin
         io_no_pcie_train <= '1';
         force_signal ("deposit", "/analyzer_tb/pcie_inst_ep/pci_core_inst/u1_dut/no_pcie_train", "2#1");
         wait until q_pci.data_link.dl_active = '1';
-        wait for 10 ns;
+        len <= 16;
+        wait for 1 us;
+
+        addr <= X"70010000";
+        payload <= (0=>X"F1", 1=>X"F2", 2=>X"F3", 3=> X"F4", 4=> X"F5", others => (others=>'0'));
+        w_pci (ioclk1, addr, len, payload, out_tlp, in_tlp);
+        addr <= X"70010100";
+        len <= 4;
+        wait for 1 us;
+        payload <= (0=>X"01", 1=>X"02", 2=>X"03", 3=> X"04", others => (others=>'0'));
+        w_pci (ioclk1, addr, len, payload, out_tlp, in_tlp);
         wait;
     end process;
 
@@ -213,6 +236,9 @@ begin
     pcie_rxp <= '1' when root_pcie_txp = '1' else
         '0' when root_pcie_txp = '0' else 'H';
 
+    out_tlp <= q_pci.tx_tlp;
+    d_pci.tx_tlp <= in_tlp;
+
     pcie_inst_root: entity work.pci_core_wrapper
     port map (
         pll_refclki         => refclk,
@@ -226,7 +252,7 @@ begin
 
         pci_rst_n           => rst,
         sli_rst             => '0',
-        sys_clk_125         => ioclk,
+        sys_clk_125         => ioclk1,
 
         d                   => d_pci,
         q                   => q_pci
@@ -245,7 +271,7 @@ begin
 
         pci_rst_n           => rst,
         sli_rst             => '0',
-        sys_clk_125         => ioclk,
+        sys_clk_125         => ioclk2,
 
         d                   => d_pci_ep,
         q                   => q_pci_ep
