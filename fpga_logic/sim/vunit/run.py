@@ -1,6 +1,5 @@
 
 """
-BPL Project test
 """
 import os
 
