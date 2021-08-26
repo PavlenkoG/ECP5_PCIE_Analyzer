@@ -96,8 +96,12 @@ package analyzer_pkg is
     end record;
 
     type t_analyzer_out is record
-        addr_wr             : std_logic_vector (MEM_LEN - 1 downto 0);
+        addr_wr             : std_logic_vector (14 downto 0);
+        data_wr             : std_logic_vector (35 downto 0);
+        wr_en               : std_logic;
         trigger_out         : std_logic;
+        data_amount         : std_logic_vector (14 downto 0);
+        addr_pointer        : std_logic_vector (14 downto 0);
     end record;
 
 end package;

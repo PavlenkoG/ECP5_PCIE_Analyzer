@@ -8,17 +8,18 @@ entity analyzer is
     port (
         clk             : in std_logic;
         rst             : in std_logic;
-        d               : t_analyzer_in;
-        q               : t_analyzer_out
+        d               : in t_analyzer_in;
+        q               : out t_analyzer_out
     );
 end analyzer;
 
 architecture arch of analyzer is
     type t_reg is record
+        data_in_scr_r           : std_logic_vector (7 downto 0);
+        rx_k_r                  : std_logic;
         timestamp               : std_logic_vector (31 downto 0);
         byte_counter            : std_logic_vector (7 downto 0);
-        data_reg                : std_logic_vector (31 downto 0);
-        data_ext_reg            : std_logic_vector (3 downto 0);
+
 
         seq_num                 : std_logic_vector (15 downto 0);
         tlp_len                 : std_logic_vector (9 downto 0);
@@ -27,8 +28,12 @@ architecture arch of analyzer is
         dw                      : std_logic_vector (7 downto 0);
 
         log_ena                 : std_logic;
+        wr2mem                  : std_logic;
         addr_pointer            : std_logic_vector (14 downto 0);
         addr_counter            : std_logic_vector (14 downto 0);
+        data_reg                : std_logic_vector (31 downto 0);
+        data_ext_reg            : std_logic_vector (3 downto 0);
+        wr_en                   : std_logic;
         data_amount             : std_logic_vector (14 downto 0);
         trigger                 : std_logic;
 
@@ -38,10 +43,10 @@ architecture arch of analyzer is
     end record t_reg;
 
     constant REG_T_INIT : t_reg := (
+        data_in_scr_r           => (others => '0'),
+        rx_k_r                  => '0',
         timestamp               => (others => '0'),
         byte_counter            => (others => '0'),
-        data_reg                => (others => '0'),
-        data_ext_reg            => (others => '0'),
 
         seq_num                 => (others => '0'),
         tlp_len                 => (others => '0'),
@@ -50,8 +55,12 @@ architecture arch of analyzer is
         dw                      => (others => '0'),
 
         log_ena                 => '0',
+        wr2mem                  => '0',
         addr_pointer            => (others => '0'),
         addr_counter            => (others => '0'),
+        data_reg                => (others => '0'),
+        data_ext_reg            => (others => '0'),
+        wr_en                   => '0',
         data_amount             => (others => '0'),
         trigger                 => '0',
 
@@ -66,6 +75,8 @@ begin
         variable v: t_reg;
     begin
         v := r;
+        v.data_in_scr_r := d.data_in_scr;
+        v.rx_k_r := d.rx_k;
 
         if d.trigger_start = '1' then
             v.log_ena := '1';
@@ -75,6 +86,9 @@ begin
             v.timestamp := (others => '0');
         end if;
 
+        v.data_reg(31 downto 8) := r.data_reg(23 downto 0);
+        v.data_reg(7 downto 0) := d.data_in_scr;
+
         if r.log_ena = '1' then
             v.timestamp := std_logic_vector (unsigned(r.timestamp) + 1);
         end if;
@@ -82,22 +96,38 @@ begin
         if d.rx_k = '1' and d.data_in_scr = K_STP_SYM_27_7 then
             v.packet_type := TLP_PKT;
             v.byte_counter := std_logic_vector(unsigned(r.byte_counter) + 1);
+            if d.filter_in.tlp_save = '1' then
+                v.wr2mem := '1';
+            end if;
         end if;
         -- start DLLP Packet
         if d.rx_k = '1' and d.data_in_scr = K_SDP_SYM_28_2 then
             v.packet_type := DLLP_PKT;
             v.byte_counter := std_logic_vector(unsigned(r.byte_counter) + 1);
+            if d.filter_in.dllp_save = '1' then
+                v.wr2mem := '1';
+            end if;
+        end if;
+        -- start ORDER SET Packet
+        if d.rx_k = '1' and d.data_in_scr = K_COM_SYM_28_5 then
+            v.packet_type := ORDR_ST;
+            v.byte_counter := std_logic_vector(unsigned(r.byte_counter) + 1);
+            if d.filter_in.order_set_save = '1' then
+                v.wr2mem := '1';
+            end if;
         end if;
         -- end TLP/DLLP Packet
-        if d.rx_k = '1'and d.data_in_scr = K_END_SYM_29_7 then
+        if r.rx_k_r = '1'and r.data_in_scr_r = K_END_SYM_29_7 and d.rx_k /= '1' then
             v.packet_type := IDLE;
             v.tlp_type := NO_PCK;
             v.dllp_type := NO_PCK;
-            v.byte_counter := (others => '0');
+            v.wr2mem := '0';
         end if;
 
-        if d.rx_k = '0' and (r.packet_type = TLP_PKT or r.packet_type = DLLP_PKT) then
+        if (r.packet_type = TLP_PKT or r.packet_type = DLLP_PKT) then
             v.byte_counter := std_logic_vector(unsigned(r.byte_counter) + 1);
+        else
+            v.byte_counter := (others => '0');
         end if;
 
         if r.packet_type = TLP_PKT then
@@ -213,16 +243,45 @@ begin
                 when others => 
             end case;
         end if;
+        if r.packet_type = ORDR_ST then
+            
+        end if;
 
         -- logger logic
+        v.wr_en := '0';
         if r.packet_type /= IDLE then
             if r.log_ena = '1' then
+                if r.packet_type = TLP_PKT then
+                end if;
+                if r.wr2mem = '1' then
+                    if unsigned(r.byte_counter) = 1 then
+                        v.wr_en := '1';
+                        v.addr_counter := std_logic_vector(unsigned(v.addr_counter) + 1);
+                        v.data_amount := std_logic_vector(unsigned(r.data_amount) + 1);
+                    end if;
+                    if unsigned(r.byte_counter(1 downto 0)) = "10" then
+                        v.wr_en := '1';
+                        v.data_amount := std_logic_vector(unsigned(r.data_amount) + 1);
+                        v.addr_counter := std_logic_vector(unsigned(v.addr_counter) + 1);
+                    end if;
+                end if;
             end if;
         end if;
 
 
         rin <= v;
     end process comb;
+
+    q.addr_wr <= r.addr_counter;
+    q.data_wr <= "0" & r.data_reg(31 downto 24) &
+                 "0" & r.data_reg(23 downto 16) &
+                 "0" & r.data_reg(15 downto 8) &
+                 "0" & r.data_reg(7 downto 0) when unsigned(r.byte_counter(1 downto 0)) = "11" else
+                 "1" & r.timestamp(31 downto 24) &
+                 "1" & r.timestamp(23 downto 16) &
+                 "1" & r.timestamp(15 downto 8) &
+                 "1" & r.timestamp(7 downto 0);
+    q.wr_en <= r.wr_en;
 
     regs: process (clk) is
     begin
