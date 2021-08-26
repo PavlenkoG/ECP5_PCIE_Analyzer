@@ -35,6 +35,13 @@ architecture RTL of top is
     signal d_anu                : t_analyzer_in;
     signal q_anu                : t_analyzer_out;
 
+    signal data_addr_1          : std_logic_vector (14 downto 0);
+    signal data_addr_2          : std_logic_vector (14 downto 0);
+    signal data_ch_1            : std_logic_vector (31 downto 0);
+    signal data_ch_2            : std_logic_vector (31 downto 0);
+    signal data_wr_1            : std_logic;
+    signal data_wr_2            : std_logic;
+
 begin
 
     pcs_inst_1 : entity work.pcs_pci
@@ -108,4 +115,12 @@ begin
         d               => d_anu,
         q               => q_anu
     ); 
+
+    data_addr_1 <= q_and.addr_wr;
+    data_addr_2 <= q_anu.addr_wr;
+    data_ch_1 <= q_and.data_wr(34 downto 27) & q_and.data_wr(25 downto 18) & q_and.data_wr(16 downto 9) & q_and.data_wr(7 downto 0);
+    data_ch_2 <= q_anu.data_wr(34 downto 27) & q_anu.data_wr(25 downto 18) & q_anu.data_wr(16 downto 9) & q_anu.data_wr(7 downto 0);
+    data_wr_1 <= q_and.wr_en;
+    data_wr_2 <= q_anu.wr_en;
+
 end architecture RTL;
