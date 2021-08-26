@@ -82,9 +82,10 @@ architecture arch of analyzer_tb is
     signal d_pci_ep                     : t_pci_core_wrapper_in;
     signal q_pci_ep                     : t_pci_core_wrapper_out;
 
-    signal payload        : payload_t;
-    signal addr           : std_logic_vector (31 downto 0);
-    signal len            : integer;
+    signal payload                      : payload_t;
+    signal addr                         : std_logic_vector (31 downto 0);
+    signal len                          : integer;
+    signal tb_end                       : boolean := false;
 
     -- component for Power Up Set/Reset; Set/Reset interface
     component pur is
@@ -109,13 +110,24 @@ begin
     asdb_dump("/analyzer_tb/dut/analyzer_up_inst/q");
     asdb_dump("/analyzer_tb/dut/analyzer_up_inst/r");
 
+    asdb_dump("/analyzer_tb/dut/data_addr_1");
+    asdb_dump("/analyzer_tb/dut/data_ch_1");
+    asdb_dump("/analyzer_tb/dut/data_wr_1");
+    asdb_dump("/analyzer_tb/dut/data_addr_2");
+    asdb_dump("/analyzer_tb/dut/data_ch_2");
+    asdb_dump("/analyzer_tb/dut/data_wr_2");
     main : process
     begin
         test_runner_setup (runner, runner_cfg);
         if run("wait for pcie link up") then
             wait until q_pci.phy.phy_ltssm_state = "0010";
             report "PCIExpress link ok";
-            wait for 5 us;
+            wait for 10 ns;
+        end if;
+        if run ("wait for data transfer") then
+            wait until tb_end = true;
+            report "all data was transferred";
+            wait for 10 ns;
         end if;
         test_runner_cleanup(runner);
     end process;
@@ -201,6 +213,15 @@ begin
         in_tlp.tx_req_vc0 <= '0';
         in_tlp.tx_st_vc0 <= '0';
         io_no_pcie_train <= '0';
+        tb_end <= false;
+
+        force_signal ("deposit", "/analyzer_tb/dut/analyzer_down_inst/d.trigger_start", "2#1");
+        force_signal ("deposit", "/analyzer_tb/dut/analyzer_down_inst/d.filter_in.tlp_save", "2#1");
+        force_signal ("deposit", "/analyzer_tb/dut/analyzer_down_inst/d.filter_in.dllp_save", "2#1");
+
+        force_signal ("deposit", "/analyzer_tb/dut/analyzer_up_inst/d.trigger_start", "2#1");
+        force_signal ("deposit", "/analyzer_tb/dut/analyzer_up_inst/d.filter_in.tlp_save", "2#1");
+        force_signal ("deposit", "/analyzer_tb/dut/analyzer_up_inst/d.filter_in.dllp_save", "2#1");
 
         force_signal ("deposit", "/analyzer_tb/pcie_inst_ep/pci_core_inst/u1_dut/no_pcie_train", "2#0");
 
@@ -211,14 +232,33 @@ begin
         len <= 16;
         wait for 1 us;
 
+        wait for 10 ns;
+        force_signal ("deposit", "/analyzer_tb/dut/analyzer_down_inst/d.trigger_start", "2#0");
+        force_signal ("deposit", "/analyzer_tb/dut/analyzer_up_inst/d.trigger_start", "2#0");
+
+        for i in 0 to 127 loop
+            payload(i) <= std_logic_vector(to_unsigned(i,8));
+        end loop;
+
+        len <= 128;
         addr <= X"70010000";
-        payload <= (0=>X"F1", 1=>X"F2", 2=>X"F3", 3=> X"F4", 4=> X"F5", others => (others=>'0'));
-        w_pci (ioclk1, addr, len, payload, out_tlp, in_tlp);
-        addr <= X"70010100";
-        len <= 4;
-        wait for 1 us;
-        payload <= (0=>X"01", 1=>X"02", 2=>X"03", 3=> X"04", others => (others=>'0'));
-        w_pci (ioclk1, addr, len, payload, out_tlp, in_tlp);
+
+        for i in 0 to 10 loop
+            w_pci (ioclk1, addr, len, payload, out_tlp, in_tlp);
+            addr <= X"70010100";
+            wait for 25 ns;
+        end loop;
+
+--      force_signal ("deposit", "/analyzer_tb/dut/analyzer_down_inst/r.data_amount", "16#7F00");
+--
+--      for i in 0 to 10 loop
+--          w_pci (ioclk1, addr, len, payload, out_tlp, in_tlp);
+--          addr <= X"70010100";
+--          wait for 25 ns;
+--      end loop;
+        
+        wait for 20 us;
+        tb_end <= true;
         wait;
     end process;
 
@@ -287,6 +327,112 @@ begin
             pcie_down_n     => pcie_txn,
             pcie_down_p     => pcie_txp
         );
+
+    -- process check write address
+    check_write_addr_up_process: process is
+       alias addr_wr      is <<signal analyzer_tb.dut.data_addr_1 : std_logic_vector(14 downto 0)>>; 
+       alias data_up      is <<signal analyzer_tb.dut.data_ch_1   : std_logic_vector(31 downto 0)>>;
+       alias wr_en        is <<signal analyzer_tb.dut.data_wr_1   : std_logic>>;
+       alias clk          is <<signal analyzer_tb.dut.rx_pclk_1   : std_logic>>;
+       variable cnt     : std_logic_vector (14 downto 0) := (0 => '1', others => '0');
+    begin
+
+        wait until clk = '1';
+        if wr_en = '1' then
+            --report "address to write is " & integer'image(to_integer(unsigned(addr_wr))) severity note;
+            assert cnt /= addr_wr report "addres to write (" & integer'image(to_integer(unsigned(addr_wr))) & ") doesn't match to calculated address " & integer'image(to_integer(unsigned(cnt))) severity warning;
+        end if;
+        cnt := std_logic_vector(unsigned(cnt) + 1);
+    end process;
+
+    check_wirte_addr_down_process: process is
+       alias addr_wr      is <<signal analyzer_tb.dut.data_addr_2   : std_logic_vector(14 downto 0)>>; 
+       alias data_up      is <<signal analyzer_tb.dut.data_ch_2     : std_logic_vector(31 downto 0)>>;
+       alias wr_en        is <<signal analyzer_tb.dut.data_wr_2     : std_logic>>;
+       alias clk          is <<signal analyzer_tb.dut.rx_pclk_2     : std_logic>>;
+       variable cnt     : std_logic_vector (14 downto 0) := (0 => '1', others => '0');
+    begin
+        wait until clk = '1';
+        if wr_en = '1' then
+            --report "address to write is " & integer'image(to_integer(unsigned(addr_wr))) severity note;
+            assert cnt /= addr_wr report "addres to write (" & integer'image(to_integer(unsigned(addr_wr))) & ") doesn't match to calculated address " & integer'image(to_integer(unsigned(cnt))) severity warning;
+        end if;
+        cnt := std_logic_vector(unsigned(cnt) + 1);
+    end process;
+
+
+    -- release credits
+    d_pci_ep.rx_tlp.ur_np_ext <= '0';
+    d_pci_ep.rx_tlp.ur_p_ext <= '0';
+    d_pci_ep.rx_tlp.ph_buf_status_vc0 <= '0';
+    d_pci_ep.rx_tlp.pd_buf_status_vc0 <= '0';
+    d_pci_ep.rx_tlp.nph_buf_status_vc0 <= '0';
+    d_pci_ep.rx_tlp.npd_buf_status_vc0 <= '0';
+    d_pci_ep.rx_tlp.npd_processed_vc0 <= '0';
+    d_pci_ep.rx_tlp.nph_processed_vc0 <= nph_processed;
+    d_pci_ep.rx_tlp.pd_processed_vc0 <= '0';
+    d_pci_ep.rx_tlp.ph_processed_vc0 <= '0';
+    d_pci_ep.rx_tlp.npd_num_vc0 <= (others => '0');
+    d_pci_ep.transaction.cmpln_tout <= '0';
+    d_pci_ep.transaction.cmpltr_abort_np <= '0';
+    d_pci_ep.transaction.cmpltr_abort_p <= '0';
+    d_pci_ep.transaction.unexp_cmpln <= '0';
+    d_pci_ep.transaction.np_req_pend <= np_req_pend;
+    pcie_release_credits_process : process is
+         variable tlp_type : std_logic_vector (6 downto 0);
+         variable data_transfer_ena : std_logic := '0';
+         variable received_packet : integer := 0;
+         variable counter : integer := 1;
+
+    begin
+         if d_pci.tx_tlp.tx_st_vc0 = '1' and d_pci.tx_tlp.tx_data_vc0(14 downto 8) = RX_MEM_RD_FMT_TYPE then
+             np_req_pend <= '1';
+         end if;
+         if tlp_rx_q.rx_st_vc0 = '1' then
+             data_transfer_ena := '1';
+             case tlp_rx_q.rx_data_vc0 (14 downto 8) is
+                 when RX_MEM_RD_FMT_TYPE =>
+                     counter := counter + 1;
+                     tlp_type := RX_MEM_RD_FMT_TYPE;
+                 when RX_MEM_WR_FMT_TYPE =>
+                     counter := counter + 1;
+                     tlp_type := RX_MEM_WR_FMT_TYPE;
+                     received_packet := received_packet + 1;
+                 when RX_CPLD_FMT_TYPE   =>
+                     counter := counter + 1;
+                     tlp_type := RX_CPLD_FMT_TYPE;
+                 when RX_CFG_WR_FMT_TYPE =>
+                     counter := counter + 1;
+                     tlp_type := RX_CFG_WR_FMT_TYPE;
+                 when RX_CFG_RD_FMT_TYPE =>
+                     counter := counter + 1;
+                     tlp_type := RX_CFG_RD_FMT_TYPE;
+                 when RX_CPL_FMT_TYPE =>
+                     counter := counter + 1;
+                     tlp_type := RX_CPL_FMT_TYPE;
+                 when others =>
+             end case;
+         end if;
+        if tlp_rx_q.rx_end_vc0 = '1' then
+            if tlp_type = RX_CPLD_FMT_TYPE or tlp_type = RX_MEM_RD_FMT_TYPE then
+                npd_processed <= '1';
+                nph_processed <= '1';
+                np_req_pend <= '0';
+            end if;
+            data_transfer_ena := '0';
+            if tlp_type = RX_MEM_RD_FMT_TYPE or tlp_type = RX_MEM_WR_FMT_TYPE or tlp_type = RX_CPLD_FMT_TYPE then
+                if tlp_type = RX_MEM_RD_FMT_TYPE then
+                end if;
+                if tlp_type = RX_MEM_WR_FMT_TYPE or tlp_type = RX_CPLD_FMT_TYPE then
+                else
+                end if;
+            end if;
+        else
+            npd_processed <= '0';
+            nph_processed <= '0';
+        end if;
+        wait until ioclk2 = '1';
+    end process;
 
 end arch;
 
