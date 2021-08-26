@@ -218,10 +218,12 @@ begin
         force_signal ("deposit", "/analyzer_tb/dut/analyzer_down_inst/d.trigger_start", "2#1");
         force_signal ("deposit", "/analyzer_tb/dut/analyzer_down_inst/d.filter_in.tlp_save", "2#1");
         force_signal ("deposit", "/analyzer_tb/dut/analyzer_down_inst/d.filter_in.dllp_save", "2#1");
+--      force_signal ("deposit", "/analyzer_tb/dut/analyzer_down_inst/d.filter_in.order_set_save", "2#1");
 
         force_signal ("deposit", "/analyzer_tb/dut/analyzer_up_inst/d.trigger_start", "2#1");
         force_signal ("deposit", "/analyzer_tb/dut/analyzer_up_inst/d.filter_in.tlp_save", "2#1");
         force_signal ("deposit", "/analyzer_tb/dut/analyzer_up_inst/d.filter_in.dllp_save", "2#1");
+--      force_signal ("deposit", "/analyzer_tb/dut/analyzer_up_inst/d.filter_in.order_set_save", "2#1");
 
         force_signal ("deposit", "/analyzer_tb/pcie_inst_ep/pci_core_inst/u1_dut/no_pcie_train", "2#0");
 

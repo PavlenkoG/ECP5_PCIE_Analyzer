@@ -74,61 +74,88 @@ begin
     comb : process (r, d) is
         variable v: t_reg;
     begin
-        v := r;
-        v.data_in_scr_r := d.data_in_scr;
-        v.rx_k_r := d.rx_k;
+    v := r;
+    v.data_in_scr_r := d.data_in_scr;
+    v.rx_k_r := d.rx_k;
 
-        if d.trigger_start = '1' then
-            v.log_ena := '1';
-        end if;
-        if d.trigger_stop = '1' or r.data_amount = X"7FFF" then
-            v.log_ena := '0';
-            v.timestamp := (others => '0');
-        end if;
+    if d.trigger_start = '1' then
+        v.log_ena := '1';
+    end if;
+    if d.trigger_stop = '1' or r.data_amount = X"7FFF" then
+        v.log_ena := '0';
+        v.timestamp := (others => '0');
+    end if;
 
-        v.data_reg(31 downto 8) := r.data_reg(23 downto 0);
-        v.data_reg(7 downto 0) := d.data_in_scr;
+    v.data_reg(31 downto 8) := r.data_reg(23 downto 0);
+    v.data_reg(7 downto 0) := d.data_in_scr;
 
-        if r.log_ena = '1' then
-            v.timestamp := std_logic_vector (unsigned(r.timestamp) + 1);
-        end if;
+    if r.log_ena = '1' then
+        v.timestamp := std_logic_vector (unsigned(r.timestamp) + 1);
+    end if;
+    -- handling of k-symbols
+    if d.rx_k = '1' then
         -- start TLP Packet
-        if d.rx_k = '1' and d.data_in_scr = K_STP_SYM_27_7 then
+        if d.data_in_scr = K_STP_SYM_27_7 then
             v.packet_type := TLP_PKT;
-            v.byte_counter := std_logic_vector(unsigned(r.byte_counter) + 1);
             if d.filter_in.tlp_save = '1' then
                 v.wr2mem := '1';
             end if;
         end if;
         -- start DLLP Packet
-        if d.rx_k = '1' and d.data_in_scr = K_SDP_SYM_28_2 then
+        if d.data_in_scr = K_SDP_SYM_28_2 then
             v.packet_type := DLLP_PKT;
-            v.byte_counter := std_logic_vector(unsigned(r.byte_counter) + 1);
             if d.filter_in.dllp_save = '1' then
                 v.wr2mem := '1';
             end if;
         end if;
         -- start ORDER SET Packet
-        if d.rx_k = '1' and d.data_in_scr = K_COM_SYM_28_5 then
+        if d.data_in_scr = K_COM_SYM_28_5 then
+            v.byte_counter := (others => '0');
             v.packet_type := ORDR_ST;
-            v.byte_counter := std_logic_vector(unsigned(r.byte_counter) + 1);
             if d.filter_in.order_set_save = '1' then
                 v.wr2mem := '1';
+            else
+                v.wr2mem := '0';
             end if;
         end if;
+    else
         -- end TLP/DLLP Packet
-        if r.rx_k_r = '1'and r.data_in_scr_r = K_END_SYM_29_7 and d.rx_k /= '1' then
+        -- only when the next start symbol isn't following the end symbol
+        if r.rx_k_r = '1' and r.data_in_scr_r = K_END_SYM_29_7 then
             v.packet_type := IDLE;
             v.tlp_type := NO_PCK;
             v.dllp_type := NO_PCK;
             v.wr2mem := '0';
-        end if;
-
-        if (r.packet_type = TLP_PKT or r.packet_type = DLLP_PKT) then
-            v.byte_counter := std_logic_vector(unsigned(r.byte_counter) + 1);
-        else
             v.byte_counter := (others => '0');
         end if;
+        if r.packet_type = IDLE then
+            v.wr2mem := '0';
+        end if;
+    end if;
+
+    -- byte counter in packets
+    if (r.packet_type = IDLE) then
+        v.byte_counter := (others => '0');
+    -- counts only when Order set, DLLP or TLP packet is sending
+    else
+        v.byte_counter := std_logic_vector(unsigned(r.byte_counter) + 1);
+        -- order set packet doesn't have an end symbol, therefore the end is detected by the byte counter
+        if r.packet_type = ORDR_ST then
+            -- TS1 and TS2 packets have 15 bytes
+            if unsigned(r.byte_counter) = 15 or d.data_in_scr = K_COM_SYM_28_5 then
+                v.byte_counter := (others => '0');
+                if d.rx_k = '0' then
+                    v.packet_type := IDLE;
+                end if;
+            end if;
+            -- SKIP, FTS or IDLE packets have 4 bytes
+            if unsigned(r.byte_counter(1 downto 0)) = 3 and
+               (r.data_in_scr_r = K_PAD_SKP_28_0 or r.data_in_scr_r = K_PAD_FTS_28_1 or r.data_in_scr_r = K_PAD_IDL_28_3) then
+                v.byte_counter := (others => '0');
+                v.packet_type := IDLE;
+            end if;
+        end if;
+    end if;
 
         if r.packet_type = TLP_PKT then
             case to_integer(unsigned(r.byte_counter)) is
