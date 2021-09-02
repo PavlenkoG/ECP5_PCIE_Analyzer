@@ -26,6 +26,7 @@ fp-info-cache
 *.csv
 
 # fpga files
+fpga_logic/impl/
 fpga_logic/sim_core/
 fpga_logic/sim/vunit/vunit_out
 temp/
