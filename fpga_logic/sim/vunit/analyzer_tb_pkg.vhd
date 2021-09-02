@@ -99,6 +99,18 @@ package analyzer_tb_pkg is
                         signal tlp_out      : out t_tx_tlp_intf_d
                         );
 
+    procedure spi_test (
+                        constant freq       : in integer;
+                        signal clk          : out std_logic;
+                        signal miso         : in std_logic;
+                        signal mosi         : out std_logic;
+                        signal cs           : out std_logic;
+
+                        signal data_in      : in payload_t;
+                        signal data_out     : out payload_t;
+                        constant len          : in integer
+    );
+
 end package;
 package body analyzer_tb_pkg is
     -- array for x_read_f
@@ -449,5 +461,33 @@ package body analyzer_tb_pkg is
         header_f (clk, addr, RX_MEM_WR_FMT_TYPE, len, tlp_in, tlp_out);
         payload_brst_f (clk, payload, len, tlp_out);
     end w_pci;
+
+    procedure spi_test (
+                        constant freq       : in integer;
+                        signal clk          : out std_logic;
+                        signal miso         : in std_logic;
+                        signal mosi         : out std_logic;
+                        signal cs           : out std_logic;
+
+                        signal data_in      : in payload_t;
+                        signal data_out     : out payload_t;
+                        constant len          : in integer) is
+    begin
+        cs <= '0';
+        wait for 8 ns;-- (1/freq)*1 us;
+        clk <= '0';
+        for i in 0 to len loop
+            for j in 0 to 7 loop
+                data_out(i)(7 - j) <= miso;
+                wait for 8 ns;--(1/freq)*500 ns;
+                clk <= '1';
+                mosi <= data_in(i)(7 - j);
+                wait for 8 ns;--(1/freq)*500 ns;
+                clk <= '0';
+            end loop;
+        end loop;
+        cs <= '1';
+        wait for 16 ns;--(1/freq)*1 us;
+    end spi_test;
 
 end package body;

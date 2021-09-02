@@ -87,6 +87,12 @@ architecture arch of analyzer_tb is
     signal len                          : integer;
     signal tb_end                       : boolean := false;
 
+    signal sclk                         : std_logic;
+    signal miso                         : std_logic;
+    signal mosi                         : std_logic;
+    signal spi_cs                       : std_logic;
+    signal spi_data_in                  : payload_t;
+
     -- component for Power Up Set/Reset; Set/Reset interface
     component pur is
     generic(
@@ -102,28 +108,62 @@ architecture arch of analyzer_tb is
 
 begin
     
+    asdb_dump("/analyzer_tb/dut/pcie_up_n");
+    asdb_dump("/analyzer_tb/dut/pcie_up_p");
+    asdb_dump("/analyzer_tb/dut/clk_in");
+    asdb_dump("/analyzer_tb/dut/rst");
+    asdb_dump("/analyzer_tb/dut/rx_k_1");
+    asdb_dump("/analyzer_tb/dut/rx_pclk_1");
+    asdb_dump("/analyzer_tb/dut/rxdata_1");
+    asdb_dump("/analyzer_tb/dut/rx_cdr_lol_s_1");
+    asdb_dump("/analyzer_tb/dut/rxstatus_1");
+    asdb_dump("/analyzer_tb/dut/pcie_done_s_1");
+    asdb_dump("/analyzer_tb/dut/pcie_cone_s_1");
+    asdb_dump("/analyzer_tb/dut/lsm_status_s_1");
+
+
     asdb_dump("/analyzer_tb/dut/analyzer_down_inst/d");
     asdb_dump("/analyzer_tb/dut/analyzer_down_inst/q");
     asdb_dump("/analyzer_tb/dut/analyzer_down_inst/r");
-
+  
     asdb_dump("/analyzer_tb/dut/analyzer_up_inst/d");
     asdb_dump("/analyzer_tb/dut/analyzer_up_inst/q");
     asdb_dump("/analyzer_tb/dut/analyzer_up_inst/r");
-
+  
     asdb_dump("/analyzer_tb/dut/data_addr_1");
     asdb_dump("/analyzer_tb/dut/data_ch_1");
     asdb_dump("/analyzer_tb/dut/data_wr_1");
     asdb_dump("/analyzer_tb/dut/data_addr_2");
     asdb_dump("/analyzer_tb/dut/data_ch_2");
     asdb_dump("/analyzer_tb/dut/data_wr_2");
+
+    asdb_dump("/analyzer_tb/dut/spi_slave_inst/clk");
+    asdb_dump("/analyzer_tb/dut/spi_slave_inst/sclk");
+    asdb_dump("/analyzer_tb/dut/spi_slave_inst/cs_n");
+    asdb_dump("/analyzer_tb/dut/spi_slave_inst/mosi");
+    asdb_dump("/analyzer_tb/dut/spi_slave_inst/miso");
+    asdb_dump("/analyzer_tb/dut/spi_slave_inst/din");
+    asdb_dump("/analyzer_tb/dut/spi_slave_inst/din_vld");
+    asdb_dump("/analyzer_tb/dut/spi_slave_inst/din_rdy");
+    asdb_dump("/analyzer_tb/dut/spi_slave_inst/dout");
+    asdb_dump("/analyzer_tb/dut/spi_slave_inst/dout_vld");
+    asdb_dump("/analyzer_tb/spi_data_in");
+
+    asdb_dump("/analyzer_tb/dut/controller_inst/d");
+    asdb_dump("/analyzer_tb/dut/controller_inst/q");
+    asdb_dump("/analyzer_tb/dut/controller_inst/r");
+
+
+    
+
     main : process
     begin
         test_runner_setup (runner, runner_cfg);
-        if run("wait for pcie link up") then
-            wait until q_pci.phy.phy_ltssm_state = "0010";
-            report "PCIExpress link ok";
-            wait for 10 ns;
-        end if;
+--      if run("wait for pcie link up") then
+--          wait until q_pci.phy.phy_ltssm_state = "0010";
+--          report "PCIExpress link ok";
+--          wait for 10 ns;
+--      end if;
         if run ("wait for data transfer") then
             wait until tb_end = true;
             report "all data was transferred";
@@ -213,6 +253,11 @@ begin
         in_tlp.tx_req_vc0 <= '0';
         in_tlp.tx_st_vc0 <= '0';
         io_no_pcie_train <= '0';
+
+        sclk <= '0';
+        spi_cs <= '1';
+        miso <= 'Z';
+        mosi <= 'Z';
         tb_end <= false;
 
         force_signal ("deposit", "/analyzer_tb/dut/analyzer_down_inst/d.trigger_start", "2#1");
@@ -258,7 +303,7 @@ begin
 --          addr <= X"70010100";
 --          wait for 25 ns;
 --      end loop;
-        
+        spi_test(freq => 62, clk => sclk, miso => miso, mosi => mosi, cs => spi_cs, data_in => payload, data_out => spi_data_in, len => 10);
         wait for 20 us;
         tb_end <= true;
         wait;
@@ -327,7 +372,12 @@ begin
             pcie_up_n       => pcie_rxn,
             pcie_up_p       => pcie_rxp,
             pcie_down_n     => pcie_txn,
-            pcie_down_p     => pcie_txp
+            pcie_down_p     => pcie_txp,
+
+            sclk            => sclk,
+            cs_n            => spi_cs,
+            mosi            => mosi,
+            miso            => miso
         );
 
     -- process check write address
