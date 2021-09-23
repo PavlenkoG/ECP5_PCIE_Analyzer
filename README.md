@@ -15,3 +15,23 @@ https://www.latticesemi.com/products/developmentboardsandkits/ecp5evaluationboar
 
 # Eval Board bottom view
 ![Eval Board Bottom](/doc/pic/ecp_eval_board_bot.png)
+
+# PCB
+
+Preparing for applying solder paste.
+![tool_1](/doc/pic/tool_1.png)
+
+Mounting of SMT Stencil
+![mounting of SMT Stencil](/doc/pic/prepare.png)
+
+Applying solder paste
+![applying solder paste](/doc/pic/prepare_2.png)
+
+PCB
+![PCB](/doc/pic/pcb_cl.jpg)
+
+PCB with solder paste
+![PCB with paste](/doc/pic/pcb_paste.jpg)
+
+Mounted PCB
+![Mounted PCB](/doc/pic/pcb_mnt.jpg)
