@@ -138,6 +138,9 @@ begin
         rx_k_out        => d_anu.rx_k
     );
 
+    d_and.trigger_start <= q_cntr.trigger_start;
+    d_and.trigger_stop <= q_cntr.trigger_stop;
+
     analyzer_down_inst : entity  work.analyzer
     port map (
         clk             => rx_pclk_1,
@@ -159,6 +162,9 @@ begin
             WrClockEn => '1',
             Q         => d_cntr.d_mem_data_in
         );
+
+    d_anu.trigger_start <= q_cntr.trigger_start;
+    d_anu.trigger_stop <= q_cntr.trigger_stop;
 
     analyzer_up_inst : entity  work.analyzer
     port map (
@@ -207,6 +213,8 @@ begin
             DOUT_VLD => d_cntr.data_in_vld
         );
 
+    d_cntr.data_amount_1 <= q_and.data_amount;
+    d_cntr.data_amount_2 <= q_and.data_amount;
     controller_inst : entity work.controller
         port map(
             clk => rx_pclk_2,
