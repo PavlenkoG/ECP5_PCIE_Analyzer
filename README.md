@@ -18,7 +18,7 @@ https://www.latticesemi.com/products/developmentboardsandkits/ecp5evaluationboar
 
 # PCB
 
-Preparing for applying solder paste.
+Preparing for applying solder paste
 ![tool_1](/doc/pic/tool_1.png)
 
 Mounting of SMT Stencil
