@@ -491,7 +491,7 @@ Connection ~ 13600 8600
 Wire Wire Line
 	13600 8600 13600 8700
 $Comp
-L pcie_analyzer:AXIAL_CABLE_SL8800_08 ST1
+L pcie_analyzer-rescue:AXIAL_CABLE_SL8800_08-pcie_analyzer ST1
 U 1 1 611C5899
 P 2300 1900
 F 0 "ST1" H 2600 2050 50  0000 C CNN

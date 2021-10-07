@@ -103,6 +103,7 @@ package analyzer_pkg is
         trigger_out         : std_logic;
         data_amount         : std_logic_vector (14 downto 0);
         addr_pointer        : std_logic_vector (14 downto 0);
+        stop_trigger        : std_logic;
     end record;
 
 end package;

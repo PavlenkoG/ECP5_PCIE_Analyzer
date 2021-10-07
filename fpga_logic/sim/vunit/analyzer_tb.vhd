@@ -93,6 +93,8 @@ architecture arch of analyzer_tb is
     signal spi_cs                       : std_logic;
     signal spi_data_in                  : payload_t;
 
+    signal gsrn                         : std_logic;
+
     -- component for Power Up Set/Reset; Set/Reset interface
     component pur is
     generic(
@@ -110,48 +112,59 @@ begin
     
     asdb_dump("/analyzer_tb/dut/pcie_up_n");
     asdb_dump("/analyzer_tb/dut/pcie_up_p");
-    asdb_dump("/analyzer_tb/dut/clk_in");
+    asdb_dump("/analyzer_tb/dut/clk_100");
+    asdb_dump("/analyzer_tb/dut/clk_lvds");
+    asdb_dump("/analyzer_tb/dut/clk_100_n");
+    asdb_dump("/analyzer_tb/dut/clk_100_p");
     asdb_dump("/analyzer_tb/dut/rst");
-    asdb_dump("/analyzer_tb/dut/rx_k_1");
+--  asdb_dump("/analyzer_tb/dut/rx_k_1");
     asdb_dump("/analyzer_tb/dut/rx_pclk_1");
-    asdb_dump("/analyzer_tb/dut/rxdata_1");
-    asdb_dump("/analyzer_tb/dut/rx_cdr_lol_s_1");
-    asdb_dump("/analyzer_tb/dut/rxstatus_1");
-    asdb_dump("/analyzer_tb/dut/pcie_done_s_1");
-    asdb_dump("/analyzer_tb/dut/pcie_cone_s_1");
-    asdb_dump("/analyzer_tb/dut/lsm_status_s_1");
+--  asdb_dump("/analyzer_tb/dut/rxdata_1");
+--  asdb_dump("/analyzer_tb/dut/rx_cdr_lol_s_1");
 
 
-    asdb_dump("/analyzer_tb/dut/analyzer_down_inst/d");
-    asdb_dump("/analyzer_tb/dut/analyzer_down_inst/q");
-    asdb_dump("/analyzer_tb/dut/analyzer_down_inst/r");
+    asdb_dump("/analyzer_tb/dut/pcs1_generate/analyzer_down_inst/d");
+    asdb_dump("/analyzer_tb/dut/pcs1_generate/analyzer_down_inst/q");
+    asdb_dump("/analyzer_tb/dut/pcs1_generate/analyzer_down_inst/r");
   
-    asdb_dump("/analyzer_tb/dut/analyzer_up_inst/d");
-    asdb_dump("/analyzer_tb/dut/analyzer_up_inst/q");
-    asdb_dump("/analyzer_tb/dut/analyzer_up_inst/r");
-  
-    asdb_dump("/analyzer_tb/dut/data_addr_1");
-    asdb_dump("/analyzer_tb/dut/data_ch_1");
-    asdb_dump("/analyzer_tb/dut/data_wr_1");
-    asdb_dump("/analyzer_tb/dut/data_addr_2");
-    asdb_dump("/analyzer_tb/dut/data_ch_2");
-    asdb_dump("/analyzer_tb/dut/data_wr_2");
-
-    asdb_dump("/analyzer_tb/dut/spi_slave_inst/clk");
-    asdb_dump("/analyzer_tb/dut/spi_slave_inst/sclk");
-    asdb_dump("/analyzer_tb/dut/spi_slave_inst/cs_n");
-    asdb_dump("/analyzer_tb/dut/spi_slave_inst/mosi");
-    asdb_dump("/analyzer_tb/dut/spi_slave_inst/miso");
-    asdb_dump("/analyzer_tb/dut/spi_slave_inst/din");
-    asdb_dump("/analyzer_tb/dut/spi_slave_inst/din_vld");
-    asdb_dump("/analyzer_tb/dut/spi_slave_inst/din_rdy");
-    asdb_dump("/analyzer_tb/dut/spi_slave_inst/dout");
-    asdb_dump("/analyzer_tb/dut/spi_slave_inst/dout_vld");
-    asdb_dump("/analyzer_tb/spi_data_in");
+--  asdb_dump("/analyzer_tb/dut/analyzer_up_inst/d");
+--  asdb_dump("/analyzer_tb/dut/analyzer_up_inst/q");
+--  asdb_dump("/analyzer_tb/dut/analyzer_up_inst/r");
+--
+--  asdb_dump("/analyzer_tb/dut/data_addr_1");
+--  asdb_dump("/analyzer_tb/dut/data_ch_1");
+--  asdb_dump("/analyzer_tb/dut/data_wr_1");
+--  asdb_dump("/analyzer_tb/dut/data_addr_2");
+--  asdb_dump("/analyzer_tb/dut/data_ch_2");
+--  asdb_dump("/analyzer_tb/dut/data_wr_2");
+--
+--  asdb_dump("/analyzer_tb/dut/spi_slave_inst/clk");
+--  asdb_dump("/analyzer_tb/dut/spi_slave_inst/sclk");
+--  asdb_dump("/analyzer_tb/dut/spi_slave_inst/cs_n");
+--  asdb_dump("/analyzer_tb/dut/spi_slave_inst/mosi");
+--  asdb_dump("/analyzer_tb/dut/spi_slave_inst/miso");
+--  asdb_dump("/analyzer_tb/dut/spi_slave_inst/din");
+--  asdb_dump("/analyzer_tb/dut/spi_slave_inst/din_vld");
+--  asdb_dump("/analyzer_tb/dut/spi_slave_inst/din_rdy");
+--  asdb_dump("/analyzer_tb/dut/spi_slave_inst/dout");
+--  asdb_dump("/analyzer_tb/dut/spi_slave_inst/dout_vld");
+--  asdb_dump("/analyzer_tb/spi_data_in");
 
     asdb_dump("/analyzer_tb/dut/controller_inst/d");
     asdb_dump("/analyzer_tb/dut/controller_inst/q");
     asdb_dump("/analyzer_tb/dut/controller_inst/r");
+
+    asdb_dump("/analyzer_tb/dut/rev_analyzer_inst/d");
+    asdb_dump("/analyzer_tb/dut/rev_analyzer_inst/q");
+    asdb_dump("/analyzer_tb/dut/rev_analyzer_inst/r");
+
+--  asdb_dump("/analyzer_tb/dut/trigger_ena");
+--  asdb_dump("/analyzer_tb/dut/trigger_resync");
+--  asdb_dump("/analyzer_tb/dut/trigger_stop");
+--  asdb_dump("/analyzer_tb/dut/button");
+--  asdb_dump("/analyzer_tb/dut/rd_addr");
+--  asdb_dump("/analyzer_tb/dut/data_ch_1");
+
 
 
     
@@ -208,7 +221,7 @@ begin
         wait;
     end process;
 
-    clk_100_process :process
+    clk_100_process : process is
     begin
         clk_100 <= '1';
         wait for 5 ns;
@@ -216,6 +229,23 @@ begin
         wait for 5 ns;
     end process;
 
+    btn_process : process is
+    begin
+        gsrn <= '0';
+        wait for 6 us;
+        gsrn <= '1';
+        wait for 5 us;
+        gsrn <= '0';
+        wait for 18 us;
+        gsrn <= '1';
+        wait for 1 us;
+        gsrn <= '0';
+        wait for 6 us;
+        gsrn <= '1';
+        wait for 5 us;
+        gsrn <= '0';
+        wait;
+    end process;
 --------------------------------------------------------------------------------
 -- forcing signals for link_up
 --------------------------------------------------------------------------------
@@ -280,9 +310,21 @@ begin
         wait for 1 us;
 
         wait for 10 ns;
-        force_signal ("deposit", "/analyzer_tb/dut/analyzer_down_inst/d.trigger_start", "2#0");
-        force_signal ("deposit", "/analyzer_tb/dut/analyzer_up_inst/d.trigger_start", "2#0");
+--      force_signal ("deposit", "/analyzer_tb/dut/analyzer_down_inst/d.trigger_start", "2#0");
+--      force_signal ("deposit", "/analyzer_tb/dut/analyzer_up_inst/d.trigger_start", "2#0");
 
+
+--      force_signal ("deposit", "/analyzer_tb/dut/analyzer_down_inst/r.data_amount", "16#7F00");
+--
+--      for i in 0 to 10 loop
+--          w_pci (ioclk1, addr, len, payload, out_tlp, in_tlp);
+--          addr <= X"70010100";
+--          wait for 25 ns;
+--      end loop;
+        payload(0) <= X"01";
+        spi_test(freq => 62, clk => sclk, miso => miso, mosi => mosi, cs => spi_cs, data_in => payload, data_out => spi_data_in, len => 1);
+
+        wait for 5 us;
         for i in 0 to 127 loop
             payload(i) <= std_logic_vector(to_unsigned(i,8));
         end loop;
@@ -296,16 +338,18 @@ begin
             wait for 25 ns;
         end loop;
 
---      force_signal ("deposit", "/analyzer_tb/dut/analyzer_down_inst/r.data_amount", "16#7F00");
+--      payload(0) <= X"02";
+--      spi_test(freq => 62, clk => sclk, miso => miso, mosi => mosi, cs => spi_cs, data_in => payload, data_out => spi_data_in, len => 1);
+--      wait for 5 us;
 --
---      for i in 0 to 10 loop
---          w_pci (ioclk1, addr, len, payload, out_tlp, in_tlp);
---          addr <= X"70010100";
---          wait for 25 ns;
---      end loop;
-        spi_test(freq => 62, clk => sclk, miso => miso, mosi => mosi, cs => spi_cs, data_in => payload, data_out => spi_data_in, len => 10);
-        wait for 20 us;
+--      payload(0) <= X"03";
+--      payload(1) <= X"00";
+--      payload(2) <= X"00";
+--      wait for 2 us;
+--      spi_test(freq => 62, clk => sclk, miso => miso, mosi => mosi, cs => spi_cs, data_in => payload, data_out => spi_data_in, len => 35);
+        wait for 11 us;
         tb_end <= true;
+
         wait;
     end process;
 
@@ -365,10 +409,16 @@ begin
     );
 
     dut : entity work.top
+        generic map (
+            PCS_1_ENABLE    => true,
+            PCS_2_ENABLE    => false
+        )
         port map (
-            clk_in          => clk_100,
-            rst             => not rst,
+            clk_100_p       => clk_100,
+            clk_100_n       => not clk_100,
 
+            pcie_clk_n      => '0',
+            pcie_clk_p      => '0',
             pcie_up_n       => pcie_rxn,
             pcie_up_p       => pcie_rxp,
             pcie_down_n     => pcie_txn,
@@ -377,7 +427,17 @@ begin
             sclk            => sclk,
             cs_n            => spi_cs,
             mosi            => mosi,
-            miso            => miso
+            miso            => miso,
+            
+            gsrn            => gsrn,
+            los             => (others => '0'),
+            disable1        => open,
+            disable2        => open,
+            disable3        => open,
+            data_out_o      => open,
+            led             => open,
+            seg             => open,
+            switch          => (others => '1')
         );
 
     -- process check write address

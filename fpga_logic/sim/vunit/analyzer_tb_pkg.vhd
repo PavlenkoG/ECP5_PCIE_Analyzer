@@ -474,20 +474,21 @@ package body analyzer_tb_pkg is
                         constant len          : in integer) is
     begin
         cs <= '0';
-        wait for 8 ns;-- (1/freq)*1 us;
+        wait for 16 ns;-- (1/freq)*1 us;
         clk <= '0';
-        for i in 0 to len loop
+        for i in 0 to len - 1 loop
             for j in 0 to 7 loop
                 data_out(i)(7 - j) <= miso;
-                wait for 8 ns;--(1/freq)*500 ns;
+                wait for 32 ns;--(1/freq)*500 ns;
                 clk <= '1';
                 mosi <= data_in(i)(7 - j);
-                wait for 8 ns;--(1/freq)*500 ns;
+                wait for 32 ns;--(1/freq)*500 ns;
                 clk <= '0';
             end loop;
         end loop;
+        wait for 16 ns;-- (1/freq)*1 us;
         cs <= '1';
-        wait for 16 ns;--(1/freq)*1 us;
+        wait for 32 ns;--(1/freq)*1 us;
     end spi_test;
 
 end package body;

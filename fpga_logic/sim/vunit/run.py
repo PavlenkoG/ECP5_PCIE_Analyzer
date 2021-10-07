@@ -20,8 +20,7 @@ MACHXO_VL_LIB =   Path("C:\\lscc\\diamond\\3.12\\cae_library\\simulation\\verilo
 ECP5_VHDL_LIB = Path("C:\\lscc\\diamond\\3.12\\cae_library\\simulation\\vhdl\\ecp5u\\src")
 ECP5_VL_LIB =   Path("C:\\lscc\\diamond\\3.12\\cae_library\\simulation\\verilog\\ecp5u")
 '''
-if (os.environ['PATH'].find("Active-HDL-11.1")):
-    print("AHDL 11.1")
+if (os.environ['PATH'].find("Active-HDL-11.1") > 0):
     VU.add_external_library("ecp5u","C:\\Aldec\\Active-HDL-11.1\\vlib\\lattice\\vhdl\\ecp5u")
     VU.add_external_library("ecp5um","C:\\Aldec\\Active-HDL-11.1\\vlib\\lattice\\vhdl\\ecp5u")
     VU.add_external_library("machxo3l","C:\\Aldec\\Active-HDL-11.1\\vlib\\lattice\\vhdl\\machxo3l")

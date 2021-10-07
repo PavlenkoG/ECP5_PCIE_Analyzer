@@ -2,4 +2,5 @@
   (lib (name pcie_analyzer)(type Legacy)(uri C:/Users/grpa/Documents/WORK/ECP5_PCIE_Analyzer/hardware/common/libs/lib/pcie_analyzer.lib)(options "")(descr ""))
   (lib (name test)(type Legacy)(uri C:/temp/libs/PCIE_adapter.lib/PCIE_adapter.lib)(options "")(descr ""))
   (lib (name hw)(type Legacy)(uri C:/temp/Loiki5000/kt_pz70pxie__hw/Common/Libs/PZ70PXIe.lib/PZ70PXIe.lib)(options "")(descr ""))
+  (lib (name pcie_analyzer-rescue)(type Legacy)(uri ${KIPRJMOD}/pcie_analyzer-rescue.lib)(options "")(descr ""))
 )
