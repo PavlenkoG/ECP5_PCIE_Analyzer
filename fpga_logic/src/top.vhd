@@ -20,8 +20,9 @@ entity top is
         PCS_2_ENABLE    : boolean := false
     );
     port(
-        clk_100_p       : in std_logic;
-        clk_100_n       : in std_logic;
+
+        clk_in          : in std_logic;
+        clk_en          : out std_logic;
 
         pcie_clk_n      : in std_logic;
         pcie_clk_p      : in std_logic;
@@ -137,11 +138,12 @@ architecture RTL of top is
 begin
 
     led(2 downto 0) <= not los(2) & not los (1) & not los (0);
-    led(4 downto 3) <= "11";
+    led(4 downto 3) <= '1' & rst;
     led(7 downto 5) <= q_ra.led_out(7 downto 5);
-    seg(14) <= not lsm_status_s;
-    seg(13) <= not rx_cdr_lol_s_1;
-    seg(12 downto 0) <= (others => '1');
+    clk_en <= '1';
+--  seg(14) <= not lsm_status_s;
+--  seg(13) <= not rx_cdr_lol_s_1;
+--  seg(12 downto 0) <= (others => '1');
 
     disable3 <= switch(2);
     disable2 <= switch(1);
@@ -156,26 +158,26 @@ begin
 
     clk_100_mhz_pll : entity work.pll
     port map (
-        clki                => clk_lvds,
+        clki                => clk_in,
         clkop               => clk_100,
         lock                => pll_lock
     );
-    clk_100_mhz_lvds_in : ilvds
-        port map (
-            an              => clk_100_n,
-            a               => clk_100_p,
-            z               => clk_lvds
-        );
+--  clk_100_mhz_lvds_in : ilvds
+--      port map (
+--          an              => clk_100_n,
+--          a               => clk_100_p,
+--          z               => clk_lvds
+--      );
 
     pcs1_generate : if (PCS_1_ENABLE) generate
         -- CDR Loss of Lock Range 1
         -- Linear Equalizer 2
         -- Loss of Signal Threshold Select 5
-        pcs_inst_1 : entity work.pcs_pci
+        pcs_inst_1 : entity work.pcs_pci_rx
         port map (
             hdinn           => pcie_up_n,
             hdinp           => pcie_up_p,
-            rxrefclk        => clk_100,
+            rxrefclk        => refclk,
             rx_pclk         => rx_pclk_1,
             rxdata          => rxdata_1,
             rx_k            => rx_k_1,
@@ -233,7 +235,7 @@ begin
     end generate;
 
     pcs2_generate : if (PCS_2_ENABLE) generate
-        pcs_inst_2 : entity work.pcs_pci
+        pcs_inst_2 : entity work.pcs_pci_tx
         port map (
             hdinn           => pcie_down_n,
             hdinp           => pcie_down_p,

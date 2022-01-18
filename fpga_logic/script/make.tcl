@@ -11,7 +11,7 @@ cd $ProjectPath/impl
 
 puts "Creating new backplane project"
 
-prj_project new -name "analyzer" -impl "analyzer" -dev LFE5UM-85F-8BG381I -synthesis "synplify"
+prj_project new -name "analyzer" -impl "analyzer" -dev LFE5UM5G-85F-8BG381C -synthesis "synplify"
 prj_project save
 
 #puts "Copying core files"
@@ -77,10 +77,17 @@ prj_src add "$ProjectPath/src/lfsr_scrambler.vhd"
 prj_src add "$ProjectPath/src/controller.vhd"
 prj_src add "$ProjectPath/src/top_pkg.vhd"
 prj_src add "$ProjectPath/src/top.vhd"
+prj_src add "$ProjectPath/src/spi_slave.vhd"
+prj_src add "$ProjectPath/src/pulse_filt.vhd"
+prj_src add "$ProjectPath/src/rev_analyzer.vhd"
+prj_src add "$ProjectPath/src/extref.vhd"
+prj_src add "$ProjectPath/src/pcs_pci_rx.vhd"
+prj_src add "$ProjectPath/src/pcs_pci_tx.vhd"
+prj_src add "$ProjectPath/src/pll.vhd"
 
 
-prj_src add "$ProjectPath/SRC/constrains.lpf"
-prj_src enable "$ProjectPath/SRC/constrains.lpf"
+prj_src add "$ProjectPath/SRC/analyzer.lpf"
+prj_src enable "$ProjectPath/SRC/analyzer.lpf"
  
 prj_strgy set_value -strategy Strategy1 syn_vhdl2008=True
 prj_project save
