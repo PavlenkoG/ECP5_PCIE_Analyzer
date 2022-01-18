@@ -138,17 +138,17 @@ begin
 --  asdb_dump("/analyzer_tb/dut/data_ch_2");
 --  asdb_dump("/analyzer_tb/dut/data_wr_2");
 --
---  asdb_dump("/analyzer_tb/dut/spi_slave_inst/clk");
---  asdb_dump("/analyzer_tb/dut/spi_slave_inst/sclk");
---  asdb_dump("/analyzer_tb/dut/spi_slave_inst/cs_n");
---  asdb_dump("/analyzer_tb/dut/spi_slave_inst/mosi");
---  asdb_dump("/analyzer_tb/dut/spi_slave_inst/miso");
---  asdb_dump("/analyzer_tb/dut/spi_slave_inst/din");
---  asdb_dump("/analyzer_tb/dut/spi_slave_inst/din_vld");
---  asdb_dump("/analyzer_tb/dut/spi_slave_inst/din_rdy");
---  asdb_dump("/analyzer_tb/dut/spi_slave_inst/dout");
---  asdb_dump("/analyzer_tb/dut/spi_slave_inst/dout_vld");
---  asdb_dump("/analyzer_tb/spi_data_in");
+    asdb_dump("/analyzer_tb/dut/spi_slave_inst/clk");
+    asdb_dump("/analyzer_tb/dut/spi_slave_inst/sclk");
+    asdb_dump("/analyzer_tb/dut/spi_slave_inst/cs_n");
+    asdb_dump("/analyzer_tb/dut/spi_slave_inst/mosi");
+    asdb_dump("/analyzer_tb/dut/spi_slave_inst/miso");
+    asdb_dump("/analyzer_tb/dut/spi_slave_inst/din");
+    asdb_dump("/analyzer_tb/dut/spi_slave_inst/din_vld");
+    asdb_dump("/analyzer_tb/dut/spi_slave_inst/din_rdy");
+    asdb_dump("/analyzer_tb/dut/spi_slave_inst/dout");
+    asdb_dump("/analyzer_tb/dut/spi_slave_inst/dout_vld");
+    asdb_dump("/analyzer_tb/spi_data_in");
 
     asdb_dump("/analyzer_tb/dut/controller_inst/d");
     asdb_dump("/analyzer_tb/dut/controller_inst/q");
