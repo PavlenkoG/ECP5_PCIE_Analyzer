@@ -26,10 +26,10 @@ end entity extref;
 architecture v1 of extref is 
     signal n2,n1,gnd,pwr : std_logic; 
     attribute LOC : string;
-    attribute LOC of EXTREF0_inst : label is "EXTREF0";
+    attribute LOC of EXTREF1_inst : label is "EXTREF1";
 begin
-    EXTREF0_inst: component EXTREFB generic map (REFCK_PWDNB=>"0b1",REFCK_RTERM=>"0b1",
-        REFCK_DCBIAS_EN=>"0b0")
+    EXTREF1_inst: component EXTREFB generic map (REFCK_PWDNB=>"0b1",REFCK_RTERM=>"0b1",
+        REFCK_DCBIAS_EN=>"0b1")
      port map (REFCLKP=>refclkp,REFCLKN=>refclkn,REFCLKO=>refclko);
     n2 <= '1' ;
     n1 <= '0' ;

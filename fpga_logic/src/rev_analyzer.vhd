@@ -17,7 +17,8 @@ use ieee.numeric_std.all;
 package rev_analyzer_pkg is
     type t_rev_analyzer_in is record
         button              : std_logic;
-        data_in             : std_logic_vector (35 downto 0);
+        data_in_rx          : std_logic_vector (35 downto 0);
+        data_in_tx          : std_logic_vector (35 downto 0);
 
         stop_trigger        : std_logic;
     end record;
@@ -26,9 +27,13 @@ package rev_analyzer_pkg is
         trigger_ena         : std_logic;
         read_addr           : std_logic_vector (14 downto 0);
 
-        data_out            : std_logic_vector (31 downto 0);
-        timestamp_ena       : std_logic;
-        data_ena            : std_logic;
+        data_out_rx         : std_logic_vector (31 downto 0);
+        timestamp_ena_rx    : std_logic;
+        data_ena_rx         : std_logic;
+
+        data_out_tx         : std_logic_vector (31 downto 0);
+        timestamp_ena_tx    : std_logic;
+        data_ena_tx         : std_logic;
     end record;
 end package;
  
@@ -67,9 +72,13 @@ architecture arch of rev_analyzer is
         read_addr               : std_logic_vector (14 downto 0);
         state                   : t_state;
 
-        read_data               : std_logic_vector (31 downto 0);
-        timestamp               : std_logic;
-        data_ena                : std_logic;
+        read_data_rx            : std_logic_vector (31 downto 0);
+        timestamp_rx            : std_logic;
+        data_ena_rx             : std_logic;
+
+        read_data_tx            : std_logic_vector (31 downto 0);
+        timestamp_tx            : std_logic;
+        data_ena_tx             : std_logic;
 
     end record reg_t;
  
@@ -82,9 +91,13 @@ architecture arch of rev_analyzer is
         read_addr               => (others => '0'),
         state                   => WAIT_ST,
 
-        read_data               => (others => '0'),
-        timestamp               => '0',
-        data_ena                => '0'
+        read_data_rx            => (others => '0'),
+        timestamp_rx            => '0',
+        data_ena_rx             => '0',
+
+        read_data_tx            => (others => '0'),
+        timestamp_tx            => '0',
+        data_ena_tx             => '0'
     );
  
     signal r, rin : reg_t;
@@ -94,22 +107,29 @@ architecture arch of rev_analyzer is
 -- placeholder for debug
 -- attributes used to prevent signals optimizing
 --******************************************************************************
-    signal data_in                  : std_logic_vector (31 downto 0);
-    signal timestamp_flag           : std_logic;
-    signal data_ena                 : std_logic;
---vhdl_comp_off
+    signal data_in_rx               : std_logic_vector (31 downto 0);
+    signal data_in_tx               : std_logic_vector (31 downto 0);
+    signal timestamp_flag_rx        : std_logic;
+    signal timestamp_flag_tx        : std_logic;
+    signal data_ena_rx              : std_logic;
+    signal data_ena_tx              : std_logic;
 --
---  attribute syn_preserve of data_in           : signal is true;
---  attribute syn_preserve of timestamp_flag    : signal is true;
---  attribute syn_preserve of data_ena          : signal is true;
---vhdl_comp_on
+    attribute syn_preserve of data_in_rx          : signal is true;
+    attribute syn_preserve of timestamp_flag_rx   : signal is true;
+    attribute syn_preserve of data_ena_rx         : signal is true;
+    attribute syn_preserve of data_ena_tx         : signal is true;
+    attribute syn_preserve of data_in_tx          : signal is true;
+    attribute syn_preserve of timestamp_flag_tx   : signal is true;
 --******************************************************************************
  
 begin
 
-    data_in <= d.data_in(34 downto 27) & d.data_in(25 downto 18) & d.data_in(16 downto 9) & d.data_in(7 downto 0);
-    timestamp_flag <= d.data_in(35);
-    data_ena <= '1' when r.state = READ_ST else '0';
+    data_in_rx <= d.data_in_rx(34 downto 27) & d.data_in_rx(25 downto 18) & d.data_in_rx(16 downto 9) & d.data_in_rx(7 downto 0);
+    timestamp_flag_rx <= d.data_in_rx(35);
+    data_ena_rx <= '1' when r.state = READ_ST else '0';
+    data_in_tx <= d.data_in_tx(34 downto 27) & d.data_in_tx(25 downto 18) & d.data_in_tx(16 downto 9) & d.data_in_tx(7 downto 0);
+    timestamp_flag_tx <= d.data_in_tx(35);
+    data_ena_tx <= '1' when r.state = READ_ST else '0';
  
     comb : process (r, d) is
     variable v: reg_t;
@@ -118,15 +138,19 @@ begin
         v.button_del := d.button;
         v.trigger_stop := r.trigger_stop(0) & d.stop_trigger;
 
-        v.read_data := d.data_in(34 downto 27) & d.data_in(25 downto 18) & d.data_in(16 downto 9) & d.data_in(7 downto 0);
-        v.timestamp := d.data_in(35);
+        v.read_data_rx := d.data_in_rx(34 downto 27) & d.data_in_rx(25 downto 18) & d.data_in_rx(16 downto 9) & d.data_in_rx(7 downto 0);
+        v.timestamp_rx := d.data_in_rx(35);
+
+        v.read_data_tx := d.data_in_tx(34 downto 27) & d.data_in_tx(25 downto 18) & d.data_in_tx(16 downto 9) & d.data_in_tx(7 downto 0);
+        v.timestamp_tx := d.data_in_tx(35);
 
         case r.state is
         when WAIT_ST =>
             v.led_out(7) := '0';
             v.led_out(6) := '1';
             v.led_out(5) := '1';
-            v.data_ena := '0';
+            v.data_ena_rx := '0';
+            v.data_ena_tx := '0';
             if r.button_del = '0' and d.button = '1' then
                 v.trigger_ena := '1';
                 v.state := TRIGGER_ST;
@@ -144,7 +168,8 @@ begin
             v.led_out(5) := '0';
             if r.read_addr < 15X"00FF" then
                 v.read_addr := r.read_addr + 1;
-                v.data_ena := '1';
+                v.data_ena_rx := '1';
+                v.data_ena_tx := '1';
             else
                 v.read_addr := (others => '0');
                 v.state := WAIT_ST;
@@ -167,9 +192,13 @@ begin
     q.led_out <= r.led_out;
     q.trigger_ena <= r.trigger_ena;
 
-    q.data_out <= r.read_data;
-    q.timestamp_ena <= r.timestamp;
-    q.data_ena <= r.data_ena;
+    q.data_out_rx <= r.read_data_rx;
+    q.timestamp_ena_rx <= r.timestamp_rx;
+    q.data_ena_rx <= r.data_ena_rx;
+
+    q.data_out_tx <= r.read_data_tx;
+    q.timestamp_ena_tx <= r.timestamp_tx;
+    q.data_ena_tx <= r.data_ena_tx;
 
     -- Register process
     regs : process (clk) is
