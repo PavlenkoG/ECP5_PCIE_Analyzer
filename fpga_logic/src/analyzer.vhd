@@ -108,6 +108,8 @@ begin
     -- handling of k-symbols
     if d.rx_k = '1' then
         v.packet_type := IDLE;
+        v.tlp_type := NO_PCK;
+        v.dllp_type := NO_PCK;
         -- start TLP Packet
         if d.data_in_scr = K_STP_SYM_27_7 then
             v.packet_type := TLP_PKT;
@@ -295,15 +297,17 @@ begin
             if r.packet_type = TLP_PKT then
             end if;
             if r.wr2mem = '1' then
-                if unsigned(r.byte_counter) = 1 then
-                    v.wr_en := '1';
-                    v.data_amount := r.data_amount + 1;
---                     v.addr_counter := std_logic_vector(unsigned(v.addr_counter) + 1);
-                end if;
-                if r.byte_counter(1 downto 0) = "10" then
-                    v.wr_en := '1';
-                    v.data_amount := r.data_amount + 1;
---                      v.addr_counter := std_logic_vector(unsigned(v.addr_counter) + 1);
+                if (d.filter_in.tlp_save = '1' and r.packet_type = TLP_PKT) or
+                (d.filter_in.dllp_save = '1' and r.packet_type = DLLP_PKT) or
+                (d.filter_in.order_set_save = '1' and r.packet_type = ORDR_ST) then
+                    if unsigned(r.byte_counter) = 1 then
+                        v.wr_en := '1';
+                        v.data_amount := r.data_amount + 1;
+                    end if;
+                    if r.byte_counter(1 downto 0) = "10" then
+                        v.wr_en := '1';
+                        v.data_amount := r.data_amount + 1;
+                    end if;
                 end if;
             end if;
         end if;
