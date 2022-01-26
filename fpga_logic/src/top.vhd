@@ -167,8 +167,8 @@ begin
     disable2 <= switch(1);
     disable1 <= switch(0);
 
-    rx_invert <= switch(3);
-    tx_invert <= switch(4);
+--  rx_invert <= switch(3);
+--  tx_invert <= switch(4);
 
     extref_inst : entity work.extref
         port map(
