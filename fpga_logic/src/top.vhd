@@ -16,15 +16,13 @@ use ecp5um.components.all;
 
 entity top is
     generic (
-        PCS_1_ENABLE    : boolean := true;
-        PCS_2_ENABLE    : boolean := true
+        PCS_1_ENABLE    : boolean := true;  -- receiver channel 1 enable
+        PCS_2_ENABLE    : boolean := true   -- receiver channel 2 enable
     );
     port(
 
-        clk_in          : in std_logic;
-        clk_en          : out std_logic;
-        clk_out         : out std_logic;
-        link_status_o   : out std_logic;
+        clk_25_in       : in std_logic;     -- 25 MHz input clock
+        clk_25_en       : out std_logic;    -- oscillator enable signal
 
         pcie_clk_n      : in std_logic;
         pcie_clk_p      : in std_logic;
@@ -39,19 +37,20 @@ entity top is
         mosi            : in std_logic;
         miso            : out std_logic;
 
-        -- button
-        gsrn            : in std_logic;
-        los             : in std_logic_vector (2 downto 0);
-        disable1        : out std_logic;
-        disable2        : out std_logic;
-        disable3        : out std_logic;
-        -- leds
+        gsrn            : in std_logic;     -- trigger button for debug
+
+        los             : in std_logic_vector (2 downto 0);     -- opAmp los signal
+        disable1        : out std_logic;                        -- disable opAmp ch1
+        disable2        : out std_logic;                        -- disable opAmp ch2
+        disable3        : out std_logic;                        -- disable opAmp ch3
+
+        -- signals for reveal analyzer
         data_out_o      : out std_logic_vector (31 downto 0);
         data_out_i      : out std_logic_vector (31 downto 0);
         timestamp       : out std_logic_vector (1 downto 0);
-        led             : out std_logic_vector (7 downto 0);
-        seg             : out std_logic_vector (14 downto 0);
-        switch          : in std_logic_vector (7 downto 0)
+        
+        led             : out std_logic_vector (7 downto 0);    -- eval board leds
+        switch          : in std_logic_vector (7 downto 0)      -- eval board switches
     );
 end top;
 
@@ -160,8 +159,7 @@ begin
     led(2 downto 0) <= not los(2) & not los (1) & not los (0);
     led(4 downto 3) <= not lsm_status_s_1 & not lsm_status_s_2;
     led(7 downto 5) <= q_ra.led_out(7 downto 5);
-    clk_en <= '1';
-    clk_out <= refclk;
+    clk_25_en <= '1';
 
     disable3 <= switch(2);
     disable2 <= switch(1);
@@ -179,7 +177,7 @@ begin
 
     clk_100_mhz_pll : entity work.pll
     port map (
-        clki                => clk_in,
+        clki                => clk_25_in,
         clkop               => clk_100,
         lock                => pll_lock
     );
@@ -190,13 +188,6 @@ begin
         clkop               => refclk,
         lock                => open
     );
-
---  clk_100_mhz_lvds_in : ilvds
---      port map (
---          an              => clk_100_n,
---          a               => clk_100_p,
---          z               => clk_lvds
---      );
 
     pcs1_generate : if (PCS_1_ENABLE) generate
         -- CDR Loss of Lock Range 1
@@ -346,8 +337,7 @@ begin
 
     data_addr_1 <= q_and.addr_wr;
     data_addr_2 <= q_anu.addr_wr;
-    --data_ch_1 <= q_and.data_wr(34 downto 27) & q_and.data_wr(25 downto 18) & q_and.data_wr(16 downto 9) & q_and.data_wr(7 downto 0);
-    --data_ch_2 <= q_anu.data_wr(34 downto 27) & q_anu.data_wr(25 downto 18) & q_anu.data_wr(16 downto 9) & q_anu.data_wr(7 downto 0);
+
     data_wr_1 <= q_and.wr_en;
     data_wr_2 <= q_anu.wr_en;
 
@@ -356,7 +346,7 @@ begin
             WORD_SIZE => SPI_WORD_SIZE
         )
         port map(
-            CLK      => rx_pclk_2,--clk_100,
+            CLK      => clk_100,
             RST      => rst,
             SCLK     => sclk,
             CS_N     => cs_n,
@@ -371,6 +361,7 @@ begin
 
     d_cntr.data_amount_1 <= q_and.data_amount;
     d_cntr.data_amount_2 <= q_and.data_amount;
+
     controller_inst : entity work.controller
         port map(
             clk => rx_pclk_2,
