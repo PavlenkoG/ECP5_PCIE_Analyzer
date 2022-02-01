@@ -39,7 +39,7 @@ package controller_pkg is
         u_mem_data_in       : std_logic_vector (35 downto 0);
         data_amount_1       : std_logic_vector (14 downto 0);
         -- memory 2 interface
-        d_mem_data_in       : std_logic_vector (35 downto 0);
+        mem_data_in       : std_logic_vector (35 downto 0);
         data_amount_2       : std_logic_vector (14 downto 0);
     end record;
 
@@ -59,7 +59,8 @@ package controller_pkg is
         d_filter_in         : t_filter_in;
 
         -- memory interface
-        addr_read         : std_logic_vector (15 downto 0);
+        mem_select          : std_logic;
+        addr_read           : std_logic_vector (15 downto 0);
     end record;
 end package;
  
@@ -80,12 +81,15 @@ end controller;
  
 architecture arch of controller is
  
-    type t_state is (IDLE, CMD_ST,  ADDR_ST, TRANSFER_ST, WAIT_ST);
-    type t_controller_state is (IDLE, READ_CONFIG, WRITE_CONFIG, READ_MEMORY);
+    type t_state is (IDLE, CMD_ST, ADDR_ST, TRANSFER_ST, WR_REG_ST);
     type reg_t is record
         -- TODO: ADDR REGISTERS HERE
         state               : t_state;
-        cntr_state          : t_controller_state;
+        cmd_r               : std_logic_vector (7 downto 0);
+        read_memory         : std_logic;
+        read_register       : std_logic;
+        mem_select          : std_logic;
+        next_byte           : std_logic;
         cs_n_d              : std_logic;
         din_rdy_d           : std_logic;
         byte_counter        : std_logic_vector (7 downto 0);
@@ -93,18 +97,24 @@ architecture arch of controller is
         data_out            : std_logic_vector (7 downto 0);
         data_out_vld        : std_logic;
 
-        read_addr           : std_logic_vector (15 downto 0);
+        read_addr           : std_logic_vector (17 downto 0);
         mem_data            : std_logic_vector (31 downto 0);
         mem_ext_data        : std_logic_vector (7 downto 0);
 
         trigger_start       : std_logic;
         trigger_stop        : std_logic;
+
+        -- register set
         
     end record reg_t;
  
     constant REG_T_INIT : reg_t := (
         state               => IDLE,
-        cntr_state          => IDLE,
+        cmd_r               => (others => '0'),
+        read_memory         => '0',
+        read_register       => '0',
+        mem_select          => '0',
+        next_byte           => '0',
         cs_n_d              => '0',
         din_rdy_d           => '0',
         byte_counter        => (others => '0'),
@@ -136,118 +146,140 @@ begin
 
         v.trigger_start := '0';
         v.trigger_stop := '0';
-        if r.read_addr(15) = '1' then
-            v.mem_data(31 downto 24) := d.d_mem_data_in (34 downto 27);
-            v.mem_data(23 downto 16) := d.d_mem_data_in (25 downto 18);
-            v.mem_data(15 downto 8) := d.d_mem_data_in (16 downto 9);
-            v.mem_data(7 downto 0) := d.d_mem_data_in (7 downto 0);
-        else
-            v.mem_data(31 downto 24) := d.u_mem_data_in (34 downto 27);
-            v.mem_data(23 downto 16) := d.u_mem_data_in (25 downto 18);
-            v.mem_data(15 downto 8) := d.u_mem_data_in (16 downto 9);
-            v.mem_data(7 downto 0) := d.u_mem_data_in (7 downto 0);
-        end if;
-        case r.cntr_state is
-            --(IDLE, READ_CONFIG, WRITE_CONFIG, READ_MEMORY);
-            when IDLE => 
 
-            when READ_CONFIG =>
-            when WRITE_CONFIG => 
-            when READ_MEMORY =>
-                if d.cs_n = '0' and r.cs_n_d = '1' then
-                    v.data_out_vld := '1';
-                end if;
-                if (to_integer(unsigned(r.byte_counter)) = 4) then
-                    v.read_addr := r.read_addr + 1;
-                end if;
-                if r.read_addr(1 downto 0) = "00" then
-                    v.mem_ext_data (3 downto 0) := d.d_mem_data_in(35) & d.d_mem_data_in(26) & d.d_mem_data_in(17) & d.d_mem_data_in(8);
-                end if;
-                if r.read_addr(1 downto 0) = "10" then
-                    v.mem_ext_data (7 downto 4) := d.d_mem_data_in(35) & d.d_mem_data_in(26) & d.d_mem_data_in(17) & d.d_mem_data_in(8);
-                end if;
-                case r.byte_counter(1 downto 0) is
-                    when "00" =>
-                        v.data_out := d.d_mem_data_in(7 downto 0);
-                    when "01" =>
-                        v.data_out := d.d_mem_data_in(16 downto 9);
-                    when "10" =>
-                        v.data_out := d.d_mem_data_in(25 downto 18);
-                    when "11" =>
-                        v.data_out := d.d_mem_data_in(34 downto 27);
-                    when others =>
-                end case;
-                if d.cs_n = '1' and r.cs_n_d = '0' then
-                    v.cntr_state := IDLE;
-                end if;
-
-        end case;
         case r.state is
         when IDLE =>
+            -- wait for falling edge of cs_n
             if d.cs_n = '0' and r.cs_n_d = '1' then
-                if r.cntr_state = IDLE then 
+                -- when first command comes
+                if r.read_memory = '0' and r.read_register = '0' then 
                     v.state := CMD_ST;
+                end if;
+                -- when read memory after command
+                if r.read_memory = '1' or r.read_register = '1' then
+                    v.state := TRANSFER_ST;
                 end if;
             end if;
         when CMD_ST =>
+            -- first byte is command
+            v.read_addr := (others => '0');
             if d.data_in_vld = '1' then
-                v.state := ADDR_ST;
-                case d.data_in is
-                when C_WRITE_REG_CMD =>
-                when C_READ_REG_CMD =>
-                when C_READ_MEM =>
-                    v.cntr_state := READ_MEMORY;
-                    v.state := ADDR_ST;
-                when others => 
-                end case;
-            end if;
-            if d.cs_n = '1' then
-                v.state := CMD_ST;
+                v.state := ADDR_ST;     -- next byte after command is address
+                v.cmd_r := d.data_in;   -- save command for using in other states
             end if;
         when ADDR_ST =>
-            if d.data_in_vld = '1' then
+            case r.cmd_r is
+            when C_READ_MEM =>          -- read memory
+                if d.data_in_vld = '1' then
+                    case r.byte_counter is
+                    when X"01" =>                               -- memory select 
+                        v.mem_select := d.data_in(0);
+                    when X"02" =>                               -- low address
+                        v.read_addr(15 downto 8) := d.data_in;
+                    when X"03" =>                               -- high address
+                        v.read_addr(7 downto 0) := d.data_in;
+                    when others =>
+                    end case;
+                end if;
+                if d.cs_n = '1' then                            -- end of spi transfer
+                    v.read_memory := '1';
+                    v.state := IDLE;
+                end if;
+            when C_READ_REG_CMD =>      -- read register
                 case r.byte_counter is
-                when X"01"=>
-                    v.read_addr(15 downto 8) := d.data_in;
-                when X"02" =>
-                    v.read_addr(7 downto 0) := d.data_in;
-                    v.state := TRANSFER_ST;
+                when X"01" =>           -- register address
+                    v.mem_select := d.data_in(0);
                 when others =>
                 end case;
-            end if;
+                if d.cs_n = '1' then    -- end of spi transfer
+                    v.read_register := '1';
+                    v.state := IDLE;
+                end if;
+            when others =>
+            end case;
+        when TRANSFER_ST =>             -- read registers state
             if d.cs_n = '1' then
+                v.state := IDLE;
+                v.read_memory := '0';
+                v.read_register := '0';
             end if;
-        when TRANSFER_ST =>
-            if d.data_out_rdy = '1' and r.din_rdy_d = '1' then
-                v.state := WAIT_ST;
-            elsif d.data_out_rdy = '1' then
-                v.read_addr := std_logic_vector(unsigned(r.read_addr) + 1);
-            end if;
-            if r.din_rdy_d = '1' then
-            end if;
-            if r.read_addr(1 downto 0) = "00" then
-                v.mem_ext_data (3 downto 0) := d.d_mem_data_in(35) & d.d_mem_data_in(26) & d.d_mem_data_in(17) & d.d_mem_data_in(8);
-            end if;
-            if r.read_addr(1 downto 0) = "10" then
-                v.mem_ext_data (7 downto 4) := d.d_mem_data_in(35) & d.d_mem_data_in(26) & d.d_mem_data_in(17) & d.d_mem_data_in(8);
-            end if;
-            if d.cs_n = '1' then
-                v.state := CMD_ST;
-            end if;
-        when WAIT_ST =>
-            v.state := IDLE;
-            if d.cs_n = '1' then
-                v.state := CMD_ST;
-            end if;
+        when WR_REG_ST =>
         when others =>
         end case;
 
-        if r.state /= IDLE then
-            if r.din_rdy_d = '1' then
+        -- read controller registers
+        if r.read_register = '1' then
+            if d.cs_n = '0' then
+                -- increment address by read_rdy or falling edge on cs_n
+                if (d.data_out_rdy = '1' or r.cs_n_d = '1') then
+                    v.read_addr := std_logic_vector(unsigned(r.read_addr) + 1);
+                end if;
+            end if;
+            -- address mux
+            case r.read_addr(7 downto 0) is
+                when C_CONFIG_REG =>
+                    v.data_out := X"01";
+                when C_STATUS_REG =>
+                    v.data_out := X"02";
+                when C_CONFIG_TLP =>
+                    v.data_out := X"03";
+                when C_CONFIG_DLLP =>
+                    v.data_out := X"04";
+                when C_CONFIG_ORDSET =>
+                    v.data_out := X"05";
+                when C_MEM_AMNT_1_LO =>
+                    v.data_out := X"06";
+                when C_MEM_AMNT_1_HI =>
+                    v.data_out := X"07";
+                when C_MEM_AMNT_2_LO =>
+                    v.data_out := X"08";
+                when C_MEM_AMNT_2_HI =>
+                    v.data_out := X"09";
+                when others => 
+                    v.data_out := X"00";
+            end case;
+        end if;
+        -- read memory
+        if r.read_memory = '1' then
+            if d.cs_n = '0' then
+                -- increment address by read_rdy or falling edge on cs_n
+                if (d.data_out_rdy = '1' or r.cs_n_d = '1') then
+                    v.read_addr := std_logic_vector(unsigned(r.read_addr) + 1);
+                    -- shift register for timestamp bit
+                    if r.read_addr(1 downto 0) = "00" then
+                        v.mem_ext_data(6 downto 0) := r.mem_ext_data(7 downto 1);
+                        v.mem_ext_data(7) := d.mem_data_in(35);
+                    end if;
+                end if;
+            end if;
+            -- first 32 bytes are data
+            if r.byte_counter < 31 then
+                case r.read_addr(1 downto 0) is 
+                    when "00" => v.data_out := d.mem_data_in (34 downto 27);
+                    when "01" => v.data_out := d.mem_data_in (25 downto 18);
+                    when "10" => v.data_out := d.mem_data_in (16 downto 9);
+                    when "11" => v.data_out := d.mem_data_in (7 downto 0);
+                    when others =>
+                end case;
+            -- last byte Nr.33 is timestamp flag register
+            else
+                v.data_out := r.mem_ext_data;
+            end if;
+        end if;
+
+        -- byte counter
+        if d.cs_n = '0'then
+            if d.data_in_vld = '1' and r.din_rdy_d = '0' then
                 v.byte_counter := std_logic_vector(unsigned(r.byte_counter) + 1);
             end if;
         else
             v.byte_counter := (others => '0');
+        end if;
+
+        if r.read_memory = '1' or r.read_register = '1' then
+            v.data_out_vld := '1';
+        else
+            v.data_out_vld := '0';
         end if;
 
         rin <= v;
@@ -266,9 +298,10 @@ begin
         end if;  
     end process regs;
 
+    q.mem_select <= r.mem_select;
     q.data_out <= r.data_out;
     q.data_out_vld <= r.data_out_vld;
     q.trigger_start <= r.trigger_start;
     q.trigger_stop <= r.trigger_stop;
-    q.addr_read <= r.read_addr;
+    q.addr_read <= r.read_addr(17 downto 2);
 end arch;
