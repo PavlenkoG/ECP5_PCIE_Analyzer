@@ -33,12 +33,12 @@ architecture arch of analyzer is
 
         log_ena                 : std_logic;
         wr2mem                  : std_logic;
-        addr_pointer            : std_logic_vector (14 downto 0);
-        addr_counter            : std_logic_vector (14 downto 0);
+        addr_pointer            : std_logic_vector (15 downto 0);
+        addr_counter            : std_logic_vector (15 downto 0);
         data_reg                : std_logic_vector (31 downto 0);
         data_ext_reg            : std_logic_vector (3 downto 0);
         wr_en                   : std_logic;
-        data_amount             : std_logic_vector (14 downto 0);
+        data_amount             : std_logic_vector (15 downto 0);
         trigger                 : std_logic;
 
         packet_type             : t_packet_type;
@@ -90,7 +90,7 @@ begin
         v.log_ena := '1';
         v.stop_trigger := '0';
     end if;
-    if d.trigger_stop = '1' or r.data_amount = 15X"00FF" then--std_logic_vector(to_unsigned(MEM_SIZE,15)) then--X"7FFF" then
+    if d.trigger_stop = '1' or r.data_amount = 15X"3FFF" then--std_logic_vector(to_unsigned(MEM_SIZE,15)) then--X"7FFF" then
         v.log_ena := '0';
         v.stop_trigger := '1';
         v.timestamp := (others => '0');

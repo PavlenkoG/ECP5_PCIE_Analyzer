@@ -37,10 +37,10 @@ package controller_pkg is
 
         -- memory 1 interface
         u_mem_data_in       : std_logic_vector (35 downto 0);
-        data_amount_1       : std_logic_vector (14 downto 0);
+        data_amount_1       : std_logic_vector (15 downto 0);
         -- memory 2 interface
         mem_data_in       : std_logic_vector (35 downto 0);
-        data_amount_2       : std_logic_vector (14 downto 0);
+        data_amount_2       : std_logic_vector (15 downto 0);
     end record;
 
     type t_controller_out is record
