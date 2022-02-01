@@ -96,13 +96,13 @@ architecture RTL of top is
     signal d_anu                : t_analyzer_in;
     signal q_anu                : t_analyzer_out;
 
-    signal data_addr_1          : std_logic_vector (14 downto 0);
-    signal data_addr_2          : std_logic_vector (14 downto 0);
-    signal data_ch_1            : std_logic_vector (31 downto 0);
-    signal data_ch_2            : std_logic_vector (31 downto 0);
-    signal timestamp_r          : std_logic_vector (1 downto 0);
-    signal data_wr_1            : std_logic;
-    signal data_wr_2            : std_logic;
+--  signal data_addr_1          : std_logic_vector (14 downto 0);
+--  signal data_addr_2          : std_logic_vector (14 downto 0);
+--  signal data_ch_1            : std_logic_vector (31 downto 0);
+--  signal data_ch_2            : std_logic_vector (31 downto 0);
+--  signal timestamp_r          : std_logic_vector (1 downto 0);
+--  signal data_wr_1            : std_logic;
+--  signal data_wr_2            : std_logic;
 
     -- spi user interface
     signal din                  : std_logic_vector (SPI_WORD_SIZE - 1 downto 0);
@@ -134,17 +134,17 @@ architecture RTL of top is
     signal refclk               : std_logic;
     signal clk_lvds             : std_logic;
 --vhdl_comp_off
-    attribute syn_preserve : boolean;
-    attribute syn_keep : boolean;
-    attribute syn_preserve of data_ch_1 : signal is true;
-    attribute syn_keep of data_ch_1 : signal is true;
-    attribute syn_preserve of data_ch_2 : signal is true;
-    attribute syn_keep of data_ch_2 : signal is true;
-    attribute syn_preserve of timestamp_r : signal is true;
-    attribute syn_keep of timestamp_r : signal is true;
-
-    attribute syn_preserve of clk_100 : signal is true;
-    attribute syn_keep of clk_100 : signal is true;
+--  attribute syn_preserve : boolean;
+--  attribute syn_keep : boolean;
+--  attribute syn_preserve of data_ch_1 : signal is true;
+--  attribute syn_keep of data_ch_1 : signal is true;
+--  attribute syn_preserve of data_ch_2 : signal is true;
+--  attribute syn_keep of data_ch_2 : signal is true;
+--  attribute syn_preserve of timestamp_r : signal is true;
+--  attribute syn_keep of timestamp_r : signal is true;
+--
+--  attribute syn_preserve of clk_100 : signal is true;
+--  attribute syn_keep of clk_100 : signal is true;
 --vhdl_comp_on
     component ilvds
     port (
@@ -204,7 +204,7 @@ begin
             rxstatus0       => rxstatus0,
             pcie_det_en_c   => '1',
             pcie_ct_c       => '0',
---          rx_invert_c     => rx_invert,
+            rx_invert_c     => '0',
             signal_detect_c => '1',
             pcie_done_s     => pcie_done_s,
             pcie_con_s      => pcie_con_s,
@@ -243,9 +243,9 @@ begin
 
         packet_memory_down_inst : entity work.packet_ram
             port map(
-                WrAddress => q_and.addr_wr,
+                WrAddress => q_and.addr_wr(14 downto 0),
                 --! TODO: remove temporary address
-                RdAddress => q_ra.read_addr,--q_cntr.addr_read,
+                RdAddress => q_cntr.addr_read(14 downto 0),
                 Data      => q_and.data_wr,
                 WE        => q_and.wr_en,
                 RdClock   => clk_100,
@@ -272,7 +272,7 @@ begin
             rxstatus0       => rxstatus1,
             pcie_det_en_c   => '1',
             pcie_ct_c       => '0',
---          rx_invert_c     => tx_invert,
+            rx_invert_c     => '0',
             signal_detect_c => '1',
             pcie_done_s     => open,
             pcie_con_s      => open,
@@ -310,8 +310,8 @@ begin
 
         packet_memory_up_inst : entity work.packet_ram
             port map(
-                WrAddress => q_anu.addr_wr,
-                RdAddress => q_ra.read_addr,--q_cntr.addr_read,
+                WrAddress => q_anu.addr_wr(14 downto 0),
+                RdAddress => q_cntr.addr_read(14 downto 0),
                 Data      => q_anu.data_wr,
                 WE        => q_anu.wr_en,
                 RdClock   => clk_100,
@@ -335,11 +335,11 @@ begin
             y            => button
         );
 
-    data_addr_1 <= q_and.addr_wr;
-    data_addr_2 <= q_anu.addr_wr;
-
-    data_wr_1 <= q_and.wr_en;
-    data_wr_2 <= q_anu.wr_en;
+--  data_addr_1 <= q_and.addr_wr;
+--  data_addr_2 <= q_anu.addr_wr;
+--
+--  data_wr_1 <= q_and.wr_en;
+--  data_wr_2 <= q_anu.wr_en;
 
     spi_slave_inst : entity work.SPI_SLAVE
         generic map(
@@ -356,15 +356,17 @@ begin
             DIN_VLD  => q_cntr.data_out_vld,
             DIN_RDY  => d_cntr.data_out_rdy,
             DOUT     => d_cntr.data_in,
-            DOUT_VLD => d_cntr.data_in_vld
+            DOUT_VLD => d_cntr.data_in_vld,
+            CS_N_OUT => d_cntr.cs_n
         );
 
     d_cntr.data_amount_1 <= q_and.data_amount;
     d_cntr.data_amount_2 <= q_and.data_amount;
+    d_cntr.mem_data_in <= mem_data_out_rx when q_cntr.mem_select = '0' else mem_data_out_tx;
 
     controller_inst : entity work.controller
         port map(
-            clk => rx_pclk_2,
+            clk => clk_100,
             rst => rst,
             d   => d_cntr,
             q   => q_cntr
@@ -425,12 +427,12 @@ begin
             trigger_stop(0) <= q_and.stop_trigger;
             trigger_stop(1) <= trigger_stop(0);
 
-            data_ch_1 <= mem_data_out_rx(34 downto 27) & mem_data_out_rx(25 downto 18) & mem_data_out_rx(16 downto 9) & mem_data_out_rx(7 downto 0);
-            data_ch_2 <= mem_data_out_tx(34 downto 27) & mem_data_out_tx(25 downto 18) & mem_data_out_tx(16 downto 9) & mem_data_out_tx(7 downto 0);
-            timestamp_r <= mem_data_out_rx(35) & mem_data_out_tx(35);
-            data_out_o <= data_ch_1;
-            data_out_i <= data_ch_2;
-            timestamp <= timestamp_r;
+--          data_ch_1 <= mem_data_out_rx(34 downto 27) & mem_data_out_rx(25 downto 18) & mem_data_out_rx(16 downto 9) & mem_data_out_rx(7 downto 0);
+--          data_ch_2 <= mem_data_out_tx(34 downto 27) & mem_data_out_tx(25 downto 18) & mem_data_out_tx(16 downto 9) & mem_data_out_tx(7 downto 0);
+--          timestamp_r <= mem_data_out_rx(35) & mem_data_out_tx(35);
+--          data_out_o <= data_ch_1;
+--          data_out_i <= data_ch_2;
+--          timestamp <= timestamp_r;
         end if;
     end process;
 
