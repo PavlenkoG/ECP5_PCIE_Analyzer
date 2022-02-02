@@ -57,6 +57,23 @@ package analyzer_pkg is
     constant DLLP_TYPE_FCNP    : std_logic_vector (7 downto 0) := B"1001_0000"; -- UpdateFC-NP
     constant DLLP_TYPE_FCCPL   : std_logic_vector (7 downto 0) := B"1010_0000"; -- UpdateFC-Cpl
 
+    -- SPI Controller commands
+    constant C_WRITE_REG_CMD        : std_logic_vector (7 downto 0) := X"01";   -- write controller register
+    constant C_READ_REG_CMD         : std_logic_vector (7 downto 0) := X"02";   -- read controller register
+    constant C_READ_MEM             : std_logic_vector (7 downto 0) := X"03";   -- read analyzer memory
+
+    -- Controller Register set
+    constant C_CONFIG_REG           : std_logic_vector (7 downto 0) := X"00";   -- config register
+    constant C_STATUS_REG_0         : std_logic_vector (7 downto 0) := X"01";   -- status register
+    constant C_STATUS_REG_1         : std_logic_vector (7 downto 0) := X"02";   -- status register
+    constant C_CONFIG_TLP           : std_logic_vector (7 downto 0) := X"03";
+    constant C_CONFIG_DLLP          : std_logic_vector (7 downto 0) := X"04";
+    constant C_CONFIG_ORDSET        : std_logic_vector (7 downto 0) := X"05";
+    constant C_MEM_AMNT_1_LO        : std_logic_vector (7 downto 0) := X"06";   -- entries of memory 1
+    constant C_MEM_AMNT_1_HI        : std_logic_vector (7 downto 0) := X"07";
+    constant C_MEM_AMNT_2_LO        : std_logic_vector (7 downto 0) := X"08";   -- entries of memory 2
+    constant C_MEM_AMNT_2_HI        : std_logic_vector (7 downto 0) := X"09";
+
     type t_packet_type is (DLLP_PKT, TLP_PKT, ORDR_ST, IDLE);
     type t_tlp_type is (NO_PCK, MRD, MRDLK, MWR, IORD, IOWR, CFGRD0, CFGWR0, CFGRD1, CFGWR1, TCFGRD, TCFGWR, MSG, MSGD, CPL, CPLD, CPLLK, CPLDLK);
     type t_dllp_type is (NO_PCK, ACK, NAK, PM_L1, PM_L23, PM_ASR1, REQ_ACK, VEN_SP, FC1P, FC1NP, FC1CPL, FC2P, FC2NP, FC2CPL, FCP, FCNP, FCCPL);
@@ -105,6 +122,30 @@ package analyzer_pkg is
         addr_pointer        : std_logic_vector (15 downto 0);
         stop_trigger        : std_logic;
     end record;
+
+    type t_intf_controller_o is record
+        start_trig          : std_logic;
+        stop_trig           : std_logic;
+        reset_o             : std_logic;
+
+        filter_in           : t_filter_in;
+        trigger_set         : t_trigger_type;
+    end record;
+
+    type t_intf_controller_i is record
+        status_reg_0        : std_logic_vector (7 downto 0);
+        status_reg_1        : std_logic_vector (7 downto 0);
+
+        data_amount_0       : std_logic_vector (15 downto 0);
+        data_amount_1       : std_logic_vector (15 downto 0);
+    end record;
+    constant INTF_CONTROLLER_O : t_intf_controller_o := (
+        '0',
+        '0',
+        '0',
+        ('0','0','0'),
+        ('0',TLP_PKT,'0',NO_PCK,'0',NO_PCK,'0',NO_PCK,'0',(others => '0'))
+    );
 
 end package;
 
