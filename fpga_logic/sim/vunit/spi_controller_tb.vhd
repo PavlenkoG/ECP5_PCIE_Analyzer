@@ -65,8 +65,10 @@ use work.controller_pkg.all;
 use work.spi_controller_tb_pkg.all;
 use work.analyzer_pkg.all;
 
+/*
 library aldec;
 use aldec.aldec_tools.all;
+*/
 
 library vunit_lib;
 context vunit_lib.vunit_context;
@@ -93,10 +95,11 @@ architecture arch of spi_controller_tb is
     signal spi_data_in      : payload_t;
     signal tb_end           : boolean := false;
 
-    signal d_mem_data_out     : std_logic_vector (35 downto 0);
-    signal u_mem_data_out     : std_logic_vector (35 downto 0);
+    signal d_mem_data_out   : std_logic_vector (35 downto 0);
+    signal u_mem_data_out   : std_logic_vector (35 downto 0);
     constant payload_clear  : payload_t := (others => (others => '0'));
 begin
+    /*
     asdb_dump("/spi_controller_tb/rst");
     asdb_dump("/spi_controller_tb/clk_100");
     asdb_dump("/spi_controller_tb/SCLK");
@@ -106,6 +109,7 @@ begin
     asdb_dump("/spi_controller_tb/d_cntr");
     asdb_dump("/spi_controller_tb/q_cntr");
     asdb_dump("/spi_controller_tb/controller_inst/r");
+    */
     main : process
     begin
         test_runner_setup (runner, runner_cfg);
@@ -141,6 +145,30 @@ begin
         cs_n <= '1';
         miso <= 'Z';
         mosi <= 'Z';
+
+        wait for 400 ns;
+        payload(0) <= X"01";        -- write reg cmd
+        payload(1) <= X"03";        -- config tlp
+        payload(2) <= X"01";        -- address hi 
+        payload(3) <= X"01";        -- address lo 
+        payload(4) <= X"01";        -- address lo 
+        spi_test(freq => f, clk => sclk, miso => miso, mosi => mosi, cs => cs_n, data_in => payload, data_out => spi_data_in, len => 5);
+
+        wait for 400 ns;
+        payload(0) <= X"01";        -- write reg cmd
+        payload(1) <= X"00";        -- config tlp
+        payload(2) <= X"01";        -- address hi 
+        spi_test(freq => f, clk => sclk, miso => miso, mosi => mosi, cs => cs_n, data_in => payload, data_out => spi_data_in, len => 3);
+
+        wait for 400 ns;
+        payload(0) <= X"02";        -- write reg cmd
+        payload(1) <= X"00";        -- config tlp
+        spi_test(freq => f, clk => sclk, miso => miso, mosi => mosi, cs => cs_n, data_in => payload, data_out => spi_data_in, len => 2);
+
+        wait for 400 ns;
+        payload <= payload_clear;
+        spi_test(freq => f, clk => sclk, miso => miso, mosi => mosi, cs => cs_n, data_in => payload, data_out => spi_data_in, len => 10);
+        wait for 1 us;
 
         wait for 400 ns;
         payload(0) <= X"03";        -- read memory
