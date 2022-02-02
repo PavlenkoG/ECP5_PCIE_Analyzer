@@ -12,35 +12,27 @@ use work.analyzer_pkg.all;
 
 package controller_pkg is
 
-    constant C_WRITE_REG_CMD        : std_logic_vector (7 downto 0) := X"01";
-    constant C_READ_REG_CMD         : std_logic_vector (7 downto 0) := X"02";
-    constant C_READ_MEM             : std_logic_vector (7 downto 0) := X"03";
-
-    constant C_CONFIG_REG           : std_logic_vector (7 downto 0) := X"00";   -- config register
-    constant C_STATUS_REG           : std_logic_vector (7 downto 0) := X"01";   -- status register
-    constant C_CONFIG_TLP           : std_logic_vector (7 downto 0) := X"02";
-    constant C_CONFIG_DLLP          : std_logic_vector (7 downto 0) := X"03";
-    constant C_CONFIG_ORDSET        : std_logic_vector (7 downto 0) := X"04";
-    constant C_MEM_AMNT_1_LO        : std_logic_vector (7 downto 0) := X"05";   -- entries of memory 1
-    constant C_MEM_AMNT_1_HI        : std_logic_vector (7 downto 0) := X"06";
-    constant C_MEM_AMNT_2_LO        : std_logic_vector (7 downto 0) := X"07";   -- entries of memory 2
-    constant C_MEM_AMNT_2_HI        : std_logic_vector (7 downto 0) := X"08";
 
     type t_controller_in is record
-        cs_n                : std_logic;
         -- user spi interface
+        cs_n                : std_logic;
         data_in             : std_logic_vector (7 downto 0);
         data_in_vld         : std_logic;
         data_out_rdy        : std_logic;
 
-        trigger_evnt        : std_logic;
-
         -- memory 1 interface
         u_mem_data_in       : std_logic_vector (35 downto 0);
-        data_amount_1       : std_logic_vector (15 downto 0);
         -- memory 2 interface
-        mem_data_in       : std_logic_vector (35 downto 0);
-        data_amount_2       : std_logic_vector (15 downto 0);
+        mem_data_in         : std_logic_vector (35 downto 0);
+
+        -- controller interface
+        los                 : std_logic_vector (1 downto 0);
+        rx_cdr_lol_s        : std_logic_vector (1 downto 0);
+        lsm_status          : std_logic_vector (1 downto 0);
+        rxstatus0           : std_logic_vector (1 downto 0);
+        rxstatus1           : std_logic_vector (1 downto 0);
+        trig_run            : std_logic;
+        controller_in       : t_intf_controller_i;
     end record;
 
     type t_controller_out is record
@@ -48,19 +40,12 @@ package controller_pkg is
         data_out            : std_logic_vector (7 downto 0);
         data_out_vld        : std_logic;
 
-        trigger_start     : std_logic;
-        trigger_stop      : std_logic;
-        -- analyzer trigger up interface
-        u_trigger_set       : t_trigger_type;
-        u_filter_in         : t_filter_in;
-
-        -- analyzer trigger downt interface
-        d_trigger_set       : t_trigger_type;
-        d_filter_in         : t_filter_in;
-
         -- memory interface
         mem_select          : std_logic;
         addr_read           : std_logic_vector (15 downto 0);
+
+        -- controller interface
+        controller_out      : t_intf_controller_o;
     end record;
 end package;
  
@@ -69,6 +54,8 @@ use ieee.std_logic_1164.all;
 use ieee.std_logic_unsigned.all;
 use ieee.numeric_std.all;
 use work.controller_pkg.all;
+
+use work.analyzer_pkg.all;
  
 entity controller is
     port  (
@@ -103,8 +90,9 @@ architecture arch of controller is
 
         trigger_start       : std_logic;
         trigger_stop        : std_logic;
-
         -- register set
+
+        intf_controller     : t_intf_controller_o;
         
     end record reg_t;
  
@@ -127,7 +115,9 @@ architecture arch of controller is
         mem_ext_data        => (others => '0'),
 
         trigger_start       => '0',
-        trigger_stop        => '0' 
+        trigger_stop        => '0',
+
+        intf_controller     => INTF_CONTROLLER_O
     );
  
     signal r, rin : reg_t;
@@ -169,6 +159,21 @@ begin
             end if;
         when ADDR_ST =>
             case r.cmd_r is
+            when C_WRITE_REG_CMD =>     -- write register
+                if d.data_in_vld = '1' then
+                    v.read_addr(7 downto 0) := d.data_in;
+                    v.state := WR_REG_ST;
+                end if;
+            when C_READ_REG_CMD =>      -- read register
+                if d.data_in_vld = '1' then
+                    if r.byte_counter = X"01" then  -- register address
+                        v.mem_select := d.data_in(0);
+                    end if;
+                end if;
+                if d.cs_n = '1' then    -- end of spi transfer
+                    v.read_register := '1';
+                    v.state := IDLE;
+                end if;
             when C_READ_MEM =>          -- read memory
                 if d.data_in_vld = '1' then
                     case r.byte_counter is
@@ -185,16 +190,6 @@ begin
                     v.read_memory := '1';
                     v.state := IDLE;
                 end if;
-            when C_READ_REG_CMD =>      -- read register
-                case r.byte_counter is
-                when X"01" =>           -- register address
-                    v.mem_select := d.data_in(0);
-                when others =>
-                end case;
-                if d.cs_n = '1' then    -- end of spi transfer
-                    v.read_register := '1';
-                    v.state := IDLE;
-                end if;
             when others =>
             end case;
         when TRANSFER_ST =>             -- read registers state
@@ -204,6 +199,25 @@ begin
                 v.read_register := '0';
             end if;
         when WR_REG_ST =>
+            if d.data_in_vld = '1' then
+                v.read_addr(7 downto 0) := r.read_addr(7 downto 0) + 1;
+                case r.read_addr(7 downto 0) is
+                    when C_CONFIG_REG =>        -- READ ONLY
+                        v.intf_controller.start_trig := d.data_in(0);
+                        v.intf_controller.stop_trig := d.data_in(1);
+                        v.intf_controller.reset_o := d.data_in(7);
+                    when C_CONFIG_TLP =>
+                        v.intf_controller.filter_in.tlp_save := d.data_in(0);
+                    when C_CONFIG_DLLP =>
+                        v.intf_controller.filter_in.dllp_save := d.data_in(0);
+                    when C_CONFIG_ORDSET =>
+                        v.intf_controller.filter_in.order_set_save := d.data_in(0);
+                    when others => 
+                end case;
+            end if;
+            if d.cs_n = '1' then                            -- end of spi transfer
+                v.state := IDLE;
+            end if;
         when others =>
         end case;
 
@@ -217,28 +231,31 @@ begin
             end if;
             -- address mux
             case r.read_addr(7 downto 0) is
-                when C_CONFIG_REG =>
-                    v.data_out := X"01";
-                when C_STATUS_REG =>
-                    v.data_out := X"02";
+--              when C_CONFIG_REG =>        -- READ ONLY
+--                  v.data_out := X"01";
+                when C_STATUS_REG_0 =>
+                    v.data_out := d.trig_run & d.rxstatus0 & d.rxstatus1 & "000";
+                when C_STATUS_REG_1 =>
+                    v.data_out := d.lsm_status & d.rx_cdr_lol_s & d.los & "00";
                 when C_CONFIG_TLP =>
-                    v.data_out := X"03";
+                    v.data_out := "0000000" & r.intf_controller.filter_in.tlp_save;
                 when C_CONFIG_DLLP =>
-                    v.data_out := X"04";
+                    v.data_out := "0000000" & r.intf_controller.filter_in.dllp_save;
                 when C_CONFIG_ORDSET =>
-                    v.data_out := X"05";
+                    v.data_out := "0000000" & r.intf_controller.filter_in.order_set_save;
                 when C_MEM_AMNT_1_LO =>
-                    v.data_out := X"06";
+                    v.data_out := d.controller_in.data_amount_0(7 downto 0);
                 when C_MEM_AMNT_1_HI =>
-                    v.data_out := X"07";
+                    v.data_out := d.controller_in.data_amount_0(15 downto 8);
                 when C_MEM_AMNT_2_LO =>
-                    v.data_out := X"08";
+                    v.data_out := d.controller_in.data_amount_1(7 downto 0);
                 when C_MEM_AMNT_2_HI =>
-                    v.data_out := X"09";
+                    v.data_out := d.controller_in.data_amount_1(15 downto 8);
                 when others => 
                     v.data_out := X"00";
             end case;
         end if;
+
         -- read memory
         if r.read_memory = '1' then
             if d.cs_n = '0' then
@@ -301,7 +318,6 @@ begin
     q.mem_select <= r.mem_select;
     q.data_out <= r.data_out;
     q.data_out_vld <= r.data_out_vld;
-    q.trigger_start <= r.trigger_start;
-    q.trigger_stop <= r.trigger_stop;
     q.addr_read <= r.read_addr(17 downto 2);
+    q.controller_out <= r.intf_controller;
 end arch;
