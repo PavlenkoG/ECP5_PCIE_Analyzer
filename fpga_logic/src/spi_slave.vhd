@@ -30,7 +30,8 @@ entity SPI_SLAVE is
         DIN_VLD  : in  std_logic; -- when DIN_VLD = 1, data for transmission are valid
         DIN_RDY  : out std_logic; -- when DIN_RDY = 1, SPI slave is ready to accept valid data for transmission
         DOUT     : out std_logic_vector(WORD_SIZE-1 downto 0); -- received data from SPI master
-        DOUT_VLD : out std_logic  -- when DOUT_VLD = 1, received data are valid
+        DOUT_VLD : out std_logic; -- when DOUT_VLD = 1, received data are valid
+        CS_N_OUT : out std_logic
     );
 end entity;
 
@@ -220,5 +221,6 @@ begin
     DIN_RDY  <= slave_ready;
     DOUT     <= data_shreg;
     DOUT_VLD <= rx_data_vld;
+    CS_N_OUT <= cs_n_reg;
 
 end architecture;
