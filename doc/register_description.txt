@@ -1,0 +1,28 @@
+config_reg
+    7   - reset
+    1   - stop_trigger
+    0   - start_trig
+status_reg_0
+    7
+    6
+    5
+    4   - rxstatus1_1
+    3   - rxstatus1_0
+    2   - rxstatus0_1
+    1   - rxstatus0_0
+    0   - trig_run
+status_reg_1
+    7
+    6
+    5   - los_1
+    4   - los_0
+    3   - rx_cdr_lol_s_1
+    2   - rx_cdr_lol_s_0
+    1   - lsm_status_1
+    0   - lsm_status_0
+config_tlp
+    0   - filter tlp
+config_dllp
+    0   - filter dllp
+config_ordset
+    0   - filter ordset
