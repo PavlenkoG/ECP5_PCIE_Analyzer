@@ -18,7 +18,8 @@ end pdpram;
 
 architecture rtl of pdpram is
     type mem_type is array (0 to (2 ** addr_width) - 1) of std_logic_vector(35 downto 0);
-    signal mem : mem_type := (
+    
+    signal mem : mem_type;/* := (
         ('1' & X"00" & '0' & X"CD" & '0' & X"EF" & '0' & X"FF"), -- 1
         ('0' & X"D0" & '0' & X"D1" & '0' & X"D2" & '0' & X"D3"), -- 2
         ('1' & X"D4" & '0' & X"D5" & '0' & X"D6" & '0' & X"D7"), -- 3
@@ -37,6 +38,7 @@ architecture rtl of pdpram is
         ('0' & X"38" & '0' & X"39" & '0' & X"3A" & '0' & X"3B"), -- 8
         others => (others =>'0')
     );
+    */
 
     attribute syn_ramstyle  : string;
     attribute syn_ramstyle of mem: signal is "no_rw_check";
