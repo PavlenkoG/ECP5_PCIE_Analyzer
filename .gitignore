@@ -8,6 +8,7 @@
 *.kicad_pcb-bak
 *.sch-bak
 *~
+*.bmp
 _autosave-*
 *.tmp
 *-save.pro
