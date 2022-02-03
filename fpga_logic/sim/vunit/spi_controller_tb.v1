@@ -3,10 +3,9 @@ use ieee.std_logic_1164.all;
 use ieee.std_logic_unsigned.all;
 use ieee.math_real.all;
 use ieee.numeric_std.all;
-use work.analyzer_tb_pkg.all;
 
 package spi_controller_tb_pkg is
-    /*
+    type payload_t is array (0 to 128) of std_logic_vector (7 downto 0);
     procedure spi_test (
                         constant freq       : in integer;
                         signal clk          : out std_logic;
@@ -18,10 +17,8 @@ package spi_controller_tb_pkg is
                         signal data_out     : out payload_t;
                         constant len          : in integer
     );
-    */
 end package;
 package body spi_controller_tb_pkg is
-    /*
     procedure spi_test (
                         constant freq       : in integer;
                         signal clk          : out std_logic;
@@ -55,7 +52,6 @@ package body spi_controller_tb_pkg is
         cs <= '1';
         wait for waittime;--(1/freq)*1 us;
     end spi_test;
-    */
 end package body;
 
 library ieee;
@@ -68,7 +64,6 @@ use std.textio.all;
 use work.controller_pkg.all;
 use work.spi_controller_tb_pkg.all;
 use work.analyzer_pkg.all;
-use work.analyzer_tb_pkg.all;
 
 library aldec;
 use aldec.aldec_tools.all;
@@ -86,7 +81,6 @@ architecture arch of spi_controller_tb is
     constant SPI_WORD_SIZE     : integer := 8;
 
     signal clk_100          : std_logic;
-    signal rx_pclk          : std_logic;
     signal rst              : std_logic;
     signal SCLK             : std_logic;
     signal mosi             : std_logic;
@@ -95,25 +89,15 @@ architecture arch of spi_controller_tb is
     signal d_cntr           : t_controller_in;
     signal q_cntr           : t_controller_out;
 
-    signal d_and            : t_analyzer_in;
-    signal q_and            : t_analyzer_out;
-
-    signal d_anu            : t_analyzer_in;
-    signal q_anu            : t_analyzer_out;
-
-    signal scr_data_1           : std_logic_vector (7 downto 0);
-    signal rx_k_1d              : std_logic;
-    signal scr_data_2           : std_logic_vector (7 downto 0);
-    signal rx_k_2d              : std_logic;
-
     signal payload          : payload_t;
     signal spi_data_in      : payload_t;
     signal tb_end           : boolean := false;
 
-    signal d_mem_data_out   : std_logic_vector (35 downto 0);
-    signal u_mem_data_out   : std_logic_vector (35 downto 0);
+    signal d_mem_data_out     : std_logic_vector (35 downto 0);
+    signal u_mem_data_out     : std_logic_vector (35 downto 0);
     constant payload_clear  : payload_t := (others => (others => '0'));
 begin
+    /*
     asdb_dump("/spi_controller_tb/rst");
     asdb_dump("/spi_controller_tb/clk_100");
     asdb_dump("/spi_controller_tb/SCLK");
@@ -123,15 +107,7 @@ begin
     asdb_dump("/spi_controller_tb/d_cntr");
     asdb_dump("/spi_controller_tb/q_cntr");
     asdb_dump("/spi_controller_tb/controller_inst/r");
-
-    asdb_dump("/spi_controller_tb/rx_pclk");
-    asdb_dump("/spi_controller_tb/analyzer_up/d");
-    asdb_dump("/spi_controller_tb/analyzer_up/q");
-    asdb_dump("/spi_controller_tb/analyzer_up/r");
-    asdb_dump("/spi_controller_tb/analyzer_down/d");
-    asdb_dump("/spi_controller_tb/analyzer_down/q");
-    asdb_dump("/spi_controller_tb/analyzer_down/r");
-
+    */
     main : process
     begin
         test_runner_setup (runner, runner_cfg);
@@ -159,14 +135,6 @@ begin
         wait for 5 ns;
     end process;
 
-    rx_pclk_process : process is
-    begin
-        rx_pclk <= '1';
-        wait for 2 ns;
-        rx_pclk <= '0';
-        wait for 2 ns;
-    end process;
-
     test_process: process is
         variable f : integer := 10;
     begin
@@ -175,30 +143,6 @@ begin
         cs_n <= '1';
         miso <= 'Z';
         mosi <= 'Z';
-
-        wait for 400 ns;
-        payload(0) <= X"01";        -- write reg cmd
-        payload(1) <= X"03";        -- config tlp
-        payload(2) <= X"01";        -- address hi 
-        payload(3) <= X"01";        -- address lo 
-        payload(4) <= X"01";        -- address lo 
-        spi_test(freq => f, clk => sclk, miso => miso, mosi => mosi, cs => cs_n, data_in => payload, data_out => spi_data_in, len => 5);
-
-        wait for 400 ns;
-        payload(0) <= X"01";        -- write reg cmd
-        payload(1) <= X"00";        -- config tlp
-        payload(2) <= X"01";        -- address hi 
-        spi_test(freq => f, clk => sclk, miso => miso, mosi => mosi, cs => cs_n, data_in => payload, data_out => spi_data_in, len => 3);
-
-        wait for 400 ns;
-        payload(0) <= X"02";        -- write reg cmd
-        payload(1) <= X"00";        -- config tlp
-        spi_test(freq => f, clk => sclk, miso => miso, mosi => mosi, cs => cs_n, data_in => payload, data_out => spi_data_in, len => 2);
-
-        wait for 400 ns;
-        payload <= payload_clear;
-        spi_test(freq => f, clk => sclk, miso => miso, mosi => mosi, cs => cs_n, data_in => payload, data_out => spi_data_in, len => 10);
-        wait for 1 us;
 
         wait for 400 ns;
         payload(0) <= X"03";        -- read memory
@@ -233,10 +177,8 @@ begin
 
         tb_end <= true;
         wait;
+
     end process;
---*****************************************************************************************
--- SPI SLAVE DUT
---*****************************************************************************************
 
     spi_slave_inst : entity work.SPI_SLAVE
         generic map(
@@ -257,76 +199,6 @@ begin
             CS_N_OUT => d_cntr.cs_n
         );
 
---*****************************************************************************************
--- STIM DCU
---*****************************************************************************************
-    stim_up_process: process is
-        file stim_file : text;
-        variable fstatus : file_open_status := STATUS_ERROR;
-        variable l : line;
-        variable c : character;
-        variable s_8 : string (1 to 2);
-        variable data : std_logic_vector(7 downto 0);
-        variable k : std_logic;
-    begin
-        if fstatus /= OPEN_OK then
-            file_open(fstatus,stim_file, "C:\Users\grpa\Documents\WORK\ECP5_PCIE_Analyzer\fpga_logic\sim\vunit\read_dcu1.txt", read_mode);
-            report "file opened successfull";
-        end if;
-        main_loop : loop
-            if endfile(stim_file) = true then
-                report "end of file";
-                exit main_loop;
-            end if;
-            wait until rx_pclk = '1';
-            readline (stim_file, l);
-            read (l,s_8); read (l,c);
-            read (l, k);
-            data := x_read_f(s_8);
-            d_anu.data_in_scr <= data;
-            d_anu.rx_k <= k;
-        end loop;
-
-        file_close(stim_file);
-        report "test file closed";
-        wait;
-    end process;
-
-    stim_down_process: process is
-        file stim_file : text;
-        variable fstatus : file_open_status := STATUS_ERROR;
-        variable l : line;
-        variable c : character;
-        variable s_8 : string (1 to 2);
-        variable data : std_logic_vector(7 downto 0);
-        variable k : std_logic;
-    begin
-        if fstatus /= OPEN_OK then
-            file_open(fstatus,stim_file, "C:\Users\grpa\Documents\WORK\ECP5_PCIE_Analyzer\fpga_logic\sim\vunit\read_dcu2.txt", read_mode);
-            report "file opened successfull";
-        end if;
-        main_loop : loop
-            if endfile(stim_file) = true then
-                report "end of file";
-                exit main_loop;
-            end if;
-            wait until rx_pclk = '1';
-            readline (stim_file, l);
-            read (l,s_8); read (l,c);
-            read (l, k);
-            data := x_read_f(s_8);
-            d_and.data_in_scr <= data;
-            d_and.rx_k <= k;
-        end loop;
-
-        file_close(stim_file);
-        report "test file closed";
-        wait;
-    end process;
-
---*****************************************************************************************
--- CONTROLLER
---*****************************************************************************************
     d_cntr.mem_data_in <= d_mem_data_out when q_cntr.mem_select = '0' else u_mem_data_out;
     controller_inst : entity work.controller
         port map(
@@ -335,55 +207,19 @@ begin
             d   => d_cntr,
             q   => q_cntr
         );
-
-
---*****************************************************************************************
--- UP LINE ANALYZER
---*****************************************************************************************
-
-    d_anu.filter_in <= q_cntr.controller_out.filter_in;
-    d_anu.trigger_set <= q_cntr.controller_out.trigger_set;
-    d_anu.trigger_start <= q_cntr.controller_out.start_trig;
-    d_anu.trigger_stop <= q_cntr.controller_out.stop_trig;
-
-    analyzer_up : entity work.analyzer
-    port map (
-        clk => rx_pclk,
-        rst => rst,
-        d   => d_anu,
-        q   => q_anu
-    );
-
-
     ram_inst_d: entity work.pdpram
     generic map (
         addr_width => 16,
         data_width => 36
     )
     port map (
-        write_en    => q_anu.wr_en,
-        waddr       => q_anu.addr_wr,
-        wclk        => rx_pclk,
+        write_en    => '0',
+        waddr       => (others => '0'),
+        wclk        => '0',
         raddr       => q_cntr.addr_read,
         rclk        => clk_100,
-        din         => q_anu.data_wr,
+        din         => (others => '0'),
         dout        => d_mem_data_out
-    );
-
---*****************************************************************************************
--- DOWN LINE ANALYZER
---*****************************************************************************************
-
-    d_and.filter_in <= q_cntr.controller_out.filter_in;
-    d_and.trigger_set <= q_cntr.controller_out.trigger_set;
-    d_and.trigger_start <= q_cntr.controller_out.start_trig;
-    d_and.trigger_stop <= q_cntr.controller_out.stop_trig;
-    analyzer_down : entity work.analyzer
-    port map (
-        clk => rx_pclk,
-        rst => rst,
-        d   => d_and,
-        q   => q_and
     );
 
     ram_inst_u: entity work.pdpram
@@ -392,12 +228,12 @@ begin
         data_width => 36
     )
     port map (
-        write_en    => q_and.wr_en,
-        waddr       => q_and.addr_wr,
-        wclk        => rx_pclk,
+        write_en    => '0',
+        waddr       => (others => '0'),
+        wclk        => '0',
         raddr       => q_cntr.addr_read,
         rclk        => clk_100,
-        din         => q_and.data_wr,
+        din         => (others => '0'),
         dout        => u_mem_data_out
     );
 

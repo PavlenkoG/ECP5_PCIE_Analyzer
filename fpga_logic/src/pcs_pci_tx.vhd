@@ -25,7 +25,6 @@ entity pcs_pci_tx is
         rxstatus0: out std_logic_vector(2 downto 0);
         pcie_det_en_c: in std_logic;
         pcie_ct_c: in std_logic;
-        rx_invert_c: in std_logic;
         signal_detect_c: in std_logic;
         pcie_done_s: out std_logic;
         pcie_con_s: out std_logic;
@@ -121,7 +120,7 @@ begin
     CH0_FF_TX_D_22=>gnd,CH1_FF_TX_D_22=>gnd,CH0_FF_TX_D_23=>gnd,CH1_FF_TX_D_23=>gnd,
     CH0_FFC_EI_EN=>gnd,CH1_FFC_EI_EN=>gnd,CH0_FFC_PCIE_DET_EN=>gnd,CH1_FFC_PCIE_DET_EN=>pcie_det_en_c,
     CH0_FFC_PCIE_CT=>gnd,CH1_FFC_PCIE_CT=>pcie_ct_c,CH0_FFC_SB_INV_RX=>gnd,
-    CH1_FFC_SB_INV_RX=>rx_invert_c,CH0_FFC_ENABLE_CGALIGN=>gnd,CH1_FFC_ENABLE_CGALIGN=>gnd,
+    CH1_FFC_SB_INV_RX=>gnd,CH0_FFC_ENABLE_CGALIGN=>gnd,CH1_FFC_ENABLE_CGALIGN=>gnd,
     CH0_FFC_SIGNAL_DETECT=>gnd,CH1_FFC_SIGNAL_DETECT=>signal_detect_c,CH0_FFC_FB_LOOPBACK=>gnd,
     CH1_FFC_FB_LOOPBACK=>gnd,CH0_FFC_SB_PFIFO_LP=>gnd,CH1_FFC_SB_PFIFO_LP=>n39,
     CH0_FFC_PFIFO_CLR=>gnd,CH1_FFC_PFIFO_CLR=>n39,CH0_FFC_RATE_MODE_RX=>gnd,

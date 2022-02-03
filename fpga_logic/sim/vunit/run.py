@@ -14,51 +14,20 @@ VU.add_verification_components()
 
 SRC_PATH = Path(__file__).parents[2]
 
-'''
-MACHXO_VHDL_LIB = Path("C:\\lscc\\diamond\\3.12\\cae_library\\simulation\\vhdl\\machxo3l\\src")
-MACHXO_VL_LIB =   Path("C:\\lscc\\diamond\\3.12\\cae_library\\simulation\\verilog\\machxo3l")
-ECP5_VHDL_LIB = Path("C:\\lscc\\diamond\\3.12\\cae_library\\simulation\\vhdl\\ecp5u\\src")
-ECP5_VL_LIB =   Path("C:\\lscc\\diamond\\3.12\\cae_library\\simulation\\verilog\\ecp5u")
-if (os.environ['PATH'].find("Active-HDL-11.1") > 0):
-    VU.add_external_library("ecp5u","C:\\Aldec\\Active-HDL-11.1\\vlib\\lattice\\vhdl\\ecp5u")
-    VU.add_external_library("ecp5um","C:\\Aldec\\Active-HDL-11.1\\vlib\\lattice\\vhdl\\ecp5u")
-    VU.add_external_library("machxo3l","C:\\Aldec\\Active-HDL-11.1\\vlib\\lattice\\vhdl\\machxo3l")
-    VU.add_external_library("ovi_ecp5u","C:\\Aldec\\Active-HDL-11.1\\vlib\\lattice\\verilog\\ovi_ecp5u")
-    VU.add_external_library("pmi_work","C:\\Aldec\\Active-HDL-11.1\\vlib\\lattice\\verilog\\pmi_work")
-    VU.add_external_library("aldec","C:\\Aldec\\Active-HDL-11.1\\vlib\\aldec")
-    VU.add_external_library("pcsd_aldec_work","C:\\Aldec\\Active-HDL-11.1\\vlib\\lattice\\verilog\\pcsd_aldec_work")
-else:
-    print("AHDL 10")
-    VU.add_external_library("ecp5u","C:\\lscc\\diamond\\3.11_x64\\active-hdl\\vlib\\ecp5u")
-    VU.add_external_library("ecp5um","C:\\lscc\\diamond\\3.11_x64\\active-hdl\\vlib\\ecp5u")
-    VU.add_external_library("machxo3l","C:\\lscc\\diamond\\3.11_x64\\active-hdl\\vlib\\machxo3l")
-    VU.add_external_library("ovi_ecp5u","C:\\lscc\\diamond\\3.11_x64\\active-hdl\\vlib\\ovi_ecp5u")
-    VU.add_external_library("pmi_work","C:\\lscc\\diamond\\3.11_x64\\active-hdl\\vlib\\pmi_work")
-    VU.add_external_library("aldec","C:\\lscc\\diamond\\3.11_x64\\active-hdl\\vlib\\aldec")
-    VU.add_external_library("pcsd_aldec_work","C:\\lscc\\diamond\\3.11_x64\\active-hdl\\vlib\\pcsd_aldec_work")
+VU.add_external_library("ecp5u","C:\\Aldec\\Active-HDL-11.1\\vlib\\lattice\\vhdl\\ecp5u")
+VU.add_external_library("ecp5um","C:\\Aldec\\Active-HDL-11.1\\vlib\\lattice\\vhdl\\ecp5u")
+VU.add_external_library("machxo3l","C:\\Aldec\\Active-HDL-11.1\\vlib\\lattice\\vhdl\\machxo3l")
+VU.add_external_library("ovi_ecp5u","C:\\Aldec\\Active-HDL-11.1\\vlib\\lattice\\verilog\\ovi_ecp5u")
+VU.add_external_library("pmi_work","C:\\Aldec\\Active-HDL-11.1\\vlib\\lattice\\verilog\\pmi_work")
+VU.add_external_library("aldec","C:\\Aldec\\Active-HDL-11.1\\vlib\\aldec")
+VU.add_external_library("pcsd_aldec_work","C:\\Aldec\\Active-HDL-11.1\\vlib\\lattice\\verilog\\pcsd_aldec_work")
 
-'''
-
-
-
-'''
-'''
-'''
-VU.add_external_library("ecp5u","C:\\lscc\\diamond\\3.12\\modeltech\\lib\\ecp5u")
-VU.add_external_library("ecp5um","C:\\lscc\\diamond\\3.12\\modeltech\\lib\\ecp5u")
-VU.add_external_library("ovi_ecp5u","C:\\lscc\\diamond\\3.12\\modeltech\\lib\\ovi_ecp5u")
-VU.add_external_library("ovi_ecp5um","C:\\lscc\\diamond\\3.12\\modeltech\\lib\\ovi_ecp5u")
-VU.add_external_library("pmi_work","C:\\lscc\\diamond\\3.12\\modeltech\\lib\\pmi_work")
-VU.add_external_library("pcsd_work","C:\\lscc\\diamond\\3.12\\modeltech\\lib\\pcsd_work")
-'''
-
-'''
 #add pcie core
 VU.add_library("sim_core")
 VU.library("sim_core").add_source_file(SRC_PATH / "sim_core" / "ip_cores " / "pcie" / "pcie.vhd")
 
 #add extref
-VU.library("sim_core").add_source_files(SRC_PATH / "sim_core" / "ip_cores" / "extref" / "*.vhd")
+#VU.library("sim_core").add_source_files(SRC_PATH / "sim_core" / "ip_cores" / "extref" / "*.vhd")
 
 #add project library
 VU.library("sim_core").add_source_files(SRC_PATH / "SRC" / "*.vhd")
@@ -69,7 +38,9 @@ VU.library("sim_core").add_source_files(SRC_PATH / "sim" / "VUnit" / "*.vhd")
 
 
 VU.add_library("pcie_core")
-#VU.library("pcie_core").add_source_file(SRC_PATH / "sim_core" / "ip_cores " / "pcie" / "pcie_eval" / "pcie" /"src"/"top"/"pcie_beh.v")
+'''
+VU.library("pcie_core").add_source_file(SRC_PATH / "sim_core" / "ip_cores " / "pcie" / "pcie_eval" / "pcie" /"src"/"top"/"pcie_beh.v")
+'''
 VU.library("pcie_core").add_source_file(SRC_PATH / "sim" / "vunit" / "dummy.v")
 
 VU.set_compile_option("activehdl.vcom_flags", ['-2008'])
@@ -94,21 +65,18 @@ VU.set_compile_option("activehdl.vlog_flags", ['-v2k5', '-dbg', '+define+RSL_SIM
                                                '../../sim_core/ip_cores/pcie/pcie_eval/models/ecp5um/pcie_phy.v',
                                                '../../sim_core/ip_cores/pcie/pcie_eval/pcie/src/top/pcie_core.v',
                                                '../../sim_core/ip_cores/pcie/pcie_eval/pcie/src/top/pcie_beh.v' ])
-'''
-'''
 VU.set_sim_option("activehdl.vsim_flags",["+access +w_nets", "+access +r","-ieee_nowarn","-t 1ps",
                                           "-L pcie_core","-L pmi_work","-L ovi_ecp5u",
                                           "-L pcsd_aldec_work","-L ecp5um", "-L sim_core"])#, "; do -do ../../v_MEM.do"])
 
 '''
-
+# Sim only spi 
+#VU.set_sim_option('activehdl.init_file.gui','v_MEM.do')
 VU.add_library("sim_core")
-
+VU.library("sim_core").add_source_file(SRC_PATH / "src" / "controller.vhd")
 VU.library("sim_core").add_source_file(SRC_PATH / "src" / "analyzer_pkg.vhd")
 VU.library("sim_core").add_source_file(SRC_PATH / "src" / "pdpram.vhd")
-VU.library("sim_core").add_source_file(SRC_PATH / "src" / "controller.vhd")
 VU.library("sim_core").add_source_file(SRC_PATH / "src" / "spi_slave.vhd")
 VU.library("sim_core").add_source_file(SRC_PATH / "sim" / "vunit" / "spi_controller_tb.vhd")
-
-VU.set_sim_option('modelsim.init_files.after_load',["wave.do"])
+'''
 VU.main()

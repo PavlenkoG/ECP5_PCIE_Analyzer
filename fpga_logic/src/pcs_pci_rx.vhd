@@ -25,7 +25,6 @@ entity pcs_pci_rx is
         rxstatus0: out std_logic_vector(2 downto 0);
         pcie_det_en_c: in std_logic;
         pcie_ct_c: in std_logic;
-        rx_invert_c: in std_logic;
         signal_detect_c: in std_logic;
         pcie_done_s: out std_logic;
         pcie_con_s: out std_logic;
@@ -61,12 +60,12 @@ begin
     DCU1_inst: component DCUA generic map (D_MACROPDB=>"0b1",D_IB_PWDNB=>"0b1",
         D_XGE_MODE=>"0b0",D_LOW_MARK=>"0d4",D_HIGH_MARK=>"0d12",D_BUS8BIT_SEL=>"0b0",
         D_CDR_LOL_SET=>"0b00",D_TXPLL_PWDNB=>"0b1",CH0_UC_MODE=>"0b0",CH0_PCIE_MODE=>"0b1",
-        CH0_RIO_MODE=>"0b0",CH0_WA_MODE=>"0b0",CH0_INVERT_RX=>"0b0",CH0_INVERT_TX=>"0b0",
+        CH0_RIO_MODE=>"0b0",CH0_WA_MODE=>"0b0",CH0_INVERT_RX=>"0b1",CH0_INVERT_TX=>"0b0",
         CH0_PRBS_SELECTION=>"0b0",CH0_GE_AN_ENABLE=>"0b0",CH0_PRBS_LOCK=>"0b0",
         CH0_PRBS_ENABLE=>"0b0",CH0_ENABLE_CG_ALIGN=>"0b1",CH0_TX_GEAR_MODE=>"0b1",
         CH0_RX_GEAR_MODE=>"0b0",CH0_PCS_DET_TIME_SEL=>"0b00",CH0_PCIE_EI_EN=>"0b0",
         CH0_TX_GEAR_BYPASS=>"0b0",CH0_ENC_BYPASS=>"0b0",CH0_SB_BYPASS=>"0b0",
-        CH0_RX_SB_BYPASS=>"0b0",CH0_WA_BYPASS=>"0b0",CH0_DEC_BYPASS=>"0b0",
+        CH0_RX_SB_BYPASS=>"0b1",CH0_WA_BYPASS=>"0b0",CH0_DEC_BYPASS=>"0b0",
         CH0_CTC_BYPASS=>"0b1",CH0_RX_GEAR_BYPASS=>"0b0",CH0_LSM_DISABLE=>"0b0",
         CH0_MATCH_2_ENABLE=>"0b0",CH0_MATCH_4_ENABLE=>"0b1",CH0_MIN_IPG_CNT=>"0b11",
         CH0_CC_MATCH_1=>"0x1BC",CH0_CC_MATCH_2=>"0x11C",CH0_CC_MATCH_3=>"0x11C",
@@ -121,7 +120,7 @@ begin
     CH1_FF_TX_D_21=>gnd,CH0_FF_TX_D_22=>gnd,CH1_FF_TX_D_22=>gnd,CH0_FF_TX_D_23=>gnd,
     CH1_FF_TX_D_23=>gnd,CH0_FFC_EI_EN=>gnd,CH1_FFC_EI_EN=>gnd,CH0_FFC_PCIE_DET_EN=>pcie_det_en_c,
     CH1_FFC_PCIE_DET_EN=>gnd,CH0_FFC_PCIE_CT=>pcie_ct_c,CH1_FFC_PCIE_CT=>gnd,
-    CH0_FFC_SB_INV_RX=>rx_invert_c,CH1_FFC_SB_INV_RX=>gnd,CH0_FFC_ENABLE_CGALIGN=>gnd,
+    CH0_FFC_SB_INV_RX=>gnd,CH1_FFC_SB_INV_RX=>gnd,CH0_FFC_ENABLE_CGALIGN=>gnd,
     CH1_FFC_ENABLE_CGALIGN=>gnd,CH0_FFC_SIGNAL_DETECT=>signal_detect_c,CH1_FFC_SIGNAL_DETECT=>gnd,
     CH0_FFC_FB_LOOPBACK=>gnd,CH1_FFC_FB_LOOPBACK=>gnd,CH0_FFC_SB_PFIFO_LP=>n39,
     CH1_FFC_SB_PFIFO_LP=>gnd,CH0_FFC_PFIFO_CLR=>n39,CH1_FFC_PFIFO_CLR=>gnd,
