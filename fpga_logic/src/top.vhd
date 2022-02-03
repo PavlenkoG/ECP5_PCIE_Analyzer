@@ -131,6 +131,11 @@ architecture RTL of top is
     signal mem_data_out_rx      : std_logic_vector (35 downto 0);
     signal mem_data_out_tx      : std_logic_vector (35 downto 0);
 
+    signal scr_data_1           : std_logic_vector (7 downto 0);
+    signal rx_k_1d              : std_logic;
+    signal scr_data_2           : std_logic_vector (7 downto 0);
+    signal rx_k_2d              : std_logic;
+
     signal refclk               : std_logic;
     signal clk_lvds             : std_logic;
 --vhdl_comp_off
@@ -204,7 +209,6 @@ begin
             rxstatus0       => rxstatus0,
             pcie_det_en_c   => '1',
             pcie_ct_c       => '0',
-            rx_invert_c     => '0',
             signal_detect_c => '1',
             pcie_done_s     => pcie_done_s,
             pcie_con_s      => pcie_con_s,
@@ -225,13 +229,15 @@ begin
             clk             => rx_pclk_1,
             data_in         => rxdata_1,
             rx_k            => rx_k_1(0),
-            data_out        => d_and.data_in_scr,
-            rx_k_out        => d_and.rx_k
+            data_out        => scr_data_1,
+            rx_k_out        => rx_k_1d
         );
 
+        d_and.data_in_scr <= scr_data_1;
+        d_and.rx_k <= rx_k_1d;
 
         d_and.trigger_start <= trigger_resync(1);--q_cntr.trigger_start;
-        d_and.trigger_stop <= q_cntr.trigger_stop;
+--      d_and.trigger_stop <= q_cntr.trigger_stop;
 
         analyzer_down_inst : entity  work.analyzer
         port map (
@@ -272,7 +278,6 @@ begin
             rxstatus0       => rxstatus1,
             pcie_det_en_c   => '1',
             pcie_ct_c       => '0',
-            rx_invert_c     => '0',
             signal_detect_c => '1',
             pcie_done_s     => open,
             pcie_con_s      => open,
@@ -293,12 +298,15 @@ begin
             clk             => rx_pclk_2,
             data_in         => rxdata_2,
             rx_k            => rx_k_2(0),
-            data_out        => d_anu.data_in_scr,
-            rx_k_out        => d_anu.rx_k
+            data_out        => scr_data_2,
+            rx_k_out        => rx_k_2d
         );
 
+        d_anu.data_in_scr <= scr_data_1;
+        d_anu.rx_k <= rx_k_1d;
+
         d_anu.trigger_start <= trigger_resync(1);--q_cntr.trigger_start;
-        d_anu.trigger_stop <= q_cntr.trigger_stop;
+--      d_anu.trigger_stop <= q_cntr.trigger_stop;
 
         analyzer_up_inst : entity  work.analyzer
         port map (
@@ -360,8 +368,8 @@ begin
             CS_N_OUT => d_cntr.cs_n
         );
 
-    d_cntr.data_amount_1 <= q_and.data_amount;
-    d_cntr.data_amount_2 <= q_and.data_amount;
+--  d_cntr.data_amount_1 <= q_and.data_amount;
+--  d_cntr.data_amount_2 <= q_and.data_amount;
     d_cntr.mem_data_in <= mem_data_out_rx when q_cntr.mem_select = '0' else mem_data_out_tx;
 
     controller_inst : entity work.controller
@@ -407,8 +415,8 @@ begin
             d_and.trigger_set.addr_match_en <= '0';
             d_and.trigger_set.addr_match <= (others => '0');
             d_and.filter_in.tlp_save <= '1';
-            d_and.filter_in.order_set_save <= '0';
-            d_and.filter_in.dllp_save <= '0';
+            d_and.filter_in.order_set_save <= '1';
+            d_and.filter_in.dllp_save <= '1';
 
             d_anu.trigger_set.packet_type_en <= '0';
             d_anu.trigger_set.packet_type <= TLP_PKT;
