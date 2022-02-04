@@ -379,7 +379,7 @@ begin
         len <= 128;
         addr <= X"70010000";
 
-        for i in 0 to 100 loop
+        for i in 0 to 500 loop
             w_pci (ioclk1, addr, len, payload, out_tlp, in_tlp);
             w_pci (ioclk1, addr, len, payload, out_tlp, in_tlp);
             w_pci (ioclk1, addr, len, payload, out_tlp_1, in_tlp_1);
