@@ -4,6 +4,7 @@ use ieee.std_logic_unsigned.all;
 use ieee.numeric_std.all;
 use ieee.std_logic_textio.all;
 use std.textio.all;
+use ieee.math_real.all;
 
 use work.pcie_tx_engine_pkg.all;
 use work.pci_wrapper_pkg.all;
@@ -472,23 +473,26 @@ package body analyzer_tb_pkg is
                         signal data_in      : in payload_t;
                         signal data_out     : out payload_t;
                         constant len          : in integer) is
+        variable f : real := Real(freq);
+        variable wt : time := (1.0/f)/2.0 * 1 us;
+
     begin
         cs <= '0';
-        wait for 16 ns;-- (1/freq)*1 us;
+        wait for wt;-- (1/freq)*1 us;
         clk <= '0';
         for i in 0 to len - 1 loop
             for j in 0 to 7 loop
                 data_out(i)(7 - j) <= miso;
-                wait for 32 ns;--(1/freq)*500 ns;
+                wait for wt;--(1/freq)*500 ns;
                 clk <= '1';
                 mosi <= data_in(i)(7 - j);
-                wait for 32 ns;--(1/freq)*500 ns;
+                wait for wt;--(1/freq)*500 ns;
                 clk <= '0';
             end loop;
         end loop;
-        wait for 16 ns;-- (1/freq)*1 us;
+        wait for wt;-- (1/freq)*1 us;
         cs <= '1';
-        wait for 32 ns;--(1/freq)*1 us;
+        wait for wt;--(1/freq)*1 us;
     end spi_test;
 
 end package body;
