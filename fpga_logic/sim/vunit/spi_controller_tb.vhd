@@ -177,22 +177,15 @@ begin
         mosi <= 'Z';
 
         wait for 400 ns;
-        payload(0) <= X"01";        -- write reg cmd
-        payload(1) <= X"03";        -- config tlp
-        payload(2) <= X"01";        -- address hi 
-        payload(3) <= X"01";        -- address lo 
-        payload(4) <= X"01";        -- address lo 
+        payload <= (0 => X"01", 1 => X"03", 2 => X"01", 3 => X"01", 4 => X"01", others => (others => '0'));
         spi_test(freq => f, clk => sclk, miso => miso, mosi => mosi, cs => cs_n, data_in => payload, data_out => spi_data_in, len => 5);
 
         wait for 400 ns;
-        payload(0) <= X"01";        -- write reg cmd
-        payload(1) <= X"00";        -- config tlp
-        payload(2) <= X"01";        -- address hi 
+        payload <= (0 => X"01", 1 => X"00", 2 => X"01", others => (others => '0'));
         spi_test(freq => f, clk => sclk, miso => miso, mosi => mosi, cs => cs_n, data_in => payload, data_out => spi_data_in, len => 3);
 
         wait for 400 ns;
-        payload(0) <= X"02";        -- write reg cmd
-        payload(1) <= X"00";        -- config tlp
+        payload <= (0 => X"02", 1 => X"00", others => (others => '0'));
         spi_test(freq => f, clk => sclk, miso => miso, mosi => mosi, cs => cs_n, data_in => payload, data_out => spi_data_in, len => 2);
 
         wait for 400 ns;
@@ -201,10 +194,7 @@ begin
         wait for 1 us;
 
         wait for 400 ns;
-        payload(0) <= X"03";        -- read memory
-        payload(1) <= X"00";        -- select mem
-        payload(2) <= X"00";        -- address hi 
-        payload(3) <= X"20";        -- address lo 
+        payload <= (0 => X"03", 1 => X"00", 2 => X"00", 3 => X"20", others => (others => '0'));
         spi_test(freq => f, clk => sclk, miso => miso, mosi => mosi, cs => cs_n, data_in => payload, data_out => spi_data_in, len => 4);
         wait for 1 us;
 
@@ -212,10 +202,7 @@ begin
         spi_test(freq => f, clk => sclk, miso => miso, mosi => mosi, cs => cs_n, data_in => payload, data_out => spi_data_in, len => 33);
         wait for 1 us;
 
-        payload(0) <= X"03";        -- read memory
-        payload(1) <= X"00";        -- select mem
-        payload(2) <= X"00";        -- address hi 
-        payload(3) <= X"00";        -- address lo 
+        payload <= (0 => X"03", 1 => X"00", 2 => X"00", 3 => X"00", others => (others => '0'));
         spi_test(freq => f, clk => sclk, miso => miso, mosi => mosi, cs => cs_n, data_in => payload, data_out => spi_data_in, len => 4);
         wait for 1 us;
 
@@ -223,13 +210,13 @@ begin
         spi_test(freq => f, clk => sclk, miso => miso, mosi => mosi, cs => cs_n, data_in => payload, data_out => spi_data_in, len => 33);
         wait for 1 us;
 
-        payload(0) <= X"02";        -- read memory
-        payload(1) <= X"00";        -- select mem
+        payload <= (0 => X"02", 1 => X"00", others => (others => '0'));
         spi_test(freq => f, clk => sclk, miso => miso, mosi => mosi, cs => cs_n, data_in => payload, data_out => spi_data_in, len => 2);
+
         wait for 1 us;
         payload <= payload_clear;
         spi_test(freq => f, clk => sclk, miso => miso, mosi => mosi, cs => cs_n, data_in => payload, data_out => spi_data_in, len => 8);
-        wait for 1 us;
+        wait for 500 us;
 
         tb_end <= true;
         wait;
@@ -269,6 +256,7 @@ begin
         variable data : std_logic_vector(7 downto 0);
         variable k : std_logic;
     begin
+        wait for 10 us;
         if fstatus /= OPEN_OK then
             file_open(fstatus,stim_file, "C:\Users\grpa\Documents\WORK\ECP5_PCIE_Analyzer\fpga_logic\sim\vunit\read_dcu1.txt", read_mode);
             report "file opened successfull";
@@ -301,6 +289,7 @@ begin
         variable data : std_logic_vector(7 downto 0);
         variable k : std_logic;
     begin
+        wait for 10 us;
         if fstatus /= OPEN_OK then
             file_open(fstatus,stim_file, "C:\Users\grpa\Documents\WORK\ECP5_PCIE_Analyzer\fpga_logic\sim\vunit\read_dcu2.txt", read_mode);
             report "file opened successfull";
@@ -327,6 +316,8 @@ begin
 --*****************************************************************************************
 -- CONTROLLER
 --*****************************************************************************************
+    d_cntr.controller_in.data_amount_0 <= q_anu.data_amount;
+    d_cntr.controller_in.data_amount_1 <= q_and.data_amount;
     d_cntr.mem_data_in <= d_mem_data_out when q_cntr.mem_select = '0' else u_mem_data_out;
     controller_inst : entity work.controller
         port map(
@@ -370,6 +361,32 @@ begin
         dout        => d_mem_data_out
     );
 
+    write_up_mem_to_file : process is
+        file stim_file : text;
+        variable fstatus : file_open_status := STATUS_ERROR;
+        variable l : line;
+    begin
+        wait for 10 us;
+        if fstatus /= OPEN_OK then
+            file_open(fstatus,stim_file, "up_memory.mem", write_mode);
+            report "file opened successfull";
+        end if;
+        main_loop : loop
+            wait until rx_pclk = '1';
+            if q_anu.wr_en = '1' then
+                write(l, q_anu.data_wr, left, 36);
+                writeline(stim_file,l);
+            end if;
+            if q_anu.stop_trigger = '1' then
+                exit main_loop;
+            end if;
+        end loop;
+
+        file_close(stim_file);
+        report "up memory is written";
+        wait;
+    end process;
+
 --*****************************************************************************************
 -- DOWN LINE ANALYZER
 --*****************************************************************************************
@@ -400,5 +417,31 @@ begin
         din         => q_and.data_wr,
         dout        => u_mem_data_out
     );
+
+    write_down_mem_to_file : process is
+        file stim_file : text;
+        variable fstatus : file_open_status := STATUS_ERROR;
+        variable l : line;
+    begin
+        wait for 10 us;
+        if fstatus /= OPEN_OK then
+            file_open(fstatus,stim_file, "down_memory.mem", write_mode);
+            report "file opened successfull";
+        end if;
+        main_loop : loop
+            wait until rx_pclk = '1';
+            if q_and.wr_en = '1' then
+                write(l, q_and.data_wr, left, 36);
+                writeline(stim_file,l);
+            end if;
+            if q_and.stop_trigger = '1' then
+                exit main_loop;
+            end if;
+        end loop;
+
+        file_close(stim_file);
+        report "down memory is written";
+        wait;
+    end process;
 
 end arch;
