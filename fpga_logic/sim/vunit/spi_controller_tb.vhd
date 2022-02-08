@@ -70,8 +70,10 @@ use work.spi_controller_tb_pkg.all;
 use work.analyzer_pkg.all;
 use work.analyzer_tb_pkg.all;
 
+/*
 library aldec;
 use aldec.aldec_tools.all;
+*/
 
 library vunit_lib;
 context vunit_lib.vunit_context;
@@ -113,7 +115,9 @@ architecture arch of spi_controller_tb is
     signal d_mem_data_out   : std_logic_vector (35 downto 0);
     signal u_mem_data_out   : std_logic_vector (35 downto 0);
     constant payload_clear  : payload_t := (others => (others => '0'));
+    signal spi_read_en      : std_logic;
 begin
+    /*
     asdb_dump("/spi_controller_tb/rst");
     asdb_dump("/spi_controller_tb/clk_100");
     asdb_dump("/spi_controller_tb/SCLK");
@@ -131,6 +135,7 @@ begin
     asdb_dump("/spi_controller_tb/analyzer_down/d");
     asdb_dump("/spi_controller_tb/analyzer_down/q");
     asdb_dump("/spi_controller_tb/analyzer_down/r");
+    */
 
     main : process
     begin
@@ -169,12 +174,15 @@ begin
 
     test_process: process is
         variable f : integer := 10;
+        variable address : std_logic_vector (15 downto 0);
     begin
         tb_end <= false;
         sclk <= '0';
         cs_n <= '1';
         miso <= 'Z';
         mosi <= 'Z';
+        address := (others => '0');
+        spi_read_en <= '0';
 
         wait for 400 ns;
         payload <= (0 => X"01", 1 => X"03", 2 => X"01", 3 => X"01", 4 => X"01", others => (others => '0'));
@@ -183,6 +191,7 @@ begin
         wait for 400 ns;
         payload <= (0 => X"01", 1 => X"00", 2 => X"01", others => (others => '0'));
         spi_test(freq => f, clk => sclk, miso => miso, mosi => mosi, cs => cs_n, data_in => payload, data_out => spi_data_in, len => 3);
+
 
         wait for 400 ns;
         payload <= (0 => X"02", 1 => X"00", others => (others => '0'));
@@ -217,6 +226,19 @@ begin
         payload <= payload_clear;
         spi_test(freq => f, clk => sclk, miso => miso, mosi => mosi, cs => cs_n, data_in => payload, data_out => spi_data_in, len => 8);
         wait for 500 us;
+
+        for i in 0 to 2048 loop
+            wait for 400 ns;
+            payload <= (0 => X"03", 1 => address(15 downto 8), 2 => address(7 downto 0), 3 => X"20", others => (others => '0'));
+            spi_test(freq => f, clk => sclk, miso => miso, mosi => mosi, cs => cs_n, data_in => payload, data_out => spi_data_in, len => 2);
+
+            wait for 400 ns;
+            payload <= payload_clear;
+            spi_read_en <= '1';
+            spi_test(freq => f, clk => sclk, miso => miso, mosi => mosi, cs => cs_n, data_in => payload, data_out => spi_data_in, len => 33);
+            spi_read_en <= '0';
+            wait for 1 us;
+        end loop;
 
         tb_end <= true;
         wait;
@@ -258,7 +280,7 @@ begin
     begin
         wait for 10 us;
         if fstatus /= OPEN_OK then
-            file_open(fstatus,stim_file, "C:\Users\grpa\Documents\WORK\ECP5_PCIE_Analyzer\fpga_logic\sim\vunit\read_dcu1.txt", read_mode);
+            file_open(fstatus,stim_file, "D:/Users/User/Documents/WORK/ECP5_PCIE_Analyzer/fpga_logic/sim/vunit/read_dcu1.txt", read_mode);
             report "file opened successfull";
         end if;
         main_loop : loop
@@ -291,7 +313,7 @@ begin
     begin
         wait for 10 us;
         if fstatus /= OPEN_OK then
-            file_open(fstatus,stim_file, "C:\Users\grpa\Documents\WORK\ECP5_PCIE_Analyzer\fpga_logic\sim\vunit\read_dcu2.txt", read_mode);
+            file_open(fstatus,stim_file, "D:/Users/User/Documents/WORK/ECP5_PCIE_Analyzer/fpga_logic/sim/vunit/read_dcu2.txt", read_mode);
             report "file opened successfull";
         end if;
         main_loop : loop
@@ -360,6 +382,21 @@ begin
         din         => q_anu.data_wr,
         dout        => d_mem_data_out
     );
+    /*
+    ram_inst_d : entity work.packet_ram
+    port map (
+        WrAddress => (others => '0'),
+        RdAddress => q_cntr.addr_read(14 downto 0),
+        Data => (others => '0'),
+        WE => '0',
+        RdClock => clk_100,
+        RdClockEn => '1',
+        Reset => rst, 
+        WrClock => rx_pclk,
+        WrClockEn => '1',
+        Q => d_mem_data_out
+        ); 
+    */
 
     write_up_mem_to_file : process is
         file stim_file : text;
@@ -441,6 +478,54 @@ begin
 
         file_close(stim_file);
         report "down memory is written";
+        wait;
+    end process;
+
+    write_readed_data_to_file : process is
+        file file_out : text;
+        variable fstatus : file_open_status := STATUS_ERROR;
+        variable l : line;
+        variable byte : std_logic_vector (7 downto 0);
+        variable bit_cnt : integer;
+        variable byte_cnt : integer;
+    begin
+        byte := (others => '0');
+        bit_cnt := 0;
+        byte_cnt := 0;
+
+        if fstatus /= OPEN_OK then
+            file_open(fstatus, file_out, "read_stim_out.txt", write_mode);
+            report "file opened successfull";
+        end if;
+        main_loop : loop
+            wait until clk_100 = '1';
+            if spi_read_en = '1' then
+                wait until SCLK = '1';
+                byte(7 downto 1) := byte(6 downto 0);
+                byte(0) := miso;
+                if bit_cnt < 7 then
+                    bit_cnt := bit_cnt + 1;
+                else
+                    bit_cnt := 0;
+                    write(l,string'("0x"));
+                    hwrite (l,byte);
+                    write (l, string'(" "));
+                    if byte_cnt < 32 then
+                        byte_cnt := byte_cnt + 1;
+                    else
+                        byte_cnt := 0;
+                        writeline(file_out,l);
+                    end if;
+                end if;
+                if (tb_end = true) then
+                    exit main_loop;
+                end if;
+            else
+                byte := (others => '0');
+            end if;
+        end loop;
+        file_close(file_out);
+        report "read file closed";
         wait;
     end process;
 
