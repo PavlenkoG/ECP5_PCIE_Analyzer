@@ -75,12 +75,24 @@ if (os.environ['VUNIT_SIMULATOR'] == "activehdl"):
 if (os.environ['VUNIT_SIMULATOR'] == "modelsim"):
     # Sim only spi 
     print("Simulate with Modelsim")
-    VU.set_sim_option('activehdl.init_file.gui','v_MEM.do')
+
     VU.add_library("sim_core")
     VU.library("sim_core").add_source_file(SRC_PATH / "src" / "controller.vhd")
     VU.library("sim_core").add_source_file(SRC_PATH / "src" / "analyzer_pkg.vhd")
+    VU.library("sim_core").add_source_file(SRC_PATH / "src" / "analyzer.vhd")
     VU.library("sim_core").add_source_file(SRC_PATH / "src" / "pdpram.vhd")
+    VU.library("sim_core").add_source_file(SRC_PATH / "src" / "packet_ram.vhd")
     VU.library("sim_core").add_source_file(SRC_PATH / "src" / "spi_slave.vhd")
+    VU.library("sim_core").add_source_file(SRC_PATH / "src" / "pci_wrapper_pkg.vhd")
+    VU.library("sim_core").add_source_file(SRC_PATH / "src" / "pcie_tx_engine.vhd")
+    VU.library("sim_core").add_source_file(SRC_PATH / "src" / "pcie_rx_engine.vhd")
+    VU.library("sim_core").add_source_file(SRC_PATH / "src" / "top_pkg.vhd")
+    VU.library("sim_core").add_source_file(SRC_PATH / "src" / "rev_analyzer.vhd")
+    #VU.library("sim_core").add_source_file(SRC_PATH / "src" / "top.vhd")
+    VU.library("sim_core").add_source_file(SRC_PATH / "sim" / "vunit" / "analyzer_tb_pkg.vhd")
     VU.library("sim_core").add_source_file(SRC_PATH / "sim" / "vunit" / "spi_controller_tb.vhd")
+
+    VU.set_sim_option("modelsim.vsim_flags",["+nowarnDECAY"])
+    VU.set_sim_option("modelsim.init_file.gui","wave.do")
 
 VU.main()
