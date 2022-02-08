@@ -63,6 +63,11 @@ def parseMem(testfile):
             byteArray.append(byte)
     byteArray.append(flags)
     msg = byteArray
+    """
+    for i in range(len(msg)):
+        print(hex(msg[i]), end =" ")
+    print()
+    """
     return msg
 
 def read_packets(spi, mem_num, address):
@@ -90,6 +95,7 @@ lineBytes = []
 if (os.name == "nt"):
     testfile = open("up_memory.mem","r")
     testfile1 = open("down_memory.mem","r")
+    testfile3 = open("read_stim_out.txt","r")
 
 if (os.name == "posix"):
     spi = SpiDev()
@@ -109,8 +115,14 @@ addr = 0
 for lines in range(2048):
 #   printProgressBar(lines + 1, 2048, prefix = 'Progress line up:   ', suffix = 'Complete', length = 50)
     if (os.name == "nt"):
-        msg = parseMem(testfile)
+        #msg = parseMem(testfile)
+        testline = testfile3.readline()
+        enc_string = testline.encode()
+        hexstring = bytes.fromhex(testline)
+        msg = bytearray(enc_string)
+        print(msg)
         writePacket (f, msg, "->, ")
+
     if (os.name == "posix"):
         msg = read_packets(spi,0,addr)
         writePacket (f, msg, "->, ")
