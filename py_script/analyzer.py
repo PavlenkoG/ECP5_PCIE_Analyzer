@@ -1,3 +1,4 @@
+import sys
 import os
 import timeit
 if (os.name == "posix"):
@@ -82,6 +83,12 @@ def read_packets(spi, mem_num, address):
     #print(msg)
     answer = spi.readbytes(33)
     return answer
+#*********************************************************************************
+# MAIN
+#*********************************************************************************
+
+mode = sys.argv
+print (mode)
 
 start = timeit.default_timer()
 if os.path.exists("out.csv"):
@@ -96,6 +103,7 @@ if (os.name == "nt"):
     testfile = open("up_memory.mem","r")
     testfile1 = open("down_memory.mem","r")
     testfile3 = open("read_stim_out.txt","r")
+    testfile_out = open("decoded_str.txt","w")
 
 if (os.name == "posix"):
     spi = SpiDev()
@@ -112,16 +120,24 @@ lineCounter = 0
 addr = 0
 #printProgressBar(0, 2048, prefix = 'Progress:', suffix = 'Complete', length = 50)
 
+msg = []
 for lines in range(2048):
 #   printProgressBar(lines + 1, 2048, prefix = 'Progress line up:   ', suffix = 'Complete', length = 50)
     if (os.name == "nt"):
-        #msg = parseMem(testfile)
-        testline = testfile3.readline()
-        enc_string = testline.encode()
-        hexstring = bytes.fromhex(testline)
-        msg = bytearray(enc_string)
-        print(msg)
+        if (mode[1] == "in"):
+            msg = parseMem(testfile)
+            for i in range(33):
+                testfile_out.write("0x")
+                testfile_out.write(hex(msg[i])[2:].zfill(2) )
+                testfile_out.write(" ")
+            testfile_out.write("\n")
+        if (mode[1] == "out"):
+            testline = testfile3.readline()
+            enc_string = testline.split()
+            for i in range (len(enc_string)):
+                msg.append(int(enc_string[i],base=16))
         writePacket (f, msg, "->, ")
+        msg=[]
 
     if (os.name == "posix"):
         msg = read_packets(spi,0,addr)
@@ -134,7 +150,7 @@ for lines in range(2048):
 #   printProgressBar(lines + 1, 2048, prefix = 'Progress line down: ', suffix = 'Complete', length = 50)
     if (os.name == "nt"):
         msg = parseMem(testfile1)
-        writePacket (f, msg, "<-, ")
+        #writePacket (f, msg, "<-, ")
     if (os.name == "posix"):
         msg = read_packets(spi,1,addr)
         writePacket (f, msg, "->, ")
