@@ -80,8 +80,15 @@ def read_packets(spi, mem_num, address):
     msg.append(int(first_b[1]))
     #msg.append(address)
     spi.writebytes(msg)
-    #print(msg)
     answer = spi.readbytes(33)
+    ''' 
+    for i in range (len(msg)):
+        print(hex(msg[i])[2:].zfill(2),end=" ")
+    print(":    ", end =" ")
+    for i in range (len(answer)):
+        print(hex(answer[i])[2:].zfill(2), end=" ")
+    print()
+    ''' 
     return answer
 #*********************************************************************************
 # MAIN
@@ -104,12 +111,14 @@ if (os.name == "nt"):
     testfile1 = open("down_memory.mem","r")
     testfile3 = open("read_stim_out.txt","r")
     testfile_out = open("decoded_str.txt","w")
+    testread_out = open("readboard.txt","w")
 
 if (os.name == "posix"):
     spi = SpiDev()
     spi.open(0,0)
-    spi.max_speed_hz = 6000000
+    spi.max_speed_hz = 1000000
     spi.mode = 1
+    testread_out = open("readboard.txt","w")
 
 byte = 0
 byteArray = []
@@ -142,19 +151,32 @@ for lines in range(2048):
     if (os.name == "posix"):
         msg = read_packets(spi,0,addr)
         writePacket (f, msg, "->, ")
+
+        #testread_out.write(hex(addr)[2:].zfill(4))
+        #testread_out.write(" ")
+        for i in range (len(msg)):
+            testread_out.write("0x")
+            testread_out.write(hex(msg[i])[2:].zfill(2))
+            testread_out.write(" ")
+        testread_out.write("\n")
         addr = addr + 32
 
 addr = 0
 #printProgressBar(0, 2048, prefix = 'Progress:', suffix = 'Complete', length = 50)    
-for lines in range(2048):
+for lines in range(16):
 #   printProgressBar(lines + 1, 2048, prefix = 'Progress line down: ', suffix = 'Complete', length = 50)
     if (os.name == "nt"):
         msg = parseMem(testfile1)
         #writePacket (f, msg, "<-, ")
     if (os.name == "posix"):
-        msg = read_packets(spi,1,addr)
-        writePacket (f, msg, "->, ")
-        addr = addr + 32
+       msg = read_packets(spi,1,addr)
+       writePacket (f, msg, "<-, ")
+       for i in range (len(msg)):
+           testread_out.write("0x")
+           testread_out.write(hex(msg[i])[2:].zfill(2))
+           testread_out.write(" ")
+       testread_out.write("\n")
+       addr = addr + 32
     
 stop = timeit.default_timer()
 print('Time: ', stop - start, 's') 
