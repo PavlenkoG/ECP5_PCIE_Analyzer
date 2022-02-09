@@ -1,97 +1,241 @@
 <script type="text/javascript">
 
-	function addPacket (table, rows, packetNum) {
-			<!-- get values from line -->
-		var cells = rows.split(",");
-		if (cells.length > 1) {
-			switch (parseInt(cells[3])) {
-				case 92:	//0x5C - K28.2 Start DLLP
-					createDllpTable(table, cells, packetNum);
-					break;
-				case 251:	//0xFB - K27.7 Start TLP
-					createTlpTable(table, cells, packetNum);
-					break;
-				default:
-					break;	
+	const DirectionPos = 0;
+	const TimeStampPos = 1;
+	const TimeUnitPos = 2;
+	const StartSymPos = 3;
+	const FirstByte = 4;
+
+	const DLLPPacketType = {
+		packetType : ['Ack','Nak', 'PM_Enter_L1', 'PM_Enter_L23', 'PM_Active_State_Request_L1', 'PM_Request_Ack', 'Ven Spec', 'InitFC1-P', 'InitFC1-NP']
+	}
+	const NONE_PACKET = {
+		headers	: ['UNKNOWN'],
+		styles	: ['unknown'],
+		spans	: ["2"			]
+
+	}
+	const DLLP_ACK_Packet = {
+		headers	: ['DLLP'		,'ACK'			,'AckNack_Seq_Num'	,'CRC 16'],
+		styles	: ['DLLP_Packet','ACK_Packet'	,'ACK_Packet'		,'CRC_16'],
+		spans	: ["2"			,"2"			,"1"				,"1"]
+	}
+	const DLLP_NACK_Packet = {
+		headers	: ['DLLP'		,'NACK'			,'AckNack_Seq_Num'	,'CRC 16'],
+		styles	: ['DLLP_Packet','NACK_Packet'	,'NACK_Packet'		,'CRC_16'],
+		spans	: ["2"			,"2"			,"1"				,"1"]
+	}
+
+	const DLLP_InitFC1_P_Packet = {
+		headers	: ['DLLP'		,'InitFC1-P'	,'VC ID'	,'HdrFC'	,'DataFC'	,'CRC 16'],
+		styles	: ['DLLP_Packet','InitFC'		,'InitFC'	,'InitFC'	,'InitFC'	,'CRC_16'],
+		spans	: ["2"			,"2"			,"1"		,"1"		,"1"		,"1"]
+	}
+
+	const DLLP_InitFC1_NP_Packet = {
+		headers	: ['DLLP'		,'InitFC1-NP'	,'VC ID'	,'HdrFC'	,'DataFC'	,'CRC 16'],
+		styles	: ['DLLP_Packet','InitFC'		,'InitFC'	,'InitFC'	,'InitFC'	,'CRC_16'],
+		spans	: ["2"			,"2"			,"1"		,"1"		,"1"		,"1"]
+	}
+
+	const DLLP_InitFC1_Cpl_Packet = {
+		headers	: ['DLLP'		,'InitFC1-Cpl'	,'VC ID'	,'HdrFC'	,'DataFC'	,'CRC 16'],
+		styles	: ['DLLP_Packet','InitFC'		,'InitFC'	,'InitFC'	,'InitFC'	,'CRC_16'],
+		spans	: ["2"			,"2"			,"1"		,"1"		,"1"		,"1"]
+	}
+
+	const DLLP_InitFC2_P_Packet = {
+		headers	: ['DLLP'		,'InitFC2-P'	,'VC ID'	,'HdrFC'	,'DataFC'	,'CRC 16'],
+		styles	: ['DLLP_Packet','InitFC'		,'InitFC'	,'InitFC'	,'InitFC'	,'CRC_16'],
+		spans	: ["2"			,"2"			,"1"		,"1"		,"1"		,"1"]
+	}
+
+	const DLLP_InitFC2_NP_Packet = {
+		headers	: ['DLLP'		,'InitFC2-NP'	,'VC ID'	,'HdrFC'	,'DataFC'	,'CRC 16'],
+		styles	: ['DLLP_Packet','InitFC'		,'InitFC'	,'InitFC'	,'InitFC'	,'CRC_16'],
+		spans	: ["2"			,"2"			,"1"		,"1"		,"1"		,"1"]
+	}
+
+	const DLLP_InitFC2_Cpl_Packet = {
+		headers	: ['DLLP'		,'InitFC2-Cpl'	,'VC ID'	,'HdrFC'	,'DataFC'	,'CRC 16'],
+		styles	: ['DLLP_Packet','InitFC'		,'InitFC'	,'InitFC'	,'InitFC'	,'CRC_16'],
+		spans	: ["2"			,"2"			,"1"		,"1"		,"1"		,"1"]
+	}
+
+	const DLLP_UpdateFC_P_Packet = {
+		headers	: ['DLLP'		,'UpdateFC_P'	,'VC ID'	,'HdrFC'	,'DataFC'	,'CRC 16'],
+		styles	: ['DLLP_Packet','InitFC'		,'InitFC'	,'InitFC'	,'InitFC'	,'CRC_16'],
+		spans	: ["2"			,"2"			,"1"		,"1"		,"1"		,"1"]
+	}
+
+	const DLLP_UpdateFC_NP_Packet = {
+		headers	: ['DLLP'		,'UpdateFC_NP'	,'VC ID'	,'HdrFC'	,'DataFC'	,'CRC 16'],
+		styles	: ['DLLP_Packet','InitFC'		,'InitFC'	,'InitFC'	,'InitFC'	,'CRC_16'],
+		spans	: ["2"			,"2"			,"1"		,"1"		,"1"		,"1"]
+	}
+
+	const DLLP_UpdateFC_Cpl_Packet = {
+		headers	: ['DLLP'		,'UpdateFC_Cpl'	,'VC ID'	,'HdrFC'	,'DataFC'	,'CRC 16'],
+		styles	: ['DLLP_Packet','InitFC'		,'InitFC'	,'InitFC'	,'InitFC'	,'CRC_16'],
+		spans	: ["2"			,"2"			,"1"		,"1"		,"1"		,"1"]
+	}
+
+	const TLP_MWR32_Packet = {
+		headers	: ['TLP'		,'Mem'			,'MWr(32)'	,'Length'	,'RequesterID'	,'Tag'	,'Address'	,'1BE'	,'Last BE'	,'Data'	,'LCRC'],
+		styles	: ['TLP_Packet'	,'Mwr'			,'Mwr'		,'Mwr'		,'ReqId'		,'ReqId','Addr'		,'BE'	,'BE'		,'Data'	,'CRC_16'],
+		spans	: ["1"			,"2"			,"1"		,"1"		,"1"			,"1"	,"1"		,"1"	,"1"		,"1"	,"1"]
+	}
+
+	const TLP_MRd32_Packet = {
+		headers	: ['TLP'		,'Mem'			,'MRd(32)'	,'Length'	,'RequesterID'	,'Tag'	,'Address'	,'1BE'	,'Last BE'	,'Data'	,'LCRC'],
+		styles	: ['TLP_Packet'	,'Mrd'			,'Mrd'		,'Mrd'		,'ReqId'		,'ReqId','Addr'		,'BE'	,'BE'		,'Data'	,'CRC_16'],
+		spans	: ["1"			,"2"			,"1"		,"1"		,"1"			,"1"	,"1"		,"1"	,"1"		,"1"	,"1"]
+	}
+
+	class Packet {
+
+		constructor(table) {
+			this.table = table;
+		}
+
+		createRowPacket (cells, packetNum, fieldNames, classType, cellSpan, data) {
+			var row = this.table.insertRow(-1);
+			var cell = row.insertCell(-1);
+			cell.innerHTML = "Packet"
+			cell.classList.add("PNum");
+
+			cell = row.insertCell(-1);
+			cell.rowSpan = "2";
+
+			if (cells[DirectionPos] == "->") {
+				cell.innerHTML = "R&rarr;";
+				cell.classList.add("Up");
+			} else {
+				cell.innerHTML = "R&larr;";
+				cell.classList.add("Down");
 			}
-		}	
-	}
 
-	function createDllpTable(table, cells, packetNum) {
-		var row = table.insertRow(-1);
-		var cell = row.insertCell(-1);
-		insertHeader (row, cell, cells);
-		
-		cell = row.insertCell(-1);
-		cell.classList.add("DLLP_Packet");
-		cell.innerHTML = "DLLP";
-		cell.rowSpan = "2";
-		
-		createDllpPacket (row, cell, cells);
-		
-		
-		row = table.insertRow(-1);
-		cell = row.insertCell(-1);
-		cell.innerHTML = packetNum;
-		cell.classList.add("PNum");
-		 
-		 
-		fillDllpPacket (row, cell, cells);
-	}
+			for (var i = 0; i < (fieldNames.length ); i++) {
+				cell = row.insertCell(-1);
+				cell.classList.add(classType[i]);
+				cell.innerHTML = fieldNames[i];
+				cell.rowSpan = cellSpan[i];
+			}
 
-	function createTlpTable(table, cells, packetNum) {
-		var row = table.insertRow(-1);
-		var cell = row.insertCell(-1);
-		insertHeader (row, cell, cells);
-		
-		cell = row.insertCell(-1);
-		cell.classList.add("TLP_Packet");
-		cell.innerHTML = "TLP";	
-		
-		createTlpPacket (row, cell, cells)
-		
-		row = table.insertRow(-1);
-		cell = row.insertCell(-1);
-		cell.innerHTML = packetNum;
-		cell.classList.add("PNum");
-		
-		fillTlpPacket (row, cell, cells);
-	}
-	
-	function insertHeader (row, cell, cells) {
-		cell.innerHTML = "Packet"
-		cell.classList.add("PNum");
-		<!-- Packet direction -->
-		cell = row.insertCell(-1);
-		cell.rowSpan = "2";
-		if (cells[0] == "->") {
-			cell.innerHTML = "R&rarr;";
-			cell.classList.add("Up");
-		} else {
-			cell.innerHTML = "R&larr;";
-			cell.classList.add("Down");
+			cell = row.insertCell(-1);
+			cell.classList.add("Timestamp");
+			cell.innerHTML = "Timestamp";
+
+			row = this.table.insertRow(-1);
+			cell = row.insertCell(-1);
+			cell.innerHTML = packetNum;
+			cell.classList.add("PNum");
+
+			for (var i = 0; i < (data.length ); i++) {
+				if ((typeof data[i]) == "string") {
+					cell = row.insertCell(-1);
+					cell.innerHTML = data[i];
+				}
+				if ((typeof data[i]) == "object") {
+					cell = row.insertCell(-1);
+					const newDiv = document.createElement("div");
+					const newSpan = document.createElement("span");
+					row.appendChild(cell);
+					cell.appendChild(newDiv);
+					newDiv.classList.add("tooltip");
+					newDiv.innerHTML = data[i][0];
+					newDiv.appendChild(newSpan);
+					newSpan.classList.add("tooltiptext");
+					for (var j = 1; j < (data[i].length); j++) {
+						newSpan.innerHTML += data[i][j];
+					}
+				}
+			}
+			cell = row.insertCell(-1);
+			cell.innerHTML = cells[TimeStampPos];
 		}
-	}
-	
-	function fillDllpPacket (row, cell, cells) {
-		if (parseInt(cells[4]) == 0) {
-			var seqNum = parseInt(cells[7]) + (parseInt(cells[6]))*256;
-			cell = row.insertCell(-1);
-			cell.innerHTML = seqNum;
-		} else {
-			cell = row.insertCell(-1);
-			cell.innerHTML = "data 1";
-			cell = row.insertCell(-1);
-			cell.innerHTML = "data 2";
-			cell = row.insertCell(-1);
-			cell.innerHTML = "data 3";
+
+		addPacket(rows, packetNum) {
+			var cells = rows.split(",");
+			if (cells.length > 1) {
+				switch (parseInt(cells[StartSymPos])) {
+					case 0x5C:	//K28.2 Start DLLP
+						this.createDllpTable(packetNum, cells);
+						break;
+					case 0xFB:	//K27.7 Start TLP
+						var packetT = TLP_MWR32_Packet;
+						this.createRowPacket(cells, packetNum, packetT.headers,packetT.styles,packetT.spans,['1','2','3','4','5','6','7','8','9','10'])
+						break;
+					default:
+						break;	
+				}
+			}
 		}
-		cell = row.insertCell(-1);
-		cell.innerHTML = "0x"+(cells[8].slice(3) + cells[9].slice(3)).toUpperCase();
-		cell = row.insertCell(-1);
-		cell.innerHTML = cells[1] + " ns";
+
+		/*
+		* DLLP packet functions
+		*/
+		createDllpTable(packetNum, cells) {
+			var packetT = NONE_PACKET;
+			var data = this.flowControlDllpFormat(cells);
+			var hdrType = parseInt(cells[FirstByte])&0xF0;
+			if (hdrType == 0) {
+				data = this.flowControlAckFormat(cells);
+				packetT = DLLP_ACK_Packet;
+			}
+			if (hdrType == 0x40) {
+				packetT = DLLP_InitFC1_P_Packet;
+			}	
+			if (hdrType == 0x50) {
+				packetT = DLLP_InitFC1_NP_Packet;
+			}	
+			if (hdrType == 0x60) {
+				packetT = DLLP_InitFC1_Cpl_Packet;
+			}
+			if (hdrType == 0xC0) {
+				packetT = DLLP_InitFC2_P_Packet;
+			}
+			if (hdrType == 0xD0) {
+				packetT = DLLP_InitFC2_NP_Packet;
+			}
+			if (hdrType == 0xE0) {
+				packetT = DLLP_InitFC2_Cpl_Packet;
+			}
+			if (hdrType == 0x80) {
+				packetT = DLLP_UpdateFC_P_Packet;
+			}
+			if (hdrType == 0x90) {
+				packetT = DLLP_UpdateFC_NP_Packet;
+			}
+			if (hdrType == 0xA0) {
+				packetT = DLLP_UpdateFC_Cpl_Packet;
+			}
+			this.createRowPacket(cells, packetNum, packetT.headers,packetT.styles,packetT.spans,data);
+		}
+
+		flowControlDllpFormat (cells) {
+			var data = [];
+			var VC_ID = parseInt(cells[FirstByte])&0x3;
+			var HeaderFC = (parseInt(cells[FirstByte+1])&0x3F)*0x4 + ((parseInt(cells[FirstByte+2])&0xC0));
+			var DataFC = (parseInt(cells[FirstByte+2])&0x3)*0xFF + (parseInt(cells[FirstByte+3]));
+			var CRC16 = "0x" + ((cells[FirstByte + 4].slice(3) + cells[FirstByte + 5].slice(3))).toUpperCase();
+			data[0] = VC_ID.toString();
+			data[1] = HeaderFC.toString();
+			data[2] = DataFC.toString();
+			data[3] = CRC16;
+			return data;
+		}
+
+		flowControlAckFormat (cells) {
+			var data = ['0','0']
+			data[0] = (parseInt(cells[FirstByte + 3]) + (parseInt(cells[FirstByte + 2]))*256).toString();
+			data[1] = "0x" + (cells[FirstByte + 4].slice(3) + cells[FirstByte + 5].slice(3)).toUpperCase();
+			return data;
+		}
+
 	}
 	
+	/*
 	function fillTlpPacket (row, cell, cells) {
 		var seqNum = parseInt(cells[5]) + (parseInt(cells[4]))*256;
 		cell = row.insertCell(-1);
@@ -198,59 +342,7 @@
 		cell.innerHTML = "Timestamp";
 		
 	}
-	
-	function createDllpPacket (row, cell, cells) {
-		cell = row.insertCell(-1);
-		cell.rowSpan = "2";
-		
-		if (parseInt(cells[4]) == 0) {
-			cell.classList.add("ACK_Packet");
-			cell.innerHTML = "ACK";
-			
-			cell = row.insertCell(-1);
-			cell.classList.add("ACK_Packet");
-			cell.innerHTML = "AckNak_Seq_Num";
-		}
-		if ((parseInt(cells[4])&240) == 64) {
-			cell.classList.add("InitFC");
-			cell.innerHTML = "InitFC1-P";
-			
-			cell = row.insertCell(-1);
-			cell.classList.add("InitFC");
-			cell.innerHTML = "VC ID";
-			
-			cell = row.insertCell(-1);
-			cell.classList.add("InitFC");
-			cell.innerHTML = "HdrVC";
-			
-			cell = row.insertCell(-1);
-			cell.classList.add("InitFC");
-			cell.innerHTML = "DataFC";
-		}	
-		if ((parseInt(cells[4])&80) == 80) {
-			cell.classList.add("InitFC");
-			cell.innerHTML = "InitFC1-NP";
-		}	
-		if ((parseInt(cells[4])&96) == 96) {
-			cell.classList.add("InitFC");
-			cell.innerHTML = "InitFC1-Cpl";
-		}
-		if ((parseInt(cells[4])&192) == 192) {
-			cell.classList.add("InitFC");
-			cell.innerHTML = "InitFC2-P";
-		}
-		if ((parseInt(cells[4])&208) == 208) {
-		}
-		if ((parseInt(cells[4])&224) == 224) {
-		}
-		cell = row.insertCell(-1);
-		cell.classList.add("CRC_16");
-		cell.innerHTML = "CRC";
-		
-		cell = row.insertCell(-1);
-		cell.classList.add("Timestamp");
-		cell.innerHTML = "Timestamp";
-	}
+	*/
 	
     function Upload() {
         var fileUpload = document.getElementById("fileUpload");
@@ -261,14 +353,20 @@
                 reader.onload = function (e) {
                     var table = document.createElement("table");
                     var rows = e.target.result.split("\n");
+					let newLine = new Packet(table,rows);
                     for (var i = 0; i < rows.length; i++) {
+
+						newLine.addPacket(rows[i], i);
+						//newLine.createRowPacket (i, ['first','second','third'], ['TLP_Packet','DLLP_Packet'], ["1","2","1"], ["data1","data2",['p1','p2','p3','p4'],"data3"])
+						//newLine.createRowPacket (i, DLLP_NACK_Packet.headers , DLLP_NACK_Packet.styles, DLLP_NACK_Packet.spans , ["data1","data2","data3"])
 					
-						addPacket(table, rows[i], i);
+						//addPacket(table, rows[i], i);
 
                     }
                     var dvCSV = document.getElementById("dvCSV");
                     dvCSV.innerHTML = "";
-                    dvCSV.appendChild(table);
+                    //dvCSV.appendChild(table);
+					dvCSV.appendChild(newLine.table);
                 }
                 reader.readAsText(fileUpload.files[0]);
             } else {
@@ -290,9 +388,10 @@ th.PNum, td.PNum{background-color:#f9f;}
 th.Up, td.Up{background-color:#eba834;}
 				
 th.Down, td.Down{background-color:#7d5500;color: #fff;}
-td.TLP_Packet {background-color:#ed9a09;}
+td.TLP_Packet {background-color:#bd7b09;}
 td.DLLP_Packet {background-color:#18d60b;}
 td.ACK_Packet {background-color:#fff200;}
+td.NACK_Packet {background-color:#30302d; color: #fff}
 td.InitFC {background-color:#185c11; color: #fff;}
 td.CRC_16 {background-color:#808080;}
 td.Timestamp {background-color:#0012d9; color: #fff;}
@@ -301,6 +400,7 @@ td.ReqId {background-color:#0f994b;}
 td.Addr{background-color:#00d5ff;}
 td.BE{background-color:#3dffa8;}
 td.Data{background-color:#b82b00;color: #fff;}
+td.unknown{background-color:#ff0000;color: #fff;}
 
 
 .tooltip {
