@@ -70,10 +70,8 @@ use work.spi_controller_tb_pkg.all;
 use work.analyzer_pkg.all;
 use work.analyzer_tb_pkg.all;
 
-/*
 library aldec;
 use aldec.aldec_tools.all;
-*/
 
 library vunit_lib;
 context vunit_lib.vunit_context;
@@ -117,7 +115,6 @@ architecture arch of spi_controller_tb is
     constant payload_clear  : payload_t := (others => (others => '0'));
     signal spi_read_en      : std_logic;
 begin
-    /*
     asdb_dump("/spi_controller_tb/rst");
     asdb_dump("/spi_controller_tb/clk_100");
     asdb_dump("/spi_controller_tb/SCLK");
@@ -127,6 +124,7 @@ begin
     asdb_dump("/spi_controller_tb/d_cntr");
     asdb_dump("/spi_controller_tb/q_cntr");
     asdb_dump("/spi_controller_tb/controller_inst/r");
+    /*
 
     asdb_dump("/spi_controller_tb/rx_pclk");
     asdb_dump("/spi_controller_tb/analyzer_up/d");
@@ -229,14 +227,15 @@ begin
 
         for i in 0 to 2048 loop
             wait for 400 ns;
-            payload <= (0 => X"03", 1 => address(15 downto 8), 2 => address(7 downto 0), 3 => X"20", others => (others => '0'));
-            spi_test(freq => f, clk => sclk, miso => miso, mosi => mosi, cs => cs_n, data_in => payload, data_out => spi_data_in, len => 2);
+            payload <= (0 => X"03", 1 => X"20", 2 => address(15 downto 8), 3 => address(7 downto 0), others => (others => '0'));
+            spi_test(freq => f, clk => sclk, miso => miso, mosi => mosi, cs => cs_n, data_in => payload, data_out => spi_data_in, len => 4);
 
             wait for 400 ns;
             payload <= payload_clear;
             spi_read_en <= '1';
             spi_test(freq => f, clk => sclk, miso => miso, mosi => mosi, cs => cs_n, data_in => payload, data_out => spi_data_in, len => 33);
             spi_read_en <= '0';
+            address := address + 32;
             wait for 1 us;
         end loop;
 
@@ -280,7 +279,7 @@ begin
     begin
         wait for 10 us;
         if fstatus /= OPEN_OK then
-            file_open(fstatus,stim_file, "D:/Users/User/Documents/WORK/ECP5_PCIE_Analyzer/fpga_logic/sim/vunit/read_dcu1.txt", read_mode);
+            file_open(fstatus,stim_file, "../../read_dcu1.txt", read_mode);
             report "file opened successfull";
         end if;
         main_loop : loop
@@ -313,7 +312,7 @@ begin
     begin
         wait for 10 us;
         if fstatus /= OPEN_OK then
-            file_open(fstatus,stim_file, "D:/Users/User/Documents/WORK/ECP5_PCIE_Analyzer/fpga_logic/sim/vunit/read_dcu2.txt", read_mode);
+            file_open(fstatus,stim_file, "../../read_dcu2.txt", read_mode);
             report "file opened successfull";
         end if;
         main_loop : loop
@@ -522,6 +521,8 @@ begin
                 end if;
             else
                 byte := (others => '0');
+                bit_cnt := 0;
+                byte_cnt := 0;
             end if;
         end loop;
         file_close(file_out);
