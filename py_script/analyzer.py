@@ -29,22 +29,23 @@ def printProgressBar (iteration, total, prefix = '', suffix = '', decimals = 1, 
 def writePacket (file, msg, direction):
     flag = int(msg[len(byteArray)-1])
     data = []
-    for i in range(8):
-        if (flag >> i & 1):
-            timestamp = 0
-            #data = []
-            for j in range(4):
-                timestamp = timestamp + (msg[i*4+j])*(256**(3-j))
-            timestamp = timestamp * 4
-            f.write('\n')
-            f.write(direction)
-            f.write(str(timestamp))
-            f.write(', ns')
-        else:
-            for j in range(4):
-                f.write(", 0x")
-                f.write(hex(msg[i*4+j])[2:].zfill(2) )
-                #data.append(msg[i*4+j])
+    if (len(msg)==33):
+        for i in range(8):
+            if (flag >> i & 1):
+                timestamp = 0
+                #data = []
+                for j in range(4):
+                    timestamp = timestamp + (msg[i*4+j])*(256**(3-j))
+                timestamp = timestamp * 4
+                f.write('\n')
+                f.write(direction)
+                f.write(str(timestamp))
+                f.write(', ns')
+            else:
+                for j in range(4):
+                    f.write(", 0x")
+                    f.write(hex(msg[i*4+j])[2:].zfill(2) )
+                    #data.append(msg[i*4+j])
 
 def parseMem(testfile):
     byteArray = []
@@ -52,7 +53,8 @@ def parseMem(testfile):
     for linesIter in range(8):
         #read line from stim file
         testline = testfile.readline()
-        
+        if (len(testline) == 0):
+            break
         #flag indicates timestamp
         flags = flags + int(testline[0])*(2**linesIter)
         for byteIter in range(4):
@@ -135,11 +137,11 @@ for lines in range(2048):
     if (os.name == "nt"):
         if (mode[1] == "in"):
             msg = parseMem(testfile)
-            for i in range(33):
-                testfile_out.write("0x")
-                testfile_out.write(hex(msg[i])[2:].zfill(2) )
-                testfile_out.write(" ")
-            testfile_out.write("\n")
+#           for i in range(33):
+#               testfile_out.write("0x")
+#               testfile_out.write(hex(msg[i])[2:].zfill(2) )
+#               testfile_out.write(" ")
+#           testfile_out.write("\n")
         if (mode[1] == "out"):
             testline = testfile3.readline()
             enc_string = testline.split()
@@ -163,11 +165,15 @@ for lines in range(2048):
 
 addr = 0
 #printProgressBar(0, 2048, prefix = 'Progress:', suffix = 'Complete', length = 50)    
-for lines in range(16):
+for lines in range(2048):
 #   printProgressBar(lines + 1, 2048, prefix = 'Progress line down: ', suffix = 'Complete', length = 50)
     if (os.name == "nt"):
-        msg = parseMem(testfile1)
-        #writePacket (f, msg, "<-, ")
+        if (mode[1] == "in"):
+            msg = parseMem(testfile1)
+
+        #msg = parseMem(testfile1)
+        writePacket (f, msg, "<-, ")
+        msg = []
     if (os.name == "posix"):
        msg = read_packets(spi,1,addr)
        writePacket (f, msg, "<-, ")
