@@ -80,16 +80,40 @@
 		spans	: ["2"			,"2"			,"1"		,"1"		,"1"		,"1"]
 	}
 
+	const TLP_MRd32_Packet = {
+		headers	: ['TLP'		,'Mem'			,'MRd(32)'	,'Length'	,'RequesterID'	,'Tag'	,'Address'	,'1st BE'	,'Last BE'	,'Data'	,'LCRC'],
+		styles	: ['TLP_Packet'	,'Mrd'			,'Mrd'		,'Mrd'		,'ReqId'		,'ReqId','Addr'		,'BE'	,'BE'		,'Data'	,'CRC_16'],
+		spans	: ["1"			,"2"			,"1"		,"1"		,"1"			,"1"	,"1"		,"1"	,"1"		,"1"	,"1"]
+	}
+
 	const TLP_MWR32_Packet = {
-		headers	: ['TLP'		,'Mem'			,'MWr(32)'	,'Length'	,'RequesterID'	,'Tag'	,'Address'	,'1BE'	,'Last BE'	,'Data'	,'LCRC'],
+		headers	: ['TLP'		,'Mem'			,'MWr(32)'	,'Length'	,'RequesterID'	,'Tag'	,'Address'	,'1st BE'	,'Last BE'	,'Data'	,'LCRC'],
 		styles	: ['TLP_Packet'	,'Mwr'			,'Mwr'		,'Mwr'		,'ReqId'		,'ReqId','Addr'		,'BE'	,'BE'		,'Data'	,'CRC_16'],
 		spans	: ["1"			,"2"			,"1"		,"1"		,"1"			,"1"	,"1"		,"1"	,"1"		,"1"	,"1"]
 	}
 
-	const TLP_MRd32_Packet = {
-		headers	: ['TLP'		,'Mem'			,'MRd(32)'	,'Length'	,'RequesterID'	,'Tag'	,'Address'	,'1BE'	,'Last BE'	,'Data'	,'LCRC'],
-		styles	: ['TLP_Packet'	,'Mrd'			,'Mrd'		,'Mrd'		,'ReqId'		,'ReqId','Addr'		,'BE'	,'BE'		,'Data'	,'CRC_16'],
-		spans	: ["1"			,"2"			,"1"		,"1"		,"1"			,"1"	,"1"		,"1"	,"1"		,"1"	,"1"]
+	const TLP_CfgRd0_Packet = {
+		headers	: ['TLP'		,'Cfg'			,'CfgRd0'	,'Length'	,'RequesterID'	,'Tag'	,'DeviceID'	,'Register'	,'1st BE'	,'LCRC'],
+		styles	: ['TLP_Packet'	,'CfgR'			,'CfgR'		,'CfgR'		,'ReqId'		,'ReqId','DevID'	,'DevID'	,'BE'		,'CRC_16'],
+		spans	: ["1"			,"2"			,"1"		,"1"		,"1"			,"1"	,"1"		,"1"		,"1"		,"1"]
+	}
+
+	const TLP_CfgWr0_Packet = {
+		headers	: ['TLP'		,'Cfg'			,'CfgWr0'	,'Length'	,'RequesterID'	,'Tag'	,'DeviceID'	,'Register'	,'1st BE'	,'Data'	,'LCRC'],
+		styles	: ['TLP_Packet'	,'CfgWr'		,'CfgWr'	,'CfgWr'	,'ReqId'		,'ReqId','DevID'	,'DevID'	,'BE'		,'Data'	,'CRC_16'],
+		spans	: ["1"			,"2"			,"1"		,"1"		,"1"			,"1"	,"1"		,"1"		,"1"		,"1"	,"1"]
+	}
+
+	const TLP_CplD_Packet = {
+		headers	: ['TLP'		,'Cpl'			,'CplD'		,'Length'	,'RequesterID'	,'CompleterID'	,'Status'	,'BCM'		,'Byte Cnt'	,'Lwr Addr'	,'Data'],
+		styles	: ['TLP_Packet'	,'CplD'			,'CplD'		,'CplD'		,'ReqId'		,'CplID'		,'Status'	,'BE'		,'BE'		,'BE'		,'Data'],
+		spans	: ["1"			,"2"			,"1"		,"1"		,"1"			,"1"			,"1"		,"1"		,"1"		,"1"		,"1"]
+	}
+
+	const TLP_Cpl_Packet = {
+		headers	: ['TLP'		,'Cpl'			,'Cpl'		,'Length'	,'RequesterID'	,'CompleterID'	,'Status'	,'BCM'		,'Byte Cnt'	,'Lwr Addr'	,'Data'],
+		styles	: ['TLP_Packet'	,'Cpl'			,'Cpl'		,'Cpl'		,'ReqId'		,'CplID'		,'Status'	,'BE'		,'BE'		,'BE'		,'Data'],
+		spans	: ["1"			,"2"			,"1"		,"1"		,"1"			,"1"			,"1"		,"1"		,"1"		,"1"		,"1"]
 	}
 
 	class Packet {
@@ -138,16 +162,25 @@
 				}
 				if ((typeof data[i]) == "object") {
 					cell = row.insertCell(-1);
+					const newLabel = document.createElement("label")
+					const newInput = document.createElement("input");
+					newInput.setAttribute("type","checkbox")
 					const newDiv = document.createElement("div");
 					const newSpan = document.createElement("span");
 					row.appendChild(cell);
-					cell.appendChild(newDiv);
-					newDiv.classList.add("tooltip");
-					newDiv.innerHTML = data[i][0];
+					cell.appendChild(newLabel);
+					newLabel.appendChild(newInput);
+					newLabel.appendChild(newDiv);
+					newDiv.classList.add("content");
+					//newDiv.innerHTML = data[i][0];
 					newDiv.appendChild(newSpan);
-					newSpan.classList.add("tooltiptext");
-					for (var j = 1; j < (data[i].length); j++) {
-						newSpan.innerHTML += data[i][j];
+					newSpan.classList.add("hidden");
+					for (var j = 0; j < (data[i].length); j++) {
+						newSpan.innerHTML += (data[i][j]+" ");
+						if ((j+1)%4 == 0) {
+							var newBr = document.createElement("BR");
+							newSpan.appendChild(newBr);
+						}
 					}
 				}
 			}
@@ -163,8 +196,7 @@
 						this.createDllpTable(packetNum, cells);
 						break;
 					case 0xFB:	//K27.7 Start TLP
-						var packetT = TLP_MWR32_Packet;
-						this.createRowPacket(cells, packetNum, packetT.headers,packetT.styles,packetT.spans,['1','2','3','4','5','6','7','8','9','10'])
+						this.createTlpTable(packetNum, cells);
 						break;
 					default:
 						break;	
@@ -172,9 +204,9 @@
 			}
 		}
 
-		/*
+		/*****************************************************************************
 		* DLLP packet functions
-		*/
+		*****************************************************************************/
 		createDllpTable(packetNum, cells) {
 			var packetT = NONE_PACKET;
 			var data = this.flowControlDllpFormat(cells);
@@ -231,6 +263,53 @@
 			data[0] = (parseInt(cells[FirstByte + 3]) + (parseInt(cells[FirstByte + 2]))*256).toString();
 			data[1] = "0x" + (cells[FirstByte + 4].slice(3) + cells[FirstByte + 5].slice(3)).toUpperCase();
 			return data;
+		}
+
+		/*****************************************************************************
+		* TLP packet functions
+		*****************************************************************************/
+		createTlpTable(packetNum, cells) {
+			var packetT = NONE_PACKET;
+			var data = ['0','1','2','3','4','5','6','7','8','9'];
+			var hdrType = parseInt(cells[FirstByte + 2]);
+			var seqNum = parseInt(cells[FirstByte + 1]) + (parseInt(cells[FirstByte]))*256;
+			var len = parseInt(cells[FirstByte+5]) + (parseInt(cells[FirstByte+4])&3)*256;
+			var addr = "0x" + (cells[FirstByte + 10].slice(3) + cells[FirstByte + 11].slice(3) + cells[FirstByte + 12].slice(3) + cells[FirstByte + 13].slice(3)).toUpperCase();
+			data[0] = seqNum.toString();
+			data[2] = len.toString();
+			data[3] = this.getTlpReqId();
+			data[4] = (parseInt(cells[FirstByte+8])).toString();
+			data[5] = addr;
+			if (hdrType == 0) {
+				data[1] = "000:00000";
+				packetT = TLP_MRd32_Packet;
+			}
+			if (hdrType == 0x40) {
+				data[1] = "010:00000";
+				packetT = TLP_MWR32_Packet;
+			}	
+			if (hdrType == 0x04) {
+				data[1] = "000:00100";
+				packetT = TLP_CfgRd0_Packet;
+			}
+			if (hdrType == 0x44) {
+				data[1] = "010:00100";
+				packetT = TLP_CfgWr0_Packet;
+			}
+			if (hdrType == 0x0A) {
+				data[1] = "000:01010";
+				packetT = TLP_Cpl_Packet;
+			}
+			if (hdrType == 0x4A) {
+				data[1] = "010:01010";
+				packetT = TLP_CplD_Packet;
+			}
+			this.createRowPacket(cells, packetNum, packetT.headers,packetT.styles,packetT.spans,data);
+		}
+
+		getTlpReqId (cells) {
+			var reqId = []
+			return "000:00:0";
 		}
 
 	}
@@ -292,56 +371,6 @@
 		}
 	}
 	
-	function createTlpPacket (row, cell, cells) {
-		
-		
-		if ((parseInt(cells[6]) & 64) == 64) {
-			cell = row.insertCell(-1);
-			cell.rowSpan = "2";	
-			cell.classList.add("Mwr");
-			cell.innerHTML = "Mem";
-			
-			cell = row.insertCell(-1);
-			cell.classList.add("Mwr");
-			cell.innerHTML = "MWr(32)";
-			
-			cell = row.insertCell(-1);
-			cell.classList.add("Mwr");
-			cell.innerHTML = "Length";
-			
-			cell = row.insertCell(-1);
-			cell.classList.add("ReqId");
-			cell.innerHTML = "RequesterId";
-			
-			cell = row.insertCell(-1);
-			cell.classList.add("ReqId");
-			cell.innerHTML = "Tag";
-			
-			cell = row.insertCell(-1);
-			cell.classList.add("Addr");
-			cell.innerHTML = "Address";
-			
-			cell = row.insertCell(-1);
-			cell.classList.add("BE");
-			cell.innerHTML = "1st BE";
-			
-			cell = row.insertCell(-1);
-			cell.classList.add("BE");
-			cell.innerHTML = "Last BE";
-			
-			cell = row.insertCell(-1);
-			cell.classList.add("Data");
-			cell.innerHTML = "Data";
-		}
-		cell = row.insertCell(-1);
-		cell.classList.add("CRC_16");
-		cell.innerHTML = "CRC";
-		
-		cell = row.insertCell(-1);
-		cell.classList.add("Timestamp");
-		cell.innerHTML = "Timestamp";
-		
-	}
 	*/
 	
     function Upload() {
@@ -355,13 +384,7 @@
                     var rows = e.target.result.split("\n");
 					let newLine = new Packet(table,rows);
                     for (var i = 0; i < rows.length; i++) {
-
 						newLine.addPacket(rows[i], i);
-						//newLine.createRowPacket (i, ['first','second','third'], ['TLP_Packet','DLLP_Packet'], ["1","2","1"], ["data1","data2",['p1','p2','p3','p4'],"data3"])
-						//newLine.createRowPacket (i, DLLP_NACK_Packet.headers , DLLP_NACK_Packet.styles, DLLP_NACK_Packet.spans , ["data1","data2","data3"])
-					
-						//addPacket(table, rows[i], i);
-
                     }
                     var dvCSV = document.getElementById("dvCSV");
                     dvCSV.innerHTML = "";
@@ -379,57 +402,71 @@
 </script>
 
 <style type="text/css">
+	body {background-color: rgb(218, 218, 218);}
+	* {font-size: small;}
+	td {
+		text-align: center;
+		border:1px solid rgb(0, 0, 0);
+	}
 
-* {font-size: small;}
-td {border: 1px solid black;
-	text-align: center;}
-th.PNum, td.PNum{background-color:#f9f;}
-					
-th.Up, td.Up{background-color:#eba834;}
-				
-th.Down, td.Down{background-color:#7d5500;color: #fff;}
-td.TLP_Packet {background-color:#bd7b09;}
-td.DLLP_Packet {background-color:#18d60b;}
-td.ACK_Packet {background-color:#fff200;}
-td.NACK_Packet {background-color:#30302d; color: #fff}
-td.InitFC {background-color:#185c11; color: #fff;}
-td.CRC_16 {background-color:#808080;}
-td.Timestamp {background-color:#0012d9; color: #fff;}
-td.Mwr {background-color:#000a7a; color: #fff;}
-td.ReqId {background-color:#0f994b;}
-td.Addr{background-color:#00d5ff;}
-td.BE{background-color:#3dffa8;}
-td.Data{background-color:#b82b00;color: #fff;}
-td.unknown{background-color:#ff0000;color: #fff;}
+	th.PNum, td.PNum{background-color:#f9f;}
 
+	th.Up, td.Up{background-color:#eba834;}
 
-.tooltip {
-			height:100%
-			margin: 0px;}
-.tooltiptext {
-  visibility: hidden;
-  width: 220px;
-  background-color: black;
-  color: #fff;
-  text-align: center;
-  border-radius: 6px;
-  padding: 5px 0;
-
-  /* Position the tooltip */
-  position: absolute;
-  z-index: 1;
-}
-.tooltip:hover .tooltiptext {
-  visibility: visible;
-}
+	th.Down, td.Down{background-color:#7d5500;color: #fff;}
+	td.TLP_Packet {background-color:#bd7b09;}
+	td.DLLP_Packet {background-color:#18d60b;}
+	td.ACK_Packet {background-color:#fff200;}
+	td.NACK_Packet {background-color:#30302d; color: #fff}
+	td.InitFC {background-color:#185c11; color: #fff;}
+	td.CRC_16 {background-color:#808080;}
+	td.Timestamp {background-color:#0012d9; color: #fff;}
+	td.Mwr {background-color:#000a7a; color: #fff;}
+	td.Mrd {background-color:#800f0f; color: #fff;}
+	td.CfgR {background-color:#a75587; color: #fff;}
+	td.CfgWr {background-color:#04598a; color: #fff;}
+	td.CplD{background-color:#e09900; color: #fff;}
+	td.DevID{background-color:#4477d6;}
+	td.CplID{background-color:#0e3885;}
+	td.Status{background-color:#ffff00;}
+	td.Cpl{background-color:#ccae6dd3; color: #fff;}
+	td.ReqId {background-color:#0f994b;}
+	td.Addr{background-color:#00d5ff;}
+	td.BE{background-color:#3dffa8;}
+	td.Data{background-color:#b82b00;color: #fff;}
+	td.unknown{background-color:#ff0000;color: #fff;}
 
 
+	.tooltip {
+				height:100%
+				margin: 0px;}
+	.tooltiptext {
+	  visibility: hidden;
+	  width: 220px;
+	  background-color: black;
+	  color: #fff;
+	  text-align: center;
+	  border-radius: 6px;
+	  padding: 5px 0;
 
-
-
+	  /* Position the tooltip */
+	  position: absolute;
+	  z-index: 1;
+	}
+	.tooltip:hover .tooltiptext {
+	  visibility: visible;
+	}
+	.content{
+		height:15px;
+		width:100px;
+		overflow:hidden;
+		text-overflow:ellipsis
+	}
+	input[type='checkbox'] { visibility: hidden; position: absolute; }
+	input[type='checkbox']:checked + .content { height: auto; width: auto;}
 </style>
+
 <input type="file" id="fileUpload" />
 <input type="button" id="upload" value="Upload" onclick="Upload()" />
 <hr />
-<div id="dvCSV">
-</div>
+<div id="dvCSV"> </div>
