@@ -25,12 +25,10 @@ def create_list(answer):
 '''
 
 
-
-
 spi = SpiDev()
-msg=[0x03,0x01,0x00,0x00]
+msg = [0x03, 0x01, 0x00, 0x00]
 
-spi.open(0,0)
+spi.open(0, 0)
 spi.max_speed_hz = 10000000
 spi.mode = 1
 
