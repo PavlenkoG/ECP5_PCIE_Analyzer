@@ -84,6 +84,7 @@ prj_src add "$ProjectPath/src/extref.vhd"
 prj_src add "$ProjectPath/src/pcs_pci_rx.vhd"
 prj_src add "$ProjectPath/src/pcs_pci_tx.vhd"
 prj_src add "$ProjectPath/src/pll.vhd"
+prj_src add "$ProjectPath/src/pll_200.vhd"
 
 
 prj_src add "$ProjectPath/SRC/analyzer.lpf"
