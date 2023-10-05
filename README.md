@@ -35,3 +35,21 @@ PCB with solder paste
 
 Mounted PCB
 ![Mounted PCB](/doc/pic/pcb_mnt.jpg)
+
+# Python script usage
+
+## record data (on raspberry pi)
+
+```
+pi@raspberrypi:~/github/ECP5_PCIE_Analyzer/py_script $ python3 analyzer.py
+['analyzer.py']
+file removed
+Time:  11.82167429399999 s
+```
+
+## analyze data
+
+copy data to local
+```
+scp -r pi@192.168.178.29:~/github/ECP5_PCIE_Analyzer/py_script/*.csv .
+```
