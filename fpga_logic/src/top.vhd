@@ -45,12 +45,14 @@ entity top is
         disable3        : out std_logic;                        -- disable opAmp ch3
 
         -- signals for reveal analyzer
-        data_out_o      : out std_logic_vector (31 downto 0);
-        data_out_i      : out std_logic_vector (31 downto 0);
-        timestamp       : out std_logic_vector (1 downto 0);
+        --data_out_o      : out std_logic_vector (31 downto 0);
+        --data_out_i      : out std_logic_vector (31 downto 0);
+        --timestamp       : out std_logic_vector (1 downto 0);
         
         led             : out std_logic_vector (7 downto 0);    -- eval board leds
-        switch          : in std_logic_vector (7 downto 0)      -- eval board switches
+        switch          : in std_logic_vector (7 downto 0);      -- eval board switches
+        uart_tx         : out std_logic;
+        uart_rx         : out std_logic
     );
 end top;
 
@@ -164,6 +166,10 @@ begin
     led(2 downto 0) <= not los(2) & not los (1) & not los (0);
     led(4 downto 3) <= not lsm_status_s_1 & not lsm_status_s_2;
     led(7 downto 5) <= q_ra.led_out(7 downto 5);
+
+    uart_rx <= 'Z';
+    uart_tx <= 'Z';
+
     clk_25_en <= '1';
 
     disable3 <= switch(2);
@@ -415,8 +421,8 @@ begin
             d_and.trigger_set.addr_match_en <= '0';
             d_and.trigger_set.addr_match <= (others => '0');
             d_and.filter_in.tlp_save <= '1';
-            d_and.filter_in.order_set_save <= '1';
-            d_and.filter_in.dllp_save <= '1';
+            d_and.filter_in.order_set_save <= '0';
+            d_and.filter_in.dllp_save <= '0';
 
             d_anu.trigger_set.packet_type_en <= '0';
             d_anu.trigger_set.packet_type <= TLP_PKT;

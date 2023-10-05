@@ -565,7 +565,6 @@ begin
     -- 15:0  - addr (15:0)
     data <= d.cfg_cmpl_req & d.tc & d.bar_hit_in(5 downto 0) & d.length(7 downto 0) & d.tag & d.dw & d.addr_read(15 downto 0);
     -- fifo to store tx requestes
-    /*
     pci_read_req_fifo_inst : entity work.pci_read_request_fifo
     port map ( Clock => clk,
                Data => data,
@@ -576,7 +575,6 @@ begin
                Full => open,
                Q => fifo_data
     );
-    */
 
 end arch;
 

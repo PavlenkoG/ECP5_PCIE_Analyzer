@@ -1,4 +1,4 @@
-rvl_alias "clk_25_in" "clk_25_in";
+RVL_ALIAS "clk_25_in" "clk_25_in"; 
 RVL_ALIAS "clk_100" "rev_analyzer_inst/clk"; 
 RVL_ALIAS "clk_100" "rev_analyzer_inst/clk"; 
 RVL_ALIAS "clk_100" "rev_analyzer_inst/clk"; 
@@ -137,3 +137,7 @@ LOCATE COMP "sclk" SITE "R20" ;
 LOCATE COMP "cs_n" SITE "U19" ;
 LOCATE COMP "miso" SITE "T19" ;
 FREQUENCY NET "clk_25_in_c" 25.000000 MHz ;
+LOCATE COMP "uart_tx" SITE "N20" ;
+LOCATE COMP "uart_rx" SITE "P18" ;
+IOBUF PORT "uart_tx" IO_TYPE=LVTTL33 PULLMODE=NONE ;
+IOBUF PORT "uart_rx" IO_TYPE=LVTTL33 PULLMODE=NONE ;
