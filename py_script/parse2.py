@@ -13,8 +13,13 @@ def hex_str_to_num(words: [str]) -> '[int]':
 def two_byte(bytes: [int]) -> int:
     return bytes[1] | (bytes[0] << 8)
 
+def four_byte(bytes: [int]) -> int:
+    return bytes[3] | (bytes[2] << 8) | (bytes[1] << 16) | (bytes[0] << 24)
+
 class FmtTypes:
     CPLD = 0b010_01010
+    MRD = 0b000_00000
+    MWR = 0b010_00000
 
 def fmt_type_to_str(val: int) -> str:
     match val:
@@ -26,11 +31,11 @@ def fmt_type_to_str(val: int) -> str:
             return "Cpl"
         case FmtTypes.CPLD:
             return "CplD"
-        case 0b000_00000:
+        case FmtTypes.MRD:
             return "MRd" #3DW
         case 0b001_00000:
             return "MRd_4DW"
-        case 0b010_00000:
+        case FmtTypes.MWR:
             return "MWr" #3DW
         case 0b011_00000:
             return "MWr_4DW"
@@ -71,8 +76,15 @@ def parse_tlp(bytes: [int], packet: dict):
                 packet['tlp_byte_count'] = byte_count
                 packet['tlp_tag'] = bytes[10]
                 packet['tlp_data'] = bytes[12:(12+byte_count)]
+        elif fmt_type == FmtTypes.MRD:
+            if len(bytes) >= 11:
+                packet['tlp_addr'] = four_byte(bytes[8:12]) & 0x11111111_11111111_11111111_11111100
+        elif fmt_type == FmtTypes.MWR:
+            if len(bytes) >= 13:
+                packet['tlp_data'] = bytes[12:(12+length)]
+                packet['tlp_addr'] = four_byte(bytes[8:12]) & 0x11111111_11111111_11111111_11111100
         else:
-            packet['tlp_data'] = bytes[4:(4+length_dw+1)]
+            packet['tlp_data'] = bytes[4:length]
 
 
 def parse_file(filename: str):
@@ -140,6 +152,8 @@ def print_parsed(sortedlist: [dict]):
             tlp_str += f"bytecount={packet['tlp_byte_count']} "
         if 'tlp_tag' in packet:
             tlp_str += f"tag=(slot={tlp_tag_to_slot(packet['tlp_tag'])} idx={tlp_tag_to_index(packet['tlp_tag'])} {tlp_tag_to_process(packet['tlp_tag'])}) "
+        if 'tlp_addr' in packet:
+            tlp_str += f"addr=0x{packet['tlp_addr']:08x} "            
         if 'tlp_data' in packet:
             tlp_str += f"data={data_as_str(packet['tlp_data'])} "
 
