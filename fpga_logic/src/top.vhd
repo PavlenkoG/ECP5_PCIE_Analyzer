@@ -126,6 +126,7 @@ architecture RTL of top is
 
     signal trigger_ena          : std_logic := '0';
     signal trigger_resync       : std_logic_vector (1 downto 0) := (others => '0');
+    signal trigger_resync1      : std_logic_vector (1 downto 0) := (others => '0');
     signal trigger_stop         : std_logic_vector (1 downto 0);
     signal rd_addr              : std_logic_vector (14 downto 0) := (others => '0');
     signal read_ena             : std_logic;
@@ -311,7 +312,7 @@ begin
         d_anu.data_in_scr <= scr_data_2;
         d_anu.rx_k <= rx_k_2d;
 
-        d_anu.trigger_start <= trigger_resync(1);--q_cntr.trigger_start;
+        d_anu.trigger_start <= trigger_resync1(1);--q_cntr.trigger_start;
 --      d_anu.trigger_stop <= q_cntr.trigger_stop;
 
         analyzer_up_inst : entity  work.analyzer
@@ -455,6 +456,13 @@ begin
         if rising_edge (rx_pclk_1) then
             trigger_resync(0) <= q_ra.trigger_ena;
             trigger_resync(1) <= trigger_resync(0);
+        end if;
+    end process;
+    resync_process : process (rx_pclk_2) is
+    begin
+        if rising_edge (rx_pclk_1) then
+            trigger_resync1(0) <= q_ra.trigger_ena;
+            trigger_resync1(1) <= trigger_resync1(0);
         end if;
     end process;
 end architecture RTL;
