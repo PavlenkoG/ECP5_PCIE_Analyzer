@@ -158,7 +158,7 @@ def print_parsed(sortedlist: [dict]):
         if 'tlp_addr' in packet:
             tlp_str += f"addr=0x{packet['tlp_addr']:08x} "
         if 'tlp_lower_addr' in packet:
-            tlp_str += f"tlp_lower_addr=0x{packet['tlp_lower_addr']:08x} "
+            tlp_str += f"tlp_lower_addr=0x{packet['tlp_lower_addr']:02x} "
         if 'tlp_data' in packet:
             tlp_str += f"data={data_as_str(packet['tlp_data'])} "
 
