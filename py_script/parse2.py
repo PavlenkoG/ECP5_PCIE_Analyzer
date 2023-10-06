@@ -1,4 +1,5 @@
 import argparse
+from datetime import datetime
 
 def hex_str_to_num(words: [str]) -> '[int]':
     out = []
@@ -16,15 +17,21 @@ def two_byte(bytes: [int]) -> int:
 def four_byte(bytes: [int]) -> int:
     return bytes[3] | (bytes[2] << 8) | (bytes[1] << 16) | (bytes[0] << 24)
 
+def eight_byte(bytes: [int]) -> int:
+    return (four_byte(bytes[0:4]) << 32) | four_byte(bytes[4:8])
+
 class FmtTypes:
     CPLD = 0b010_01010
     MRD = 0b000_00000
     MWR = 0b010_00000
+    MSGD = 0b011_10100
 
 def fmt_type_to_str(val: int) -> str:
     match val:
-        case 0b011_10100:
+        case FmtTypes.MSGD:
             return "MsgD"
+        case 0b001_10000:
+            return "Msg"
         case 0b001_10100:
             return "Msg"
         case 0b000_01010:
@@ -89,6 +96,15 @@ def parse_tlp(bytes: [int], packet: dict):
                 packet['tlp_first_be'] = bytes[7] & 0b1111
                 packet['tlp_last_be'] = (bytes[7] >> 4) & 0b1111
                 packet['tlp_be'] = bytes[7]
+        elif fmt_type == FmtTypes.MSGD:
+            idx_ts = 8
+            idx_prop_delay = idx_ts + 8
+            idx_after_prop_delay = idx_prop_delay + 4
+            if len(bytes) >= idx_prop_delay:
+                # packet['tlp_data'] = bytes[9:(9+8)] # timestamp master time
+                packet['tlp_ts_master'] = eight_byte(bytes[idx_ts:idx_prop_delay]) # timestamp master time
+            if len(bytes) >= idx_after_prop_delay:
+                packet['tlp_prop_delay'] = four_byte(bytes[idx_prop_delay:idx_after_prop_delay]) # propagation delay
         else:
             packet['tlp_data'] = bytes[4:length]
 
@@ -168,10 +184,16 @@ def print_parsed(sortedlist: [dict]):
             tlp_str += f"1st_be=0b{packet['tlp_first_be']:04b} "
         if 'tlp_last_be' in packet:
             tlp_str += f"last_be=0b{packet['tlp_last_be']:04b} "
+        if 'tlp_ts_master' in packet:
+            # tlp_str += f"ts_master={packet['tlp_ts_master']} ({datetime.fromtimestamp(packet['tlp_ts_master']/1e9).strftime("%A, %B %d, %Y %I:%M:%S")}) "
+            tlp_str += f"ts_master=0x{packet['tlp_ts_master']:016x} ts_master={packet['tlp_ts_master']} "
+        if 'tlp_prop_delay' in packet:
+            tlp_str += f"prop_delay=0x{packet['tlp_prop_delay']:08x} "            
+            
         # if 'tlp_be' in packet:
         #     tlp_str += f"be=0x{packet['tlp_be']:02x} "
 
-        print(f"{packet['direction']} {packet['ts']/1e6: 10.6f} {delta_ts: 10} {type_to_str(packet['type']):3} {packet['number']: 8} {tlp_str}")
+        print(f"{packet['direction']} {packet['ts']/1e6: 12.6f} {delta_ts: 10} {type_to_str(packet['type']):3} {packet['number']: 8} {tlp_str}")
         last = packet['ts']
 
 def execute():
