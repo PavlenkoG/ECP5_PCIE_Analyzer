@@ -75,7 +75,10 @@ def parse_tlp(bytes: [int], packet: dict):
                 byte_count = bytes[7] | ((bytes[6] & 0b1111) << 8)
                 packet['tlp_byte_count'] = byte_count
                 packet['tlp_tag'] = bytes[10]
-                packet['tlp_data'] = bytes[12:(12+byte_count)]
+                lower_addr = bytes[11] & 0b0111_1111
+                packet['tlp_lower_addr'] = lower_addr
+                idx_data_start = 12 + lower_addr
+                packet['tlp_data'] = bytes[idx_data_start:(idx_data_start+byte_count)]
         elif fmt_type == FmtTypes.MRD:
             if len(bytes) >= 11:
                 packet['tlp_addr'] = four_byte(bytes[8:12]) & 0x11111111_11111111_11111111_11111100
@@ -153,7 +156,9 @@ def print_parsed(sortedlist: [dict]):
         if 'tlp_tag' in packet:
             tlp_str += f"tag=(slot={tlp_tag_to_slot(packet['tlp_tag'])} idx={tlp_tag_to_index(packet['tlp_tag'])} {tlp_tag_to_process(packet['tlp_tag'])}) "
         if 'tlp_addr' in packet:
-            tlp_str += f"addr=0x{packet['tlp_addr']:08x} "            
+            tlp_str += f"addr=0x{packet['tlp_addr']:08x} "
+        if 'tlp_lower_addr' in packet:
+            tlp_str += f"tlp_lower_addr=0x{packet['tlp_lower_addr']:08x} "
         if 'tlp_data' in packet:
             tlp_str += f"data={data_as_str(packet['tlp_data'])} "
 
