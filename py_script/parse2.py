@@ -81,11 +81,11 @@ def parse_tlp(bytes: [int], packet: dict):
                 packet['tlp_data'] = bytes[idx_data_start:(idx_data_start+byte_count)]
         elif fmt_type == FmtTypes.MRD:
             if len(bytes) >= 11:
-                packet['tlp_addr'] = four_byte(bytes[8:12]) & 0x11111111_11111111_11111111_11111100
+                packet['tlp_addr'] = four_byte(bytes[8:12]) & 0b11111111_11111111_11111111_11111100
         elif fmt_type == FmtTypes.MWR:
             if len(bytes) >= 13:
                 packet['tlp_data'] = bytes[12:(12+length)]
-                packet['tlp_addr'] = four_byte(bytes[8:12]) & 0x11111111_11111111_11111111_11111100
+                packet['tlp_addr'] = four_byte(bytes[8:12]) & 0b11111111_11111111_11111111_11111100
         else:
             packet['tlp_data'] = bytes[4:length]
 
