@@ -86,6 +86,9 @@ def parse_tlp(bytes: [int], packet: dict):
             if len(bytes) >= 13:
                 packet['tlp_data'] = bytes[12:(12+length)]
                 packet['tlp_addr'] = four_byte(bytes[8:12]) & 0b11111111_11111111_11111111_11111100
+                packet['tlp_first_be'] = bytes[7] & 0b1111
+                packet['tlp_last_be'] = (bytes[7] >> 4) & 0b1111
+                packet['tlp_be'] = bytes[7]
         else:
             packet['tlp_data'] = bytes[4:length]
 
@@ -161,6 +164,12 @@ def print_parsed(sortedlist: [dict]):
             tlp_str += f"tlp_lower_addr=0x{packet['tlp_lower_addr']:02x} "
         if 'tlp_data' in packet:
             tlp_str += f"data={data_as_str(packet['tlp_data'])} "
+        if 'tlp_first_be' in packet:
+            tlp_str += f"1st_be=0b{packet['tlp_first_be']:04b} "
+        if 'tlp_last_be' in packet:
+            tlp_str += f"last_be=0b{packet['tlp_last_be']:04b} "
+        # if 'tlp_be' in packet:
+        #     tlp_str += f"be=0x{packet['tlp_be']:02x} "
 
         print(f"{packet['direction']} {packet['ts']/1e6: 10.6f} {delta_ts: 10} {type_to_str(packet['type']):3} {packet['number']: 8} {tlp_str}")
         last = packet['ts']
