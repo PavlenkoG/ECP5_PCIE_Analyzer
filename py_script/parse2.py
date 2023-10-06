@@ -34,6 +34,24 @@ def fmt_type_to_str(val: int) -> str:
             return "MWr_4DW"
         case other:
             return f"??? 0b{val: b}"
+        
+def tlp_tag_to_slot(tag: int) -> int:
+    # bit 4:0
+    return tag & 0b11111
+
+
+def tlp_tag_to_index(tag: int) -> int:
+    # bit6:5
+    return (tag & 0b1100000) >> 5
+
+
+def tlp_tag_to_process(tag: int) -> int:
+    # bit 7
+    if ((tag & 0b1000_0000) == 0b1000_0000):
+        # acyclic
+        return "acyclic"
+    else:
+        return "cyclic"        
 
 
 def parse_tlp(bytes: [int], packet: dict):
@@ -41,13 +59,16 @@ def parse_tlp(bytes: [int], packet: dict):
     packet['tlp_fmt_type'] = fmt_type
     if len(bytes) >= 4:
         length_dw = bytes[3] | ((bytes[2] & 0b11) << 8)
-        if length_dw > 100:
-            print(f"len_dw={length_dw} {bytes[2]} {bytes[3]}")
-        packet['tlp_length'] = length_dw
+        length = length_dw * 4
+        # if length_dw > 100:
+        #     print(f"len_dw={length_dw} {bytes[2]} {bytes[3]}")
+        packet['tlp_length_dw'] = length_dw
         if fmt_type == FmtTypes.CPLD:
             if len(bytes) > 11:
+                byte_count = bytes[7] | ((bytes[6] & 0b1111) << 8)
+                packet['tlp_byte_count'] = byte_count
                 packet['tlp_tag'] = bytes[10]
-                packet['tlp_data'] = bytes[12:(4+length_dw+1)]
+                packet['tlp_data'] = bytes[12:(12+byte_count)]
         else:
             packet['tlp_data'] = bytes[4:(4+length_dw+1)]
 
@@ -98,8 +119,8 @@ def type_to_str(type: int) -> 'str':
 
 def data_as_str(vals: [int]) -> str:
     out = "["
-    for val in vals:
-        out += f"0x{val:02x},"
+    str_vals = map(lambda val: f"0x{val:02x}", vals)
+    out += ','.join(str_vals)
     out += "]"
     return out
 
@@ -109,11 +130,14 @@ for packet in sortedlist:
     tlp_str = ""
     if 'tlp_fmt_type' in packet:
         tlp_str += f"{fmt_type_to_str(packet['tlp_fmt_type']):4} "
-    if 'tlp_length' in packet:
-        tlp_str += f"lenDW={packet['tlp_length']} "
+    if 'tlp_length_dw' in packet:
+        tlp_str += f"lenDW={packet['tlp_length_dw']} "
+    if 'tlp_byte_count' in packet:
+        tlp_str += f"bytecount={packet['tlp_byte_count']} "
+    if 'tlp_tag' in packet:
+        tlp_str += f"tag=(slot={tlp_tag_to_slot(packet['tlp_tag'])} idx={tlp_tag_to_index(packet['tlp_tag'])} {tlp_tag_to_process(packet['tlp_tag'])}) "
     if 'tlp_data' in packet:
         tlp_str += f"data={data_as_str(packet['tlp_data'])} "
 
-    print(f"{packet['direction']} {packet['ts']/1e6: 10.6f} {delta_ts: 10} {
-          type_to_str(packet['type']):3} {packet['number']: 8} {tlp_str}")
+    print(f"{packet['direction']} {packet['ts']/1e6: 10.6f} {delta_ts: 10} {type_to_str(packet['type']):3} {packet['number']: 8} {tlp_str}")
     last = packet['ts']
