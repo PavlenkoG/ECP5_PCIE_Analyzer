@@ -308,8 +308,8 @@ begin
             rx_k_out        => rx_k_2d
         );
 
-        d_anu.data_in_scr <= scr_data_1;
-        d_anu.rx_k <= rx_k_1d;
+        d_anu.data_in_scr <= scr_data_2;
+        d_anu.rx_k <= rx_k_2d;
 
         d_anu.trigger_start <= trigger_resync(1);--q_cntr.trigger_start;
 --      d_anu.trigger_stop <= q_cntr.trigger_stop;
