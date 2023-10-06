@@ -1,3 +1,5 @@
+import argparse
+
 def hex_str_to_num(words: [str]) -> '[int]':
     out = []
     for word in words:
@@ -73,9 +75,9 @@ def parse_tlp(bytes: [int], packet: dict):
             packet['tlp_data'] = bytes[4:(4+length_dw+1)]
 
 
-def parse_file():
+def parse_file(filename: str):
     out = []
-    with open('application.csv') as f:
+    with open(filename) as f:
         lines = f.readlines()
         for line in lines:
             # print(f"len={len(line)}")
@@ -101,10 +103,11 @@ class PacketTypes:
     TYPE_START_DLLP = 0x5c
 
 
-parsed = parse_file()
-sortedlist = sorted(parsed,  key=lambda packet: packet["ts"], reverse=False)
-
-# print(sortedlist[0])
+def do_parse(filename: str):
+    parsed = parse_file(filename)
+    sortedlist = sorted(parsed,  key=lambda packet: packet["ts"], reverse=False)
+    # print(sortedlist[0])
+    return sortedlist
 
 
 def type_to_str(type: int) -> 'str':
@@ -124,20 +127,37 @@ def data_as_str(vals: [int]) -> str:
     out += "]"
     return out
 
-last = 0
-for packet in sortedlist:
-    delta_ts = packet['ts'] - last
-    tlp_str = ""
-    if 'tlp_fmt_type' in packet:
-        tlp_str += f"{fmt_type_to_str(packet['tlp_fmt_type']):4} "
-    if 'tlp_length_dw' in packet:
-        tlp_str += f"lenDW={packet['tlp_length_dw']} "
-    if 'tlp_byte_count' in packet:
-        tlp_str += f"bytecount={packet['tlp_byte_count']} "
-    if 'tlp_tag' in packet:
-        tlp_str += f"tag=(slot={tlp_tag_to_slot(packet['tlp_tag'])} idx={tlp_tag_to_index(packet['tlp_tag'])} {tlp_tag_to_process(packet['tlp_tag'])}) "
-    if 'tlp_data' in packet:
-        tlp_str += f"data={data_as_str(packet['tlp_data'])} "
+def print_parsed(sortedlist: [dict]):
+    last = 0
+    for packet in sortedlist:
+        delta_ts = packet['ts'] - last
+        tlp_str = ""
+        if 'tlp_fmt_type' in packet:
+            tlp_str += f"{fmt_type_to_str(packet['tlp_fmt_type']):4} "
+        if 'tlp_length_dw' in packet:
+            tlp_str += f"lenDW={packet['tlp_length_dw']} "
+        if 'tlp_byte_count' in packet:
+            tlp_str += f"bytecount={packet['tlp_byte_count']} "
+        if 'tlp_tag' in packet:
+            tlp_str += f"tag=(slot={tlp_tag_to_slot(packet['tlp_tag'])} idx={tlp_tag_to_index(packet['tlp_tag'])} {tlp_tag_to_process(packet['tlp_tag'])}) "
+        if 'tlp_data' in packet:
+            tlp_str += f"data={data_as_str(packet['tlp_data'])} "
 
-    print(f"{packet['direction']} {packet['ts']/1e6: 10.6f} {delta_ts: 10} {type_to_str(packet['type']):3} {packet['number']: 8} {tlp_str}")
-    last = packet['ts']
+        print(f"{packet['direction']} {packet['ts']/1e6: 10.6f} {delta_ts: 10} {type_to_str(packet['type']):3} {packet['number']: 8} {tlp_str}")
+        last = packet['ts']
+
+def execute():
+    """build a m100 io module initial package"""
+    parser = argparse.ArgumentParser(
+        prog='',
+        description='',
+        epilog=r'')
+    parser.add_argument('record_csv')
+    args = parser.parse_args()
+
+    parsed = do_parse(args.record_csv)
+    print_parsed(parsed)
+
+
+if __name__ == "__main__":
+    execute()
