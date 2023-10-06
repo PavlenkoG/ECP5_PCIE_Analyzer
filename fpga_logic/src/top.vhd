@@ -388,7 +388,7 @@ begin
         );
 
     d_ra.button <= button;
-    d_ra.stop_trigger <= q_and.stop_trigger;
+    d_ra.stop_trigger <= q_anu.stop_trigger;
     d_ra.data_in_rx <= mem_data_out_rx;
     d_ra.data_in_tx <= mem_data_out_tx;
 
@@ -460,7 +460,7 @@ begin
     end process;
     resync_process : process (rx_pclk_2) is
     begin
-        if rising_edge (rx_pclk_1) then
+        if rising_edge (rx_pclk_2) then
             trigger_resync1(0) <= q_ra.trigger_ena;
             trigger_resync1(1) <= trigger_resync1(0);
         end if;
